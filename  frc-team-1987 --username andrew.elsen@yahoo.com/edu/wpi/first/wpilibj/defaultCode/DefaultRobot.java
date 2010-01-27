@@ -7,15 +7,20 @@
 package edu.wpi.first.wpilibj.defaultCode;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.camera.AxisCamera;
+import edu.wpi.first.wpilibj.camera.AxisCameraException;
+import edu.wpi.first.wpilibj.image.ColorImage;
+import edu.wpi.first.wpilibj.image.NIVisionException;
+import edu.wpi.first.wpilibj.DriverStationLCD;
 
 /**
  * This "BuiltinDefaultCode" provides the "default code" functionality as used in the "Benchtop Test."
@@ -103,6 +108,11 @@ public class DefaultRobot extends IterativeRobot {
     int m_disabledPeriodicLoops;
     int m_telePeriodicLoops;
 
+    double kScoreThreshold = .01;
+    AxisCamera cam;
+
+    TrackerDashboard trackerDashboard = new TrackerDashboard();
+
     /**
      * Constructor for this "BuiltinDefaultCode" Class.
      *
@@ -154,7 +164,10 @@ public class DefaultRobot extends IterativeRobot {
     public void robotInit() {
         // Actions which would be performed once (and only once) upon initialization of the
         // robot would be put here.
-
+        Timer.delay(10.0);
+        cam = AxisCamera.getInstance();
+        cam.writeResolution(AxisCamera.ResolutionT.k320x240);
+        cam.writeBrightness(0);
         System.out.println("RobotInit() completed.\n");
     }
 
@@ -176,6 +189,11 @@ public class DefaultRobot extends IterativeRobot {
         m_driveMode = UNINITIALIZED_DRIVE;		// Set drive mode to uninitialized
         ClearSolenoidLEDsKITT();
         m_timercombine.start();
+
+        boolean lastTrigger = false;
+    DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Starting Camera Code");
+    DriverStationLCD.getInstance().updateLCD();
+    Timer.delay(1.0); //Wait one second so user can see starting message
     }
     /********************************** Periodic Routines *************************************/
     static int printSec = (int) ((Timer.getUsClock() / 1000000.0) + 1.0);
@@ -313,6 +331,40 @@ public class DefaultRobot extends IterativeRobot {
         /*
         }  // if (m_ds->GetPacketNumber()...
          */
+
+        try {
+                DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Camera Running     ");
+                DriverStationLCD.getInstance().updateLCD();
+                if (cam.freshImage()) {// && turnController.onTarget()) {
+                    ColorImage image = cam.getImage();
+                    Thread.yield();
+                    Target[] targets = Target.findCircularTargets(image);
+                    Thread.yield();
+                    image.free();
+                    if (targets.length == 0 || targets[0].m_score < kScoreThreshold) {
+                        System.out.println("No target found");
+                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Not Found              " );
+                        Target[] newTargets = new Target[targets.length + 1];
+                        newTargets[0] = new Target();
+                        newTargets[0].m_majorRadius = 0;
+                        newTargets[0].m_minorRadius = 0;
+                        newTargets[0].m_score = 0;
+                        for (int i = 0; i < targets.length; i++) {
+                            newTargets[i + 1] = targets[i];
+                        }
+                  } else {
+                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser3, 1, "Pos X: " + targets[0].m_xPos );
+                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser4, 1, "Pos Y: " + targets[0].m_yPos );
+                        DriverStationLCD.getInstance().updateLCD();
+                        System.out.println(targets[0]);
+                        System.out.println("Target Angle: " + targets[0].getHorizontalAngle());
+                    }
+                }
+            } catch (NIVisionException ex) {
+                ex.printStackTrace();
+            } catch (AxisCameraException ex) {
+                ex.printStackTrace();
+            }
 
     }
 
