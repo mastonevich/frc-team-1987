@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.image.ColorImage;
 import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 
+
 /**
  * This "BuiltinDefaultCode" provides the "default code" functionality as used in the "Benchtop Test."
  *
@@ -107,6 +108,8 @@ public class DefaultRobot extends IterativeRobot {
     int m_autoPeriodicLoops;
     int m_disabledPeriodicLoops;
     int m_telePeriodicLoops;
+
+    int ShooterSpeedLock;
 
     double kScoreThreshold = .01;
     AxisCamera cam;
@@ -308,8 +311,8 @@ public class DefaultRobot extends IterativeRobot {
                 }
             }
         }
-        m_leftshooter.set(.25);                                                                                                                                                                                                                                    m_leftshooter.set(.25);
-        m_rightshooter.set(.25);
+        m_leftshooter.set(SetShooterSpeed(m_leftStick.getY()));
+        m_rightshooter.set(SetShooterSpeed(m_leftStick.getY()));
         // determine if tank or arcade mode, based upon position of "Z" wheel on kit joystick
         if (m_rightStick.getZ() <= 0) {    // Logitech Attack3 has z-polarity reversed; up is negative
             // use arcade drive
@@ -366,7 +369,18 @@ public class DefaultRobot extends IterativeRobot {
                 ex.printStackTrace();
             }
 
+
     }
+
+                public double SetShooterSpeed(double ShooterSpeed) {
+                ShooterSpeed = Math.abs(ShooterSpeed);
+                if (m_leftStick.getRawButton(10)) {
+                    System.out.println("Button 10 Pressed");
+                    ShooterSpeedLock = 1 - ShooterSpeedLock;
+                }
+                else if(ShooterSpeed == 0 && ShooterSpeedLock != 1) ShooterSpeed = .25;
+                return ShooterSpeed;
+            }
 
     /**
      * Clear KITT-style LED display on the solenoids
