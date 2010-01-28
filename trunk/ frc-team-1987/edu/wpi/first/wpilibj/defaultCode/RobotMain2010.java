@@ -75,7 +75,7 @@ import edu.wpi.first.wpilibj.DriverStationLCD;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class DefaultRobot extends IterativeRobot {
+public class RobotMain2010 extends IterativeRobot {
     // Declare variable for the robot drive system
 
     RobotDrive m_robotDrive;		// robot will use PWM 1-4 for drive motors
@@ -109,6 +109,7 @@ public class DefaultRobot extends IterativeRobot {
     int m_disabledPeriodicLoops;
     int m_telePeriodicLoops;
 
+    
     int ShooterSpeedLock;
 
     double kScoreThreshold = .01;
@@ -123,7 +124,7 @@ public class DefaultRobot extends IterativeRobot {
      * the robot.  Essentially, the constructor defines the input/output mapping for the robot,
      * providing named objects for each of the robot interfaces.
      */
-    public DefaultRobot() {
+    public RobotMain2010() {
         System.out.println("BuiltinDefaultCode Constructor Started\n");
 
         // Create a robot using standard right/left robot drive on PWMS 1, 2, 3, and #4
