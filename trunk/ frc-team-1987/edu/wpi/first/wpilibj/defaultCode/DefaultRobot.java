@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj.camera.AxisCameraException;
 import edu.wpi.first.wpilibj.image.ColorImage;
 import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.DriverStationLCD;
-
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.AnalogChannel;
 
 /**
  * This "BuiltinDefaultCode" provides the "default code" functionality as used in the "Benchtop Test."
@@ -75,7 +76,7 @@ import edu.wpi.first.wpilibj.DriverStationLCD;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class RobotMain2010 extends IterativeRobot {
+public class DefaultRobot extends IterativeRobot {
     // Declare variable for the robot drive system
 
     RobotDrive m_robotDrive;		// robot will use PWM 1-4 for drive motors
@@ -96,6 +97,11 @@ public class RobotMain2010 extends IterativeRobot {
     static final Jaguar m_leftshooter = new Jaguar(3);
     static final Jaguar m_rightshooter = new Jaguar(4);
     static final Timer m_timercombine = new Timer();
+    static final Encoder m_encoder12 = new Encoder(1,2);
+    static final Encoder m_encoder34 = new Encoder(3,4);
+    static final Encoder m_encoder56 = new Encoder(5,6);
+    static final Encoder m_encoder78 = new Encoder(7,8);
+    static final AnalogChannel m_analogchannel = new AnalogChannel(5);
     // Declare variables for each of the eight solenoid outputs
     static final int NUM_SOLENOIDS = 8;
     Solenoid[] m_solenoids = new Solenoid[NUM_SOLENOIDS];
@@ -108,13 +114,11 @@ public class RobotMain2010 extends IterativeRobot {
     int m_autoPeriodicLoops;
     int m_disabledPeriodicLoops;
     int m_telePeriodicLoops;
-
-    
+    boolean ButtonTenValue;
+    boolean ButtonTenValue_Old;
     int ShooterSpeedLock;
-
     double kScoreThreshold = .01;
     AxisCamera cam;
-
     TrackerDashboard trackerDashboard = new TrackerDashboard();
 
     /**
@@ -124,7 +128,7 @@ public class RobotMain2010 extends IterativeRobot {
      * the robot.  Essentially, the constructor defines the input/output mapping for the robot,
      * providing named objects for each of the robot interfaces.
      */
-    public RobotMain2010() {
+    public DefaultRobot() {
         System.out.println("BuiltinDefaultCode Constructor Started\n");
 
         // Create a robot using standard right/left robot drive on PWMS 1, 2, 3, and #4
@@ -173,6 +177,14 @@ public class RobotMain2010 extends IterativeRobot {
         cam.writeResolution(AxisCamera.ResolutionT.k320x240);
         cam.writeBrightness(0);
         System.out.println("RobotInit() completed.\n");
+        m_encoder12.reset();
+        m_encoder12.start();
+        m_encoder34.reset();
+        m_encoder34.start();
+        m_encoder56.reset();
+        m_encoder56.start();
+        m_encoder78.reset();
+        m_encoder78.start();
     }
 
     public void disabledInit() {
@@ -195,9 +207,9 @@ public class RobotMain2010 extends IterativeRobot {
         m_timercombine.start();
 
         boolean lastTrigger = false;
-    DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Starting Camera Code");
-    DriverStationLCD.getInstance().updateLCD();
-    Timer.delay(1.0); //Wait one second so user can see starting message
+        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Starting Camera Code");
+        DriverStationLCD.getInstance().updateLCD();
+        Timer.delay(1.0); //Wait one second so user can see starting message
     }
     /********************************** Periodic Routines *************************************/
     static int printSec = (int) ((Timer.getUsClock() / 1000000.0) + 1.0);
@@ -214,8 +226,8 @@ public class RobotMain2010 extends IterativeRobot {
         if ((Timer.getUsClock() / 1000000.0) > printSec) {
             // Move the cursor back to the previous line and clear it.
             //System.out.println("\x1b[1A\x1b[2K");
-            System.out.println("Disabled seconds: " + (printSec - startSec) + "\r\n");
-            printSec++;
+            //System.out.println("Disabled seconds: " + (printSec - startSec) + "\r\n");
+            //printSec++;
         }
     }
 
@@ -332,56 +344,83 @@ public class RobotMain2010 extends IterativeRobot {
                 m_driveMode = TANK_DRIVE;
             }
         }
+        System.out.println("Encoder12 = " + String.valueOf(m_encoder12.get()));
+        System.out.println("Encoder34 = " + String.valueOf(m_encoder34.get()));
+        System.out.println("Encoder56 = " + String.valueOf(m_encoder56.get()));
+        System.out.println("Encoder78 = " + String.valueOf(m_encoder78.get()));
+        
+        System.out.println("Analog = " + String.valueOf(m_analogchannel.getVoltage()));
         /*
+         *
         }  // if (m_ds->GetPacketNumber()...
          */
 
         try {
-                DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Camera Running     ");
-                DriverStationLCD.getInstance().updateLCD();
-                if (cam.freshImage()) {// && turnController.onTarget()) {
-                    ColorImage image = cam.getImage();
-                    Thread.yield();
-                    Target[] targets = Target.findCircularTargets(image);
-                    Thread.yield();
-                    image.free();
-                    if (targets.length == 0 || targets[0].m_score < kScoreThreshold) {
-                        System.out.println("No target found");
-                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Not Found              " );
-                        Target[] newTargets = new Target[targets.length + 1];
-                        newTargets[0] = new Target();
-                        newTargets[0].m_majorRadius = 0;
-                        newTargets[0].m_minorRadius = 0;
-                        newTargets[0].m_score = 0;
-                        for (int i = 0; i < targets.length; i++) {
-                            newTargets[i + 1] = targets[i];
-                        }
-                  } else {
-                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser3, 1, "Pos X: " + targets[0].m_xPos );
-                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser4, 1, "Pos Y: " + targets[0].m_yPos );
-                        DriverStationLCD.getInstance().updateLCD();
-                        System.out.println(targets[0]);
-                        System.out.println("Target Angle: " + targets[0].getHorizontalAngle());
+            DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Camera Running     ");
+            DriverStationLCD.getInstance().updateLCD();
+            if (cam.freshImage()) {// && turnController.onTarget()) {
+                ColorImage image = cam.getImage();
+                Thread.yield();
+                Target[] targets = Target.findCircularTargets(image);
+                Thread.yield();
+                image.free();
+                if (targets.length == 0 || targets[0].m_score < kScoreThreshold) {
+                    System.out.println("No target found");
+                    DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Not Found              ");
+                    Target[] newTargets = new Target[targets.length + 1];
+                    newTargets[0] = new Target();
+                    newTargets[0].m_majorRadius = 0;
+                    newTargets[0].m_minorRadius = 0;
+                    newTargets[0].m_score = 0;
+                    for (int i = 0; i < targets.length; i++) {
+                        newTargets[i + 1] = targets[i];
                     }
+                } else {
+                    DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser3, 1, "Pos X: " + targets[0].m_xPos);
+                    DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser4, 1, "Pos Y: " + targets[0].m_yPos);
+                    DriverStationLCD.getInstance().updateLCD();
+                    System.out.println(targets[0]);
+                    System.out.println("Target Angle: " + targets[0].getHorizontalAngle());
                 }
-            } catch (NIVisionException ex) {
-                ex.printStackTrace();
-            } catch (AxisCameraException ex) {
-                ex.printStackTrace();
             }
-
+        } catch (NIVisionException ex) {
+            ex.printStackTrace();
+        } catch (AxisCameraException ex) {
+            ex.printStackTrace();
+        }
 
     }
 
-                public double SetShooterSpeed(double ShooterSpeed) {
-                ShooterSpeed = Math.abs(ShooterSpeed);
-                if (m_leftStick.getRawButton(10)) {
-                    System.out.println("Button 10 Pressed");
-                    ShooterSpeedLock = 1 - ShooterSpeedLock;
-                }
-                else if(ShooterSpeed == 0 && ShooterSpeedLock != 1) ShooterSpeed = .25;
-                return ShooterSpeed;
+    public double SetShooterSpeed(double ShooterJoystickY) {
+        double ShooterSpeed = 0;
+        ShooterJoystickY = Math.abs(ShooterJoystickY);
+        double LockedShooterSpeed = ShooterJoystickY;
+        ButtonTenValue = m_leftStick.getRawButton(10);
+        if ((ButtonTenValue) && (!ButtonTenValue_Old)) { //If button was not pressed and is now pressed...
+            ShooterSpeed = LockedShooterSpeed;
+            ShooterSpeedLock = 1 - ShooterSpeedLock;
+
+            if (ShooterSpeedLock == 1) {
+                System.out.println("Shooter Speed Locked");
+            } else {
+                System.out.println("Shooter Speed Unlocked");
             }
+        }
+
+        ButtonTenValue_Old = ButtonTenValue;
+
+        if((ShooterSpeedLock == 1)) {
+            ShooterSpeed = LockedShooterSpeed;
+        }
+
+        else if(ShooterJoystickY == 0 && ShooterSpeedLock == 0) {
+            ShooterSpeed = .25;
+        }
+
+        else if(ShooterSpeedLock == 0) ShooterSpeed = ShooterJoystickY;
+
+        return ShooterSpeed;
+    }
 
     /**
      * Clear KITT-style LED display on the solenoids
