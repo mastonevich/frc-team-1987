@@ -223,12 +223,12 @@ public class DefaultRobot extends IterativeRobot {
         m_disabledPeriodicLoops++;
 
         // while disabled, printout the duration of current disabled mode in seconds
-        if ((Timer.getUsClock() / 1000000.0) > printSec) {
-            // Move the cursor back to the previous line and clear it.
-            //System.out.println("\x1b[1A\x1b[2K");
-            //System.out.println("Disabled seconds: " + (printSec - startSec) + "\r\n");
-            //printSec++;
-        }
+        /* if ((Timer.getUsClock() / 1000000.0) > printSec) {
+             Move the cursor back to the previous line and clear it.
+             System.out.println("\x1b[1A\x1b[2K");
+             System.out.println("Disabled seconds: " + (printSec - startSec) + "\r\n");
+             printSec++;
+        } */
     }
 
     public void autonomousPeriodic() {
