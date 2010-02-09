@@ -60,7 +60,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_robotDrive.arcadeDrive(m_rightStick, false);			// drive with arcade style (use right stick)
     }
 
-    //Continuous
+    //Continuous WE DID NOT USE THIS LAST YEAR AND MAY NOT THIS YEAR
     public void disabledContinuous() {
     }
 
