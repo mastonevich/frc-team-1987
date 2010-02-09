@@ -36,7 +36,7 @@ public class BreakawayRobot extends IterativeRobot {
         // Define joysticks being used at USB port #1 and USB port #2 on the Drivers Station
         m_rightStick = new Joystick(1);
         m_leftStick = new Joystick(2);
-        m_compressor = new Compressor(1,1);
+        m_compressor = new Compressor(1, 1);
         m_solenoid1 = new Solenoid(1);
         m_solenoid2 = new Solenoid(8);
 
@@ -70,7 +70,13 @@ public class BreakawayRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
 
         m_robotDrive.arcadeDrive(m_rightStick, false);			// drive with arcade style (use right stick)
-
+        if (m_rightStick.getRawButton(7)) {
+            m_solenoid1.set(false);
+            m_solenoid2.set(true);
+        } else {
+            m_solenoid1.set(true);
+            m_solenoid2.set(false);
+        }
     }
 
     //Continuous WE DID NOT USE THIS LAST YEAR AND MAY NOT THIS YEAR
