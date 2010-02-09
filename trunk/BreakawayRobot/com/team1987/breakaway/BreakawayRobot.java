@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -34,29 +33,40 @@ public class BreakawayRobot extends IterativeRobot {
         m_leftStick = new Joystick(2);
     }
 
-    /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
-     */
     public void robotInit() {
     }
 
-    /**
-     * This function is called periodically during autonomous
-     */
+    //Inits
+    public void disabledInit() {
+    }
+
+    public void autonomousInit() {
+    }
+
+    public void teleopInit() {
+    }
+
+    //Periodics
+    public void disabledPeriodic() {
+    }
+
     public void autonomousPeriodic() {
     }
 
-    /**
-     * This function is called periodically during operator control
-     */
     public void teleopPeriodic() {
-		// feed the user watchdog at every period when in autonomous
-		Watchdog.getInstance().feed();
+        // feed the user watchdog at every period when in autonomous
+        Watchdog.getInstance().feed();
 
         m_robotDrive.arcadeDrive(m_rightStick, false);			// drive with arcade style (use right stick)
+    }
 
+    //Continuous
+    public void disabledContinuous() {
+    }
 
+    public void autonomousContinuous() {
+    }
 
+    public void teleopContinuous() {
     }
 }
