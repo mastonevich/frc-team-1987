@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.AnalogChannel;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,6 +31,11 @@ public class BreakawayRobot extends IterativeRobot {
     Compressor m_compressor;
     Solenoid m_solenoid1;
     Solenoid m_solenoid2;
+    Relay m_relay1;
+    AnalogChannel m_analogChannel1;
+    Victor m_victor1;
+    static double m_analogChannel1_max;
+    static double m_analogChannel1_min;
 
     public BreakawayRobot() {
         // Create a robot using standard right/left robot drive on PWMS 1, 2, 3, and 4
@@ -39,6 +47,13 @@ public class BreakawayRobot extends IterativeRobot {
         m_compressor = new Compressor(1, 1);
         m_solenoid1 = new Solenoid(1);
         m_solenoid2 = new Solenoid(8);
+        m_relay1 = new Relay(2, Relay.Direction.kBoth);
+        m_analogChannel1 = new AnalogChannel(2);
+        m_victor1 = new Victor(5);
+
+        m_analogChannel1_max = 4.5;
+        m_analogChannel1_min = .5;
+
 
     }
 
@@ -46,6 +61,8 @@ public class BreakawayRobot extends IterativeRobot {
         m_compressor.start();
         m_solenoid1.set(true);
         m_solenoid2.set(false);
+        m_relay1.set(Relay.Value.kOff);
+        m_victor1.set(0);
     }
 
     //Inits
@@ -77,6 +94,21 @@ public class BreakawayRobot extends IterativeRobot {
             m_solenoid1.set(true);
             m_solenoid2.set(false);
         }
+
+        if (m_rightStick.getRawButton(11))  {
+            if (m_analogChannel1.getVoltage() > m_analogChannel1_min) {
+                m_relay1.set(Relay.Value.kForward);
+            }
+            else m_relay1.set(Relay.Value.kOff);
+        }
+        else if (m_rightStick.getRawButton(10)) {
+                if(m_analogChannel1.getVoltage() < m_analogChannel1_max) {
+                    m_relay1.set(Relay.Value.kReverse);
+                }
+                else m_relay1.set(Relay.Value.kOff);
+        }
+        else m_relay1.set(Relay.Value.kOff);
+
     }
 
     //Continuous WE DID NOT USE THIS LAST YEAR AND MAY NOT THIS YEAR
