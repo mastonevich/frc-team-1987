@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.AnalogChannel;
 
+import com.team1987.breakaway.api.Constants;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -34,27 +36,22 @@ public class BreakawayRobot extends IterativeRobot {
     Relay m_relay1;
     AnalogChannel m_analogChannel1;
     Victor m_victor1;
-    static double m_analogChannel1_max;
-    static double m_analogChannel1_min;
 
     public BreakawayRobot() {
         // Create a robot using standard right/left robot drive on PWMS 1, 2, 3, and 4
-        m_robotDrive = new RobotDrive(1, 2, 3, 4);
+        m_robotDrive = new RobotDrive(Constants.c_leftDriveMotor1, Constants.c_leftDriveMotor2,
+                Constants.c_rightDriveMotor1, Constants.c_rightDriveMotor2);
 
         // Define joysticks being used at USB port #1 and USB port #2 on the Drivers Station
-        m_rightStick = new Joystick(1);
-        m_leftStick = new Joystick(2);
-        m_compressor = new Compressor(1, 1);
-        m_solenoid1 = new Solenoid(1);
-        m_solenoid2 = new Solenoid(8);
-        m_relay1 = new Relay(2, Relay.Direction.kBoth);
-        m_analogChannel1 = new AnalogChannel(2);
-        m_victor1 = new Victor(5);
-
-        m_analogChannel1_max = 4.5;
-        m_analogChannel1_min = .5;
-
-
+        m_rightStick = new Joystick(Constants.c_joystickRightPort);
+        m_leftStick = new Joystick(Constants.c_joystickLeftPort);
+        m_compressor = new Compressor(Constants.c_compressorPressureSwitchChannel,
+                Constants.c_compressorRelayChannel);
+        m_solenoid1 = new Solenoid(Constants.c_hookAngleSolenoid1Channel);
+        m_solenoid2 = new Solenoid(Constants.c_hookAngleSolenoid2Channel);
+        m_relay1 = new Relay(Constants.c_hookExtenderChannel, Relay.Direction.kBoth);
+        m_analogChannel1 = new AnalogChannel(Constants.c_stringPOTChannel);
+        m_victor1 = new Victor(Constants.c_victor1Channel);
     }
 
     public void robotInit() {
@@ -62,7 +59,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_solenoid1.set(true);
         m_solenoid2.set(false);
         m_relay1.set(Relay.Value.kOff);
-        m_victor1.set(0);
+        m_victor1.set(Constants.c_victorStop);
     }
 
     //Inits
@@ -87,27 +84,34 @@ public class BreakawayRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
 
         m_robotDrive.arcadeDrive(m_rightStick, false);			// drive with arcade style (use right stick)
-        if (m_rightStick.getRawButton(7)) {
+        if(m_rightStick.getRawButton(Constants.c_hookAngleButton)) {
             m_solenoid1.set(false);
             m_solenoid2.set(true);
-        } else {
+        }
+        else {
             m_solenoid1.set(true);
             m_solenoid2.set(false);
         }
 
-        if (m_rightStick.getRawButton(11))  {
-            if (m_analogChannel1.getVoltage() > m_analogChannel1_min) {
+        if(m_rightStick.getRawButton(Constants.c_hookExtenderButton)) {
+            if(m_analogChannel1.getVoltage() > Constants.c_stringPOT_min) {
                 m_relay1.set(Relay.Value.kForward);
             }
-            else m_relay1.set(Relay.Value.kOff);
+            else {
+                m_relay1.set(Relay.Value.kOff);
+            }
         }
-        else if (m_rightStick.getRawButton(10)) {
-                if(m_analogChannel1.getVoltage() < m_analogChannel1_max) {
-                    m_relay1.set(Relay.Value.kReverse);
-                }
-                else m_relay1.set(Relay.Value.kOff);
+        else if(m_rightStick.getRawButton(Constants.c_hookRetractorButton)) {
+            if(m_analogChannel1.getVoltage() < Constants.c_stringPOT_max) {
+                m_relay1.set(Relay.Value.kReverse);
+            }
+            else {
+                m_relay1.set(Relay.Value.kOff);
+            }
         }
-        else m_relay1.set(Relay.Value.kOff);
+        else {
+            m_relay1.set(Relay.Value.kOff);
+        }
 
     }
 
@@ -120,4 +124,5 @@ public class BreakawayRobot extends IterativeRobot {
 
     public void teleopContinuous() {
     }
+
 }
