@@ -39,5 +39,15 @@ public final class Constants {
     public static final int c_hookExtenderButton = 11;
     public static final int c_hookRetractorButton = 10;
 
+    public static final int c_kickerSwitchBits = 255;
+    public static final int c_kickerSwitchPos1 = 1;
+    public static final int c_kickerSwitchPos2 = 2;
+    public static final int c_kickerSwitchPos3 = 4;
+    public static final int c_kickerSwitchPos4 = 8;
+    public static final int c_kickerSwitchPos5 = 16;
+    public static final int c_kickerSwitchPos6 = 32;
+    public static final int c_kickerSwitchPos7 = 64;
+    public static final int c_kickerSwitchPos8 = 128;
+
 }
 

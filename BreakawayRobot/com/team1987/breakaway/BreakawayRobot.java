@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.AnalogChannel;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
+
+import edu.wpi.first.wpilibj.DriverStationLCD;
 
 import com.team1987.breakaway.api.Constants;
 
@@ -27,17 +31,38 @@ import com.team1987.breakaway.api.Constants;
  */
 public class BreakawayRobot extends IterativeRobot {
 
+    // Declare a variable to use to access the driver station object
+    DriverStation m_DS;                     // driver station object
+    DriverStationEnhancedIO m_DSEIO;
     RobotDrive m_robotDrive;		// robot will use PWM 1-4 for drive motors
     Joystick m_rightStick;			// joystick 1 (arcade stick or right tank stick)
-    Joystick m_leftStick;			// joystick 2 (tank left stick)
+    public Joystick m_leftStick;			// joystick 2 (tank left stick)
     Compressor m_compressor;
     Solenoid m_solenoid1;
     Solenoid m_solenoid2;
     Relay m_relay1;
     AnalogChannel m_analogChannel1;
     Victor m_victor1;
+    DriverStationLCD m_DSLCD;
+
+    int kickerStrength;
 
     public BreakawayRobot() {
+
+        // Acquire the Driver Station object
+        m_DS = DriverStation.getInstance();
+
+        m_DSEIO = m_DS.getEnhancedIO();
+
+        try {
+            for(int i = 1; i <= 8; i++) {
+                m_DSEIO.setDigitalConfig(i, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
+            }
+        } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
+            ex.printStackTrace();
+        }
+
+
         // Create a robot using standard right/left robot drive on PWMS 1, 2, 3, and 4
         m_robotDrive = new RobotDrive(Constants.c_leftDriveMotor1, Constants.c_leftDriveMotor2,
                 Constants.c_rightDriveMotor1, Constants.c_rightDriveMotor2);
@@ -52,6 +77,8 @@ public class BreakawayRobot extends IterativeRobot {
         m_relay1 = new Relay(Constants.c_hookExtenderChannel, Relay.Direction.kBoth);
         m_analogChannel1 = new AnalogChannel(Constants.c_stringPOTChannel);
         m_victor1 = new Victor(Constants.c_victor1Channel);
+        m_DSLCD = DriverStationLCD.getInstance();
+
     }
 
     public void robotInit() {
@@ -74,9 +101,17 @@ public class BreakawayRobot extends IterativeRobot {
 
     //Periodics
     public void disabledPeriodic() {
+        if(m_leftStick.getZ() <= 0) {
+            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
+            m_DSLCD.updateLCD();
+        }
     }
 
     public void autonomousPeriodic() {
+        if(m_leftStick.getZ() <= 0) {
+            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
+            m_DSLCD.updateLCD();
+        }
     }
 
     public void teleopPeriodic() {
@@ -112,6 +147,12 @@ public class BreakawayRobot extends IterativeRobot {
         else {
             m_relay1.set(Relay.Value.kOff);
         }
+        
+        if(m_leftStick.getZ() <= 0) {
+            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
+            m_DSLCD.updateLCD();
+        }
+
 
     }
 
@@ -123,6 +164,28 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void teleopContinuous() {
+    }
+
+    public int kickerStrength() {
+
+            try {
+                kickerStrength = ~m_DSEIO.getDigitals() & Constants.c_kickerSwitchBits;
+                switch(kickerStrength) {
+                    case Constants.c_kickerSwitchPos1: break;
+                    case Constants.c_kickerSwitchPos2: break;
+                    case Constants.c_kickerSwitchPos3: kickerStrength = 3; break;
+                    case Constants.c_kickerSwitchPos4: kickerStrength = 4; break;
+                    case Constants.c_kickerSwitchPos5: kickerStrength = 5; break;
+                    case Constants.c_kickerSwitchPos6: kickerStrength = 6; break;
+                    case Constants.c_kickerSwitchPos7: kickerStrength = 7; break;
+                    case Constants.c_kickerSwitchPos8: kickerStrength = 8; break;
+                }
+
+            } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
+                ex.printStackTrace();
+            }
+            return kickerStrength;
+
     }
 
 }
