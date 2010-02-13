@@ -17,10 +17,16 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.camera.AxisCamera;
+import edu.wpi.first.wpilibj.camera.AxisCameraException;
+import edu.wpi.first.wpilibj.image.ColorImage;
+import edu.wpi.first.wpilibj.image.NIVisionException;
 
 import edu.wpi.first.wpilibj.DriverStationLCD;
 
 import com.team1987.breakaway.api.Constants;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -44,6 +50,11 @@ public class BreakawayRobot extends IterativeRobot {
     AnalogChannel m_analogChannel1;
     Victor m_victor1;
     DriverStationLCD m_DSLCD;
+
+    double kScoreThreshold = .01;
+    AxisCamera cam;
+
+    TrackerDashboard trackerDashboard = new TrackerDashboard();
 
     int kickerStrength;
 
@@ -87,6 +98,14 @@ public class BreakawayRobot extends IterativeRobot {
         m_solenoid2.set(false);
         m_relay1.set(Relay.Value.kOff);
         m_victor1.set(Constants.c_victorStop);
+
+        Timer.delay(10.0);
+        cam = AxisCamera.getInstance();
+        cam.writeResolution(AxisCamera.ResolutionT.k320x240);
+        cam.writeBrightness(0);
+        cam.writeColorLevel(0);
+
+        Watchdog.getInstance().setExpiration(1);
     }
 
     //Inits
@@ -97,6 +116,10 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void teleopInit() {
+        boolean lastTrigger = false;
+    DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Starting Camera Code");
+    DriverStationLCD.getInstance().updateLCD();
+    Timer.delay(1.0); //Wait one second so user can see starting message
     }
 
     //Periodics
@@ -153,6 +176,40 @@ public class BreakawayRobot extends IterativeRobot {
             m_DSLCD.updateLCD();
         }
 
+
+        try {
+                DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Camera Running     ");
+                DriverStationLCD.getInstance().updateLCD();
+                if (cam.freshImage()) {// && turnController.onTarget()) {
+                    ColorImage image = cam.getImage();
+                    Thread.yield();
+                    Target[] targets = Target.findCircularTargets(image);
+                    Thread.yield();
+                    image.free();
+                    if (targets.length == 0 || targets[0].m_score < kScoreThreshold) {
+                        System.out.println("No target found");
+                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1, "Not Found              " );
+                        Target[] newTargets = new Target[targets.length + 1];
+                        newTargets[0] = new Target();
+                        newTargets[0].m_majorRadius = 0;
+                        newTargets[0].m_minorRadius = 0;
+                        newTargets[0].m_score = 0;
+                        for (int i = 0; i < targets.length; i++) {
+                            newTargets[i + 1] = targets[i];
+                        }
+                  } else {
+                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser3, 1, "Pos X: " + targets[0].m_xPos );
+                        DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser4, 1, "Pos Y: " + targets[0].m_yPos );
+                        DriverStationLCD.getInstance().updateLCD();
+                        System.out.println(targets[0]);
+                        System.out.println("Target Angle: " + targets[0].getHorizontalAngle());
+                    }
+                }
+            } catch (NIVisionException ex) {
+                ex.printStackTrace();
+            } catch (AxisCameraException ex) {
+                ex.printStackTrace();
+            }
 
     }
 
