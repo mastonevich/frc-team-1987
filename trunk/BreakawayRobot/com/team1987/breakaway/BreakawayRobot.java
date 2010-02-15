@@ -15,14 +15,13 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.AnalogChannel;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
 import edu.wpi.first.wpilibj.image.ColorImage;
 import edu.wpi.first.wpilibj.image.NIVisionException;
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 
 import com.team1987.breakaway.api.Constants;
@@ -37,9 +36,10 @@ import com.team1987.breakaway.api.Constants;
  */
 public class BreakawayRobot extends IterativeRobot {
 
-    // Declare a variable to use to access the driver station object
-    DriverStation m_DS;                     // driver station object
+    DriverStation m_DS;
     DriverStationEnhancedIO m_DSEIO;
+    DriverStationLCD m_DSLCD;
+
     RobotDrive m_robotDrive;		// robot will use PWM 1-4 for drive motors
     Joystick m_rightStick;			// joystick 1 (arcade stick or right tank stick)
     public Joystick m_leftStick;			// joystick 2 (tank left stick)
@@ -49,7 +49,7 @@ public class BreakawayRobot extends IterativeRobot {
     Relay m_relay1;
     AnalogChannel m_analogChannel1;
     Victor m_victor1;
-    DriverStationLCD m_DSLCD;
+   
 
     double kScoreThreshold = .01;
     AxisCamera cam;
@@ -60,18 +60,11 @@ public class BreakawayRobot extends IterativeRobot {
 
     public BreakawayRobot() {
 
-        // Acquire the Driver Station object
-        m_DS = DriverStation.getInstance();
+       m_DS = DriverStation.getInstance();
 
-        m_DSEIO = m_DS.getEnhancedIO();
+       m_DSEIO = m_DS.getEnhancedIO();
 
-        try {
-            for(int i = 1; i <= 8; i++) {
-                m_DSEIO.setDigitalConfig(i, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
-            }
-        } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
-            ex.printStackTrace();
-        }
+       m_DSLCD = DriverStationLCD.getInstance();
 
 
         // Create a robot using standard right/left robot drive on PWMS 1, 2, 3, and 4
@@ -88,7 +81,6 @@ public class BreakawayRobot extends IterativeRobot {
         m_relay1 = new Relay(Constants.c_hookExtenderChannel, Relay.Direction.kBoth);
         m_analogChannel1 = new AnalogChannel(Constants.c_stringPOTChannel);
         m_victor1 = new Victor(Constants.c_victor1Channel);
-        m_DSLCD = DriverStationLCD.getInstance();
 
     }
 
@@ -98,6 +90,14 @@ public class BreakawayRobot extends IterativeRobot {
         m_solenoid2.set(false);
         m_relay1.set(Relay.Value.kOff);
         m_victor1.set(Constants.c_victorStop);
+
+        for(int i=1; i<9; i++) {
+            try {
+                m_DSEIO.setDigitalConfig(i, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
+            } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
+                ex.printStackTrace();
+            }
+        }
 
         Timer.delay(10.0);
         cam = AxisCamera.getInstance();
@@ -110,6 +110,10 @@ public class BreakawayRobot extends IterativeRobot {
 
     //Inits
     public void disabledInit() {
+        if(m_leftStick.getZ() <= 0) {
+            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
+            m_DSLCD.updateLCD();
+        }
     }
 
     public void autonomousInit() {
