@@ -19,11 +19,20 @@ public final class Constants {
     public static final int c_joystickLeftPort = 2;
     public static final int c_compressorPressureSwitchChannel = 1;
     public static final int c_compressorRelayChannel = 1;
-    public static final int c_hookAngleSolenoid1Channel = 1;
-    public static final int c_hookAngleSolenoid2Channel = 8;
+
+    public static final int c_LanceAngleSolenoidInChannel = 1;
+    public static final int c_LanceAngleSolenoidOutChannel = 2;
+    public static final int c_herderSolenoid1InChannel = 3;
+    public static final int c_herderSolenoid1OutChannel = 4;
+    public static final int c_herderSolenoid2InChannel = 5;
+    public static final int c_herderSolenoid2OutChannel = 6;
+    public static final int c_kickerSolenoidInChannel = 7;
+    public static final int c_kickerSolenoidOutChannel = 8;
+
     public static final int c_stringPOTChannel = 2;
-    public static final int c_victor1Channel = 5;
-    public static final int c_hookExtenderChannel = 2;
+    public static final int c_kickerWinderChannel = 5;
+    public static final int c_LanceExtenderRelayChannel = 2;
+    public static final int c_combineRelayChannel = 3;
 
     public static final double c_stringPOT_max = 4.5;
     public static final double c_stringPOT_min = .5;
@@ -35,9 +44,10 @@ public final class Constants {
 
     public static final int c_victorStop = 0;
 
-    public static final int c_hookAngleButton = 7;
-    public static final int c_hookExtenderButton = 11;
-    public static final int c_hookRetractorButton = 10;
+    public static final int c_kickerRightButton = 1;
+    public static final int c_LanceAngleLeftButton = 7;
+    public static final int c_LanceExtenderLeftButton = 11;
+    public static final int c_LanceRetractorLeftButton = 10;
 
     public static final int c_kickerSwitchBits = 255;
     public static final int c_kickerSwitchPos1 = 1;
