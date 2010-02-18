@@ -167,10 +167,12 @@ public class BreakawayRobot extends IterativeRobot {
         // feed the user watchdog at every period when in autonomous
         Watchdog.getInstance().feed();
 
-        m_robotDrive.arcadeDrive(m_rightStick, false);			// drive with arcade style (use right stick)
+        // drive with arcade style (use right stick)
+        m_robotDrive.arcadeDrive(m_rightStick, false);
 
 
-        //Herder Code
+
+        //Kicker/Herder Code
         if(m_rightStick.getRawButton(Constants.c_kickerRightButton)) {
             m_herderSolenoid1In.set(false);
             m_herderSolenoid1Out.set(true);
@@ -219,6 +221,7 @@ public class BreakawayRobot extends IterativeRobot {
             m_LanceExtenderRelay.set(Relay.Value.kOff);
         }
 
+        //KickerStrength
         if(m_leftStick.getZ() <= 0) {
             m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
             m_DSLCD.updateLCD();
