@@ -23,6 +23,9 @@ import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.DriverStationLCD;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
+
 
 import com.team1987.breakaway.api.Constants;
 
@@ -59,7 +62,16 @@ public class BreakawayRobot extends IterativeRobot {
     double kScoreThreshold = .01;
     AxisCamera cam;
     TrackerDashboard trackerDashboard = new TrackerDashboard();
+    DigitalInput m_kickerReleaseExtended;
+    DigitalInput m_kickerReleaseReturned;
+    DigitalInput m_LanceReleaseExtended;
+    DigitalInput m_LanceReleaseReturned;
+    Encoder m_leftDriveEncoder;
+    Encoder m_rightDriveEncoder;
+    Encoder m_kickerEncoder;
     int kickerStrength;
+    boolean kickerLowTrajectory;
+    boolean kickerReady;
 
     public BreakawayRobot() {
 
@@ -77,7 +89,7 @@ public class BreakawayRobot extends IterativeRobot {
         // Define joysticks being used at USB port #1 and USB port #2 on the Drivers Station
         m_rightStick = new Joystick(Constants.c_joystickRightPort);
         m_leftStick = new Joystick(Constants.c_joystickLeftPort);
-        m_compressor = new Compressor(Constants.c_compressorPressureSwitchChannel,
+        m_compressor = new Compressor(Constants.c_compressorPressureSwitchDigitalChannel,
                 Constants.c_compressorRelayChannel);
         m_LanceAngleSolenoidIn = new Solenoid(Constants.c_LanceAngleSolenoidInChannel);
         m_LanceAngleSolenoidOut = new Solenoid(Constants.c_LanceAngleSolenoidOutChannel);
@@ -91,8 +103,16 @@ public class BreakawayRobot extends IterativeRobot {
         m_analogChannel1 = new AnalogChannel(Constants.c_stringPOTChannel);
         m_kickerWinder = new Victor(Constants.c_kickerWinderChannel);
 
-        m_LanceExtenderRelay = new Relay(Constants.c_LanceExtenderRelayChannel, Relay.Direction.kBoth);
+        m_LanceExtenderRelay = new Relay(Constants.c_LanceExtenderRelayChannel,
+                Relay.Direction.kBoth);
         m_combineRelay = new Relay(Constants.c_combineRelayChannel, Relay.Direction.kBoth);
+        m_kickerReleaseExtended = new DigitalInput(Constants.c_kickerReleaseExtendedDigitalChannel);
+        m_kickerReleaseReturned = new DigitalInput(Constants.c_kickerReleaseReturnedDigitalChannel);
+        m_LanceReleaseExtended = new DigitalInput(Constants.c_LanceReleaseExtendedDigitalChannel);
+        m_LanceReleaseReturned = new DigitalInput(Constants.c_LanceReleaseReturnedDigitalChannel);
+        m_leftDriveEncoder = new Encoder(Constants.c_leftDriveEncoderDigitalChannel1,Constants.c_leftDriveEncoderDigitalChannel2);
+        m_rightDriveEncoder = new Encoder(Constants.c_rightDriveEncoderDigitalChannel1, Constants.c_rightDriveEncoderDigitalChannel2);
+        m_kickerEncoder = new Encoder(Constants.c_kickerEncoderDigitalChannel1, Constants.c_kickerEncoderDigitalChannel2);
 
     }
 
@@ -112,7 +132,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_LanceExtenderRelay.set(Relay.Value.kOff);
         m_combineRelay.set(Relay.Value.kOff);
 
-        for(int i = 1; i < 9; i++) {
+        for(int i = 1; i < 10; i++) {
             try {
                 m_DSEIO.setDigitalConfig(i, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
             } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
@@ -150,17 +170,13 @@ public class BreakawayRobot extends IterativeRobot {
 
     //Periodics
     public void disabledPeriodic() {
-        if(m_leftStick.getZ() <= 0) {
-            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
+        if(m_rightStick.getZ() <= 0) {
+            m_DSLCD.println(DriverStationLCD.Line.kUser5, 1, "Kicker Strength = " + kickerStrength());
             m_DSLCD.updateLCD();
         }
     }
 
     public void autonomousPeriodic() {
-        if(m_leftStick.getZ() <= 0) {
-            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
-            m_DSLCD.updateLCD();
-        }
     }
 
     public void teleopPeriodic() {
@@ -170,22 +186,27 @@ public class BreakawayRobot extends IterativeRobot {
         // drive with arcade style (use right stick)
         m_robotDrive.arcadeDrive(m_rightStick, false);
 
-
+        try {
+            kickerLowTrajectory = m_DSEIO.getDigital(Constants.c_kickerLowTrajectoryIOChannel);
+        } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
+            ex.printStackTrace();
+        }
 
         //Kicker/Herder Code
-        if(m_rightStick.getRawButton(Constants.c_kickerRightButton)) {
-            m_herderSolenoid1In.set(false);
-            m_herderSolenoid1Out.set(true);
-            m_herderSolenoid2In.set(false);
-            m_herderSolenoid2Out.set(true);
+        if((m_rightStick.getRawButton(Constants.c_kickerRightButton)) && kickerReady){
+            if(kickerLowTrajectory) {
+                m_herderSolenoid1In.set(false);
+                m_herderSolenoid1Out.set(true);
+                m_herderSolenoid2In.set(false);
+                m_herderSolenoid2Out.set(true);
+                //add code to restore to default position before 2 seconds
+            }
             m_kickerSolenoidIn.set(false);
             m_kickerSolenoidOut.set(true);
+            kickerReady = !kickerReady;
+
         }
         else {
-            m_herderSolenoid1In.set(true);
-            m_herderSolenoid1Out.set(false);
-            m_herderSolenoid2In.set(true);
-            m_herderSolenoid2Out.set(false);
             m_kickerSolenoidIn.set(true);
             m_kickerSolenoidOut.set(false);
         }
@@ -222,7 +243,7 @@ public class BreakawayRobot extends IterativeRobot {
         }
 
         //KickerStrength
-        if(m_leftStick.getZ() <= 0) {
+        if(m_rightStick.getZ() <= 0) {
             m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Strength = " + kickerStrength());
             m_DSLCD.updateLCD();
         }

@@ -17,9 +17,7 @@ public final class Constants {
 
     public static final int c_joystickRightPort = 1;
     public static final int c_joystickLeftPort = 2;
-    public static final int c_compressorPressureSwitchChannel = 1;
-    public static final int c_compressorRelayChannel = 1;
-
+    
     public static final int c_LanceAngleSolenoidInChannel = 1;
     public static final int c_LanceAngleSolenoidOutChannel = 2;
     public static final int c_herderSolenoid1InChannel = 3;
@@ -33,6 +31,19 @@ public final class Constants {
     public static final int c_kickerWinderChannel = 5;
     public static final int c_LanceExtenderRelayChannel = 2;
     public static final int c_combineRelayChannel = 3;
+    public static final int c_compressorRelayChannel = 1;
+
+    public static final int c_leftDriveEncoderDigitalChannel1 = 1;
+    public static final int c_leftDriveEncoderDigitalChannel2 = 2;
+    public static final int c_rightDriveEncoderDigitalChannel1 = 3;
+    public static final int c_rightDriveEncoderDigitalChannel2 = 4;
+    public static final int c_kickerEncoderDigitalChannel1 = 5;
+    public static final int c_kickerEncoderDigitalChannel2 = 6;
+    public static final int c_LanceReleaseExtendedDigitalChannel = 7;
+    public static final int c_LanceReleaseReturnedDigitalChannel = 8;
+    public static final int c_kickerReleaseExtendedDigitalChannel = 9;
+    public static final int c_kickerReleaseReturnedDigitalChannel = 10;
+    public static final int c_compressorPressureSwitchDigitalChannel = 11;
 
     public static final double c_stringPOT_max = 4.5;
     public static final double c_stringPOT_min = .5;
@@ -44,6 +55,7 @@ public final class Constants {
 
     public static final int c_victorStop = 0;
 
+    //Buttons
     public static final int c_kickerRightButton = 1;
     public static final int c_LanceAngleLeftButton = 7;
     public static final int c_LanceExtenderLeftButton = 11;
@@ -58,6 +70,8 @@ public final class Constants {
     public static final int c_kickerSwitchPos6 = 32;
     public static final int c_kickerSwitchPos7 = 64;
     public static final int c_kickerSwitchPos8 = 128;
+
+    public static final int c_kickerLowTrajectoryIOChannel = 0;
 
 }
 
