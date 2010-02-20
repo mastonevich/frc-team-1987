@@ -53,13 +53,17 @@ public final class Constants {
     public static final int c_rightDriveMotor1 = 3;
     public static final int c_rightDriveMotor2 = 4;
 
-    public static final int c_victorStop = 0;
+    public static final double c_kickerStopWinding = 0;
+    public static final double c_kickerReturningSpeed = .1;
+    public static final double c_kickerWindingSpeed = .5;
 
     //Buttons
     public static final int c_kickerRightButton = 1;
     public static final int c_LanceAngleLeftButton = 7;
     public static final int c_LanceExtenderLeftButton = 11;
     public static final int c_LanceRetractorLeftButton = 10;
+
+    public static final int c_kickerEncoderMaxCounts = 80;
 
     public static final int c_kickerSwitchBits = 255;
     public static final int c_kickerSwitchPos1 = 1;
@@ -72,6 +76,13 @@ public final class Constants {
     public static final int c_kickerSwitchPos8 = 128;
 
     public static final int c_kickerLowTrajectoryIOChannel = 0;
+
+    public static final int c_kickerReady = 0;
+    public static final int c_kickerKicking = 1;
+    public static final int c_kickerReleased = 2;
+    public static final int c_kickerReturning = 3;
+    public static final int c_kickerLocked = 4;
+    public static final int c_kickerWinding = 5;
 
 }
 
