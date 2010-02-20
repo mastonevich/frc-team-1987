@@ -77,6 +77,11 @@ public class BreakawayRobot extends IterativeRobot {
 
     public BreakawayRobot() {
 
+        System.out.println("Instantiating Breakaway robot");
+
+        Watchdog.getInstance().setExpiration(1);
+        Watchdog.getInstance().feed();
+
         m_DS = DriverStation.getInstance();
 
         m_DSEIO = m_DS.getEnhancedIO();
@@ -98,7 +103,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_herderSolenoid1In = new Solenoid(Constants.c_herderSolenoid1InChannel);
         m_herderSolenoid1Out = new Solenoid(Constants.c_herderSolenoid1OutChannel);
         m_herderSolenoid2In = new Solenoid(Constants.c_herderSolenoid2InChannel);
-        m_herderSolenoid2Out = new Solenoid(Constants.c_herderSolenoid1OutChannel);
+        m_herderSolenoid2Out = new Solenoid(Constants.c_herderSolenoid2OutChannel);
         m_kickerSolenoidIn = new Solenoid(Constants.c_kickerSolenoidInChannel);
         m_kickerSolenoidOut = new Solenoid(Constants.c_kickerSolenoidOutChannel);
 
@@ -118,10 +123,14 @@ public class BreakawayRobot extends IterativeRobot {
                 Constants.c_rightDriveEncoderDigitalChannel2);
         m_kickerEncoder = new Encoder(Constants.c_kickerEncoderDigitalChannel1,
                 Constants.c_kickerEncoderDigitalChannel2);
+        m_winch = new Victor(Constants.c_winchChannel);
 
     }
 
     public void robotInit() {
+        Watchdog.getInstance().setExpiration(1);
+        Watchdog.getInstance().feed();
+
         m_compressor.start();
         m_LanceReleaseSolenoidIn.set(true);
         m_LanceReleaseSolenoidOut.set(false);
@@ -154,29 +163,38 @@ public class BreakawayRobot extends IterativeRobot {
         cam.writeBrightness(0);
         cam.writeColorLevel(0);
 
-        Watchdog.getInstance().setExpiration(1);
     }
 
     //Inits
     public void disabledInit() {
+        Watchdog.getInstance().feed();
     }
 
     public void autonomousInit() {
+        System.out.println("Feeding Watchdog - autonomousInit");
+        Watchdog.getInstance().feed();
     }
 
     public void teleopInit() {
+        System.out.println("Feeding Watchdog - teleopInit");
+        Watchdog.getInstance().feed();
+        kickerState = Constants.c_kickerReleased;
     }
 
     //Periodics
     public void disabledPeriodic() {
+        Watchdog.getInstance().feed();
         setKickerStrength();
     }
 
     public void autonomousPeriodic() {
+        System.out.println("Feeding Watchdog - autonomousPeriodic");
+        Watchdog.getInstance().feed();
     }
 
     public void teleopPeriodic() {
         // feed the user watchdog at every period when in autonomous
+        System.out.println("Feeding Watchdog - teleopPeriodic");
         Watchdog.getInstance().feed();
 
         // drive with arcade style (use right stick)
@@ -191,6 +209,7 @@ public class BreakawayRobot extends IterativeRobot {
         //Kicker/Herder Code
         switch(kickerState) {
             case Constants.c_kickerReady:
+                System.out.println("Kicker Ready");
                 if(m_rightStick.getRawButton(Constants.c_kickerRightButton)) {
                     if(kickerLowTrajectory) {
                         m_herderSolenoid1In.set(false);
@@ -205,11 +224,13 @@ public class BreakawayRobot extends IterativeRobot {
                 }
                 break;
             case Constants.c_kickerKicking:
+                System.out.println("Kicker Kicking");
                 if(!m_kickerReleaseExtended.get()) {
                     kickerState = Constants.c_kickerReleased;
                 }
                 break;
             case Constants.c_kickerReleased:
+                System.out.println("Kicker Released");
                 m_kickerSolenoidIn.set(true);
                 m_kickerSolenoidOut.set(false);
                 m_herderSolenoid1In.set(true);
@@ -219,19 +240,23 @@ public class BreakawayRobot extends IterativeRobot {
                 kickerState = Constants.c_kickerReturning;
                 break;
             case Constants.c_kickerReturning:
+                System.out.println("Kicker Returning");
                 if(!m_kickerReleaseReturned.get()) {
                     m_kickerEncoder.reset();
                     kickerState = Constants.c_kickerLocked;
                 }
                 else {
                     m_kickerWinder.set(Constants.c_kickerReturningSpeed);
+                    System.out.println("Kicker - " + m_kickerEncoder.get());
                 }
                 break;
             case Constants.c_kickerLocked:
+                System.out.println("Kicker locked");
                 m_kickerWinder.set(Constants.c_kickerWindingSpeed);
                 kickerState = Constants.c_kickerWinding;
                 break;
             case Constants.c_kickerWinding:
+                System.out.println("Kicker winding");
                 if(m_kickerEncoder.get() > kickerEncoderCountLimit) {
                     m_kickerWinder.set(Constants.c_kickerStopWinding);
                     kickerState = Constants.c_kickerReady;
@@ -285,9 +310,9 @@ public class BreakawayRobot extends IterativeRobot {
                 Thread.yield();
                 image.free();
                 if(targets.length == 0 || targets[0].m_score < kScoreThreshold) {
-                    System.out.println("No target found");
+                    System.out.println("Target Not Found ");
                     DriverStationLCD.getInstance().println(DriverStationLCD.Line.kUser2, 1,
-                            "Not Found              ");
+                            "Target Not Found              ");
                     Target[] newTargets = new Target[targets.length + 1];
                     newTargets[0] = new Target();
                     newTargets[0].m_majorRadius = 0;
@@ -311,6 +336,13 @@ public class BreakawayRobot extends IterativeRobot {
             ex.printStackTrace();
         } catch(AxisCameraException ex) {
             ex.printStackTrace();
+        }
+
+        if(m_leftStick.getRawButton(Constants.c_winchStartButton)) {
+            m_winch.set(-1.0);
+        }
+        else {
+            m_winch.set(0);
         }
 
     }

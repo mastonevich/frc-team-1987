@@ -15,6 +15,9 @@ public final class Constants {
     private Constants(){
     }
 
+    public static final double c_stringPOT_max = 11;
+    public static final double c_stringPOT_min = -11;
+
     public static final int c_joystickRightPort = 1;
     public static final int c_joystickLeftPort = 2;
     
@@ -28,10 +31,9 @@ public final class Constants {
     public static final int c_kickerSolenoidOutChannel = 8;
 
     public static final int c_stringPOTChannel = 2;
-    public static final int c_kickerWinderChannel = 5;
-    public static final int c_LanceExtenderRelayChannel = 2;
-    public static final int c_combineRelayChannel = 3;
-    public static final int c_compressorRelayChannel = 1;
+    public static final int c_LanceExtenderRelayChannel = 1;
+    public static final int c_combineRelayChannel = 2;
+    public static final int c_compressorRelayChannel = 3;
 
     public static final int c_leftDriveEncoderDigitalChannel1 = 1;
     public static final int c_leftDriveEncoderDigitalChannel2 = 2;
@@ -51,16 +53,20 @@ public final class Constants {
     public static final int c_leftDriveMotor2 = 2;
     public static final int c_rightDriveMotor1 = 3;
     public static final int c_rightDriveMotor2 = 4;
+    public static final int c_kickerWinderChannel = 5;
+    public static final int c_winchChannel = 6;
+ 
 
     public static final double c_kickerStopWinding = 0;
-    public static final double c_kickerReturningSpeed = .1;
-    public static final double c_kickerWindingSpeed = .5;
+    public static final double c_kickerReturningSpeed = 1;
+    public static final double c_kickerWindingSpeed = 1;
 
     //Buttons
     public static final int c_kickerRightButton = 1;
     public static final int c_LanceReleaseLeftButton = 7;
     public static final int c_LanceExtenderLeftButton = 11;
     public static final int c_LanceRetractorLeftButton = 10;
+    public static final int c_winchStartButton = 6;
 
     public static final int c_kickerEncoderMaxCounts = 80;
 
@@ -74,7 +80,7 @@ public final class Constants {
     public static final int c_kickerSwitchPos7 = 64;
     public static final int c_kickerSwitchPos8 = 128;
 
-    public static final int c_kickerLowTrajectoryIOChannel = 0;
+    public static final int c_kickerLowTrajectoryIOChannel = 9;
 
     public static final int c_kickerReady = 0;
     public static final int c_kickerKicking = 1;
