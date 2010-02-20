@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
-
+import edu.wpi.first.wpilibj.GearTooth;
 
 import com.team1987.breakaway.api.Constants;
 
@@ -69,6 +69,7 @@ public class BreakawayRobot extends IterativeRobot {
     Encoder m_leftDriveEncoder;
     Encoder m_rightDriveEncoder;
     Encoder m_kickerEncoder;
+    GearTooth m_kickerWinderGearTooth;
     int kickerState;
     int kickerStrength;
     int kickerEncoderCountLimit;
@@ -123,6 +124,7 @@ public class BreakawayRobot extends IterativeRobot {
                 Constants.c_rightDriveEncoderDigitalChannel2);
         m_kickerEncoder = new Encoder(Constants.c_kickerEncoderDigitalChannel1,
                 Constants.c_kickerEncoderDigitalChannel2);
+        m_kickerWinderGearTooth = new GearTooth(Constants.c_kickerWinderGearToothChannel);
         m_winch = new Victor(Constants.c_winchChannel);
 
     }
@@ -147,6 +149,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_combineRelay.set(Relay.Value.kOff);
 
         m_kickerEncoder.start();
+        m_kickerWinderGearTooth.start();
 
         //instantiate digital input pins
         for(int i = 1; i < 10; i++) {
@@ -188,13 +191,13 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void autonomousPeriodic() {
-        System.out.println("Feeding Watchdog - autonomousPeriodic");
+       // System.out.println("Feeding Watchdog - autonomousPeriodic");
         Watchdog.getInstance().feed();
     }
 
     public void teleopPeriodic() {
         // feed the user watchdog at every period when in autonomous
-        System.out.println("Feeding Watchdog - teleopPeriodic");
+       // System.out.println("Feeding Watchdog - teleopPeriodic");
         Watchdog.getInstance().feed();
 
         // drive with arcade style (use right stick)
@@ -243,11 +246,13 @@ public class BreakawayRobot extends IterativeRobot {
                 System.out.println("Kicker Returning");
                 if(!m_kickerReleaseReturned.get()) {
                     m_kickerEncoder.reset();
+                    m_kickerWinderGearTooth.reset();
                     kickerState = Constants.c_kickerLocked;
                 }
                 else {
                     m_kickerWinder.set(Constants.c_kickerReturningSpeed);
-                    System.out.println("Kicker - " + m_kickerEncoder.get());
+                    System.out.println("Kicker Encoder - " + m_kickerEncoder.get());
+                    System.out.println("Kicker Geartooth - " + m_kickerWinderGearTooth);
                 }
                 break;
             case Constants.c_kickerLocked:
@@ -257,7 +262,8 @@ public class BreakawayRobot extends IterativeRobot {
                 break;
             case Constants.c_kickerWinding:
                 System.out.println("Kicker winding");
-                if(m_kickerEncoder.get() > kickerEncoderCountLimit) {
+         //       if(m_kickerEncoder.get() > kickerEncoderCountLimit) {
+                  if(m_kickerWinderGearTooth.get() > kickerEncoderCountLimit) {
                     m_kickerWinder.set(Constants.c_kickerStopWinding);
                     kickerState = Constants.c_kickerReady;
                 }
@@ -297,6 +303,13 @@ public class BreakawayRobot extends IterativeRobot {
             m_LanceExtenderRelay.set(Relay.Value.kOff);
         }
 
+
+        if(m_leftStick.getRawButton(Constants.c_winchStartButton)) {
+            m_winch.set(-1.0);
+        }
+        else {
+            m_winch.set(0);
+        }
         setKickerStrength();
 
         try {
@@ -336,13 +349,6 @@ public class BreakawayRobot extends IterativeRobot {
             ex.printStackTrace();
         } catch(AxisCameraException ex) {
             ex.printStackTrace();
-        }
-
-        if(m_leftStick.getRawButton(Constants.c_winchStartButton)) {
-            m_winch.set(-1.0);
-        }
-        else {
-            m_winch.set(0);
         }
 
     }
