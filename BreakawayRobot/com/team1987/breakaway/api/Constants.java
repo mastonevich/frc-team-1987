@@ -22,17 +22,14 @@ public final class Constants {
     public static final int c_joystickLeftPort = 1;
     
     //Solenoids
-    public static final int c_LanceReleaseSolenoidInChannel = 1;
-    public static final int c_LanceReleaseSolenoidOutChannel = 2;
-    public static final int c_herderSolenoid1InChannel = 3;
-    public static final int c_herderSolenoid1OutChannel = 4;
-    public static final int c_herderSolenoid2InChannel = 5;
-    public static final int c_herderSolenoid2OutChannel = 6;
-    public static final int c_kickerSolenoidInChannel = 7;
-    public static final int c_kickerSolenoidOutChannel = 8;
+    public static final int c_LanceReleaseSolenoidInChannel = 4;
+    public static final int c_LanceReleaseSolenoidOutChannel = 3;
+    public static final int c_herderSolenoidsInChannel = 6;
+    public static final int c_herderSolenoidsOutChannel = 5;
+    public static final int c_kickerSolenoidInChannel = 1;
+    public static final int c_kickerSolenoidOutChannel = 2;
 
     //Relays
-
     public static final int c_LanceExtenderRelayChannel = 1;
     public static final int c_combineRelayChannel = 2;
     public static final int c_compressorRelayChannel = 3;
@@ -53,7 +50,7 @@ public final class Constants {
     public static final int c_compressorPressureSwitchDigitalChannel = 11;
     public static final int c_kickerWinderGearToothChannel = 12;
     
-    public static final int c_kickerEncoderMaxCounts = 80;
+    public static final int c_kickerEncoderMaxCounts = 0;
 
     public static final double c_LanceExtendTime = 3;
 
@@ -72,10 +69,13 @@ public final class Constants {
 
     //Buttons
     public static final int c_kickerRightButton = 1;
-    public static final int c_winchStartButton = 6;
+    public static final int c_winchStartLeftButton = 6;
     public static final int c_LanceReleaseLeftButton = 7;
     public static final int c_LanceExtenderLeftButton = 11;
-    public static final int c_LanceRetractorLeftButton = 10;  
+    public static final int c_LanceRetractorLeftButton = 10;
+    public static final int c_combineForwardRightButton = 5;
+    public static final int c_combineOffRightButton = 2;
+    public static final int c_combineReverseRightButton = 4;
     
     //Kicker 8pos Switch
     public static final int c_kickerSwitchBits = 255;
@@ -87,7 +87,7 @@ public final class Constants {
     public static final int c_kickerSwitchPos6 = 32;
     public static final int c_kickerSwitchPos7 = 64;
     public static final int c_kickerSwitchPos8 = 128;
-
+    
     public static final int c_kickerLowTrajectoryIOChannel = 9;
 
     //Kicker States
