@@ -48,10 +48,8 @@ public class BreakawayRobot extends IterativeRobot {
     //Solenoids
     Solenoid m_LanceReleaseSolenoidIn;
     Solenoid m_LanceReleaseSolenoidOut;
-    Solenoid m_herderSolenoid1In;
-    Solenoid m_herderSolenoid1Out;
-    Solenoid m_herderSolenoid2In;
-    Solenoid m_herderSolenoid2Out;
+    Solenoid m_herderSolenoidsIn;
+    Solenoid m_herderSolenoidsOut;
     Solenoid m_kickerSolenoidIn;
     Solenoid m_kickerSolenoidOut;
     Relay m_LanceExtenderRelay;
@@ -65,7 +63,6 @@ public class BreakawayRobot extends IterativeRobot {
     DigitalInput m_kickerReleaseExtended;
     DigitalInput m_kickerReleaseReturned;
     DigitalInput m_LanceReleaseExtended;
-    DigitalInput m_LanceReleaseReturned;
     Encoder m_leftDriveEncoder;
     Encoder m_rightDriveEncoder;
     Encoder m_kickerEncoder;
@@ -101,10 +98,9 @@ public class BreakawayRobot extends IterativeRobot {
                 Constants.c_compressorRelayChannel);
         m_LanceReleaseSolenoidIn = new Solenoid(Constants.c_LanceReleaseSolenoidInChannel);
         m_LanceReleaseSolenoidOut = new Solenoid(Constants.c_LanceReleaseSolenoidOutChannel);
-        m_herderSolenoid1In = new Solenoid(Constants.c_herderSolenoid1InChannel);
-        m_herderSolenoid1Out = new Solenoid(Constants.c_herderSolenoid1OutChannel);
-        m_herderSolenoid2In = new Solenoid(Constants.c_herderSolenoid2InChannel);
-        m_herderSolenoid2Out = new Solenoid(Constants.c_herderSolenoid2OutChannel);
+        m_herderSolenoidsIn = new Solenoid(Constants.c_herderSolenoidsInChannel);
+        m_herderSolenoidsOut = new Solenoid(Constants.c_herderSolenoidsOutChannel);
+
         m_kickerSolenoidIn = new Solenoid(Constants.c_kickerSolenoidInChannel);
         m_kickerSolenoidOut = new Solenoid(Constants.c_kickerSolenoidOutChannel);
 
@@ -117,7 +113,6 @@ public class BreakawayRobot extends IterativeRobot {
         m_kickerReleaseExtended = new DigitalInput(Constants.c_kickerReleaseExtendedDigitalChannel);
         m_kickerReleaseReturned = new DigitalInput(Constants.c_kickerReleaseReturnedDigitalChannel);
         m_LanceReleaseExtended = new DigitalInput(Constants.c_LanceReleaseExtendedDigitalChannel);
-        m_LanceReleaseReturned = new DigitalInput(Constants.c_LanceReleaseReturnedDigitalChannel);
         m_leftDriveEncoder = new Encoder(Constants.c_leftDriveEncoderDigitalChannel1,
                 Constants.c_leftDriveEncoderDigitalChannel2);
         m_rightDriveEncoder = new Encoder(Constants.c_rightDriveEncoderDigitalChannel1,
@@ -136,17 +131,15 @@ public class BreakawayRobot extends IterativeRobot {
         m_compressor.start();
         m_LanceReleaseSolenoidIn.set(true);
         m_LanceReleaseSolenoidOut.set(false);
-        m_herderSolenoid1In.set(true);
-        m_herderSolenoid1Out.set(false);
-        m_herderSolenoid2In.set(true);
-        m_herderSolenoid2Out.set(false);
+        m_herderSolenoidsIn.set(true);
+        m_herderSolenoidsOut.set(false);
         m_kickerSolenoidIn.set(true);
         m_kickerSolenoidOut.set(false);
 
         m_kickerWinder.set(Constants.c_kickerStopWinding);
 
         m_LanceExtenderRelay.set(Relay.Value.kOff);
-        m_combineRelay.set(Relay.Value.kOff);
+        m_combineRelay.set(Relay.Value.kReverse);
 
         m_kickerEncoder.start();
         m_kickerWinderGearTooth.start();
@@ -159,8 +152,6 @@ public class BreakawayRobot extends IterativeRobot {
                 ex.printStackTrace();
             }
         }
-
-        Timer.delay(10.0);
         cam = AxisCamera.getInstance();
         cam.writeResolution(AxisCamera.ResolutionT.k320x240);
         cam.writeBrightness(0);
@@ -215,10 +206,8 @@ public class BreakawayRobot extends IterativeRobot {
                 System.out.println("Kicker Ready");
                 if(m_rightStick.getRawButton(Constants.c_kickerRightButton)) {
                     if(kickerLowTrajectory) {
-                        m_herderSolenoid1In.set(false);
-                        m_herderSolenoid1Out.set(true);
-                        m_herderSolenoid2In.set(false);
-                        m_herderSolenoid2Out.set(true);
+                        m_herderSolenoidsIn.set(false);
+                        m_herderSolenoidsOut.set(true);
                         //add code to restore to default position before 2 seconds
                     }
                     m_kickerSolenoidIn.set(false);
@@ -236,10 +225,8 @@ public class BreakawayRobot extends IterativeRobot {
                 System.out.println("Kicker Released");
                 m_kickerSolenoidIn.set(true);
                 m_kickerSolenoidOut.set(false);
-                m_herderSolenoid1In.set(true);
-                m_herderSolenoid1Out.set(false);
-                m_herderSolenoid2In.set(true);
-                m_herderSolenoid2Out.set(false);
+                m_herderSolenoidsIn.set(true);
+                m_herderSolenoidsOut.set(false);
                 kickerState = Constants.c_kickerReturning;
                 break;
             case Constants.c_kickerReturning:
@@ -252,7 +239,7 @@ public class BreakawayRobot extends IterativeRobot {
                 else {
                     m_kickerWinder.set(Constants.c_kickerReturningSpeed);
                     System.out.println("Kicker Encoder - " + m_kickerEncoder.get());
-                    System.out.println("Kicker Geartooth - " + m_kickerWinderGearTooth);
+                    System.out.println("Kicker Geartooth - " + m_kickerWinderGearTooth.get());
                 }
                 break;
             case Constants.c_kickerLocked:
@@ -263,12 +250,18 @@ public class BreakawayRobot extends IterativeRobot {
             case Constants.c_kickerWinding:
                 System.out.println("Kicker winding");
          //       if(m_kickerEncoder.get() > kickerEncoderCountLimit) {
-                  if(m_kickerWinderGearTooth.get() > kickerEncoderCountLimit) {
+                  if(m_kickerWinderGearTooth.get() >= kickerEncoderCountLimit) {
                     m_kickerWinder.set(Constants.c_kickerStopWinding);
                     kickerState = Constants.c_kickerReady;
                 }
                 break;
         }
+        if(m_rightStick.getRawButton(Constants.c_combineForwardRightButton))
+            m_combineRelay.set(Relay.Value.kReverse);
+        if(m_rightStick.getRawButton(Constants.c_combineOffRightButton))
+            m_combineRelay.set(Relay.Value.kOff);
+        if(m_rightStick.getRawButton(Constants.c_combineReverseRightButton))
+            m_combineRelay.set(Relay.Value.kForward);
 
         //Lance Release Code
         if(m_leftStick.getRawButton(Constants.c_LanceReleaseLeftButton)) {
@@ -304,7 +297,7 @@ public class BreakawayRobot extends IterativeRobot {
         }
 
 
-        if(m_leftStick.getRawButton(Constants.c_winchStartButton)) {
+        if(m_leftStick.getRawButton(Constants.c_winchStartLeftButton)) {
             m_winch.set(-1.0);
         }
         else {
