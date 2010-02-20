@@ -18,8 +18,8 @@ public final class Constants {
     public static final int c_joystickRightPort = 1;
     public static final int c_joystickLeftPort = 2;
     
-    public static final int c_LanceAngleSolenoidInChannel = 1;
-    public static final int c_LanceAngleSolenoidOutChannel = 2;
+    public static final int c_LanceReleaseSolenoidInChannel = 1;
+    public static final int c_LanceReleaseSolenoidOutChannel = 2;
     public static final int c_herderSolenoid1InChannel = 3;
     public static final int c_herderSolenoid1OutChannel = 4;
     public static final int c_herderSolenoid2InChannel = 5;
@@ -45,8 +45,7 @@ public final class Constants {
     public static final int c_kickerReleaseReturnedDigitalChannel = 10;
     public static final int c_compressorPressureSwitchDigitalChannel = 11;
 
-    public static final double c_stringPOT_max = 4.5;
-    public static final double c_stringPOT_min = .5;
+    public static final double c_LanceExtendTime = 3;
 
     public static final int c_leftDriveMotor1 = 1;
     public static final int c_leftDriveMotor2 = 2;
@@ -59,7 +58,7 @@ public final class Constants {
 
     //Buttons
     public static final int c_kickerRightButton = 1;
-    public static final int c_LanceAngleLeftButton = 7;
+    public static final int c_LanceReleaseLeftButton = 7;
     public static final int c_LanceExtenderLeftButton = 11;
     public static final int c_LanceRetractorLeftButton = 10;
 
