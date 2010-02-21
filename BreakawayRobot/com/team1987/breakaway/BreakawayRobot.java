@@ -224,12 +224,14 @@ public class BreakawayRobot extends IterativeRobot {
                     kickerState = Constants.c_kickerKicking;
                 }
                 break;
+
             case Constants.c_kickerKicking:
                 System.out.println("Kicker Kicking");
                 if(!m_kickerSolenoidExtended.get()) {
                     kickerState = Constants.c_kickerReleased;
                 }
                 break;
+
             case Constants.c_kickerReleased:
                 System.out.println("Kicker Released");
                 m_kickerSolenoidIn.set(true);
@@ -238,6 +240,7 @@ public class BreakawayRobot extends IterativeRobot {
                 m_herderSolenoidsOut.set(false);
                 kickerState = Constants.c_kickerReturning;
                 break;
+
             case Constants.c_kickerReturning:
                 System.out.println("Kicker Returning");
                 blnKickerSolenoidOut = m_kickerSolenoidReturned.get();
@@ -252,11 +255,13 @@ public class BreakawayRobot extends IterativeRobot {
                     System.out.println("Kicker Geartooth - " + m_kickerWinderGearTooth.get());
                 }
                 break;
+
             case Constants.c_kickerLocked:
                 System.out.println("Kicker locked");
                 m_kickerWinder.set(Constants.c_kickerWindingSpeed);
                 kickerState = Constants.c_kickerWinding;
                 break;
+                
             case Constants.c_kickerWinding:
                 System.out.println("Kicker winding");
          //       if(m_kickerEncoder.get() > kickerEncoderCountLimit) {
@@ -285,13 +290,13 @@ public class BreakawayRobot extends IterativeRobot {
             m_LanceRaiseSolenoidOut.set(false);
         }
 */
-        System.out.println("Lance Raised = " + m_LanceRaised.getChannel());
+        System.out.println("Lance Raised = " + !m_LanceRaised.get());
         //Lance Extender Code
 /*        if(m_leftStick.getRawButton(Constants.c_LanceExtenderLeftButton)) {
 
 
             if(m_analogChannel1.getVoltage() > Constants.c_stringPOT_min) {
-                m_LanceExtenderRelay.set(Relay.Value.kForward);
+                m_LanceExtenderRelay.set(Relay.Value.kReverse);
             }
             else {
                 m_LanceExtenderRelay.set(Relay.Value.kOff);
@@ -299,7 +304,7 @@ public class BreakawayRobot extends IterativeRobot {
         }
         else if(m_leftStick.getRawButton(Constants.c_LanceRetractorLeftButton)) {
             if(m_analogChannel1.getVoltage() < Constants.c_stringPOT_max) {
-                m_LanceExtenderRelay.set(Relay.Value.kReverse);
+                m_LanceExtenderRelay.set(Relay.Value.kForward);
             }
             else {
                 m_LanceExtenderRelay.set(Relay.Value.kOff);
