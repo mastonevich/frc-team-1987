@@ -22,8 +22,8 @@ public final class Constants {
     public static final int c_joystickLeftPort = 1;
     
     //Solenoids
-    public static final int c_LanceReleaseSolenoidInChannel = 4;
-    public static final int c_LanceReleaseSolenoidOutChannel = 3;
+    public static final int c_LanceRaiseSolenoidInChannel = 4;
+    public static final int c_LanceRaiseSolenoidOutChannel = 3;
     public static final int c_herderSolenoidsInChannel = 6;
     public static final int c_herderSolenoidsOutChannel = 5;
     public static final int c_kickerSolenoidInChannel = 1;
@@ -43,10 +43,10 @@ public final class Constants {
     public static final int c_rightDriveEncoderDigitalChannel2 = 4;
     public static final int c_kickerEncoderDigitalChannel1 = 5;
     public static final int c_kickerEncoderDigitalChannel2 = 6;
-    public static final int c_LanceReleaseExtendedDigitalChannel = 7;
-    public static final int c_LanceReleaseReturnedDigitalChannel = 8;
-    public static final int c_kickerReleaseExtendedDigitalChannel = 9;
-    public static final int c_kickerReleaseReturnedDigitalChannel = 10;
+    public static final int c_LanceRaisedDigitalChannel = 7;
+    public static final int c_LanceReturnedDigitalChannel = 8;
+    public static final int c_kickerSolenoidExtendedDigitalChannel = 9;
+    public static final int c_kickerSolenoidReturnedDigitalChannel = 10;
     public static final int c_compressorPressureSwitchDigitalChannel = 11;
     public static final int c_kickerWinderGearToothChannel = 12;
     
@@ -70,7 +70,7 @@ public final class Constants {
     //Buttons
     public static final int c_kickerRightButton = 1;
     public static final int c_winchStartLeftButton = 6;
-    public static final int c_LanceReleaseLeftButton = 7;
+    public static final int c_LanceRaiseLeftButton = 7;
     public static final int c_LanceExtenderLeftButton = 11;
     public static final int c_LanceRetractorLeftButton = 10;
     public static final int c_combineForwardRightButton = 5;
