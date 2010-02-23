@@ -471,35 +471,35 @@ public class BreakawayRobot extends IterativeRobot {
             kickerStrength = ~m_DSEIO.getDigitals() & Constants.c_kickerSwitchBits;
             switch(kickerStrength) {
                 case Constants.c_kickerSwitchPos1:
-                    kickerWinderVoltageLimit = 3.00;
+                    kickerWinderVoltageLimit = 3.5;
                     break;
 
                 case Constants.c_kickerSwitchPos2:
-                    kickerWinderVoltageLimit = 3.15;
+                    kickerWinderVoltageLimit = 4.35;
                     break;
 
                 case Constants.c_kickerSwitchPos3:
-                    kickerWinderVoltageLimit = 3.30;
+                    kickerWinderVoltageLimit = 4.45;
                     break;
 
                 case Constants.c_kickerSwitchPos4:
-                    kickerWinderVoltageLimit = 3.45;
+                    kickerWinderVoltageLimit = 4.55;
                     break;
 
                 case Constants.c_kickerSwitchPos5:
-                    kickerWinderVoltageLimit = 3.60;
+                    kickerWinderVoltageLimit = 4.65;
                     break;
 
                 case Constants.c_kickerSwitchPos6:
-                    kickerWinderVoltageLimit = 3.75;
+                    kickerWinderVoltageLimit = 4.75;
                     break;
 
                 case Constants.c_kickerSwitchPos7:
-                    kickerWinderVoltageLimit = 3.90;
+                    kickerWinderVoltageLimit = 4.85;
                     break;
 
                 case Constants.c_kickerSwitchPos8:
-                    kickerWinderVoltageLimit = 4.6;
+                    kickerWinderVoltageLimit = 4.96;
                     break;
             }
 
