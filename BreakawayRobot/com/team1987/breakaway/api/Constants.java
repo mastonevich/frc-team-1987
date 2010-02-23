@@ -19,7 +19,7 @@ public final class Constants {
     public static final int c_combineOffRightButton = 2;
     public static final int c_combineReverseRightButton = 4;
     public static final int c_combineForwardRightButton = 5;
-    public static final int c_LanceRaiseLeftButton = 6;
+    public static final int c_LanceRaiseLeftButton = 7;
     public static final int c_winchWindLeftButton = 8;
     public static final int c_winchUnwindLeftButton = 9;
     public static final int c_LanceRetractorLeftButton = 10;
@@ -33,11 +33,11 @@ public final class Constants {
     public static final int c_kickerEncoderDigitalChannel2 = 6;
     public static final int c_kickerWinderGearToothDigitalChannel = 7;
     public static final int c_LanceExtendedDigitalChannel = 8;
-    public static final int c_kickerSolenoidExtendedDigitalChannel = 9;
     public static final int c_kickerSolenoidReturnedDigitalChannel = 10;
+    public static final int c_kickerSolenoidExtendedDigitalChannel = 9;
     public static final int c_compressorPressureSwitchDigitalChannel = 11;
-    public static final int c_LanceRaisedDigitalChannel = 13;
-    public static final int c_kickerWinderEmergencyStopDigitalChannel = 14;
+    public static final int c_LanceRaisedDigitalChannel = 12;
+    public static final int c_kickerWinderEmergencyStopDigitalChannel = 13;
     //Enhanced IO Channel
     public static final int c_kickerLowTrajectoryIOChannel = 9;
     //Joystick Ports
@@ -46,7 +46,7 @@ public final class Constants {
     //Kicker Winder
     public static final double c_kickerStopWinding = 0;
     public static final double c_kickerReturningSpeed = .15;
-    public static final double c_kickerWindingSpeed = .175;
+    public static final double c_kickerWindingSpeed = .15;
     //Motor PWM Channels
     public static final int c_leftDriveMotor1PWMChannel = 1;
     public static final int c_leftDriveMotor2PWMChannel = 2;
@@ -90,8 +90,10 @@ public final class Constants {
     public static final String c_strKickerLocked = "Kicker Locked";
     public static final String c_strKickerWinding = "Kicker Winding";
     //Random Constants (delays, etc)
-    public static final int c_kickerDelay = 2;
-    public static final int c_kickerEncoderMaxCounts = 0;
+    public static final int c_kickerDelay = 1;
+    public static final int c_kickerSolenoidDelay = 2;
+    public static final int c_kickerEncoderMaxCounts = 50;
     public static final double c_LanceExtendTime = 3;
+    public static final int c_gearToothLimit = 6;
 }
 
