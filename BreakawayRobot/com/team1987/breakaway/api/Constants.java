@@ -48,7 +48,7 @@ public final class Constants {
     //Kicker Winder
     public static final double c_kickerStopWinding = 0;
     public static final double c_kickerReturningSpeed = .1;
-    public static final double c_kickerWindingSpeed = .45;
+    public static final double c_kickerWindingSpeed = .6;
     //Motor PWM Channels
     public static final int c_leftDriveMotor1PWMChannel = 1;
     public static final int c_leftDriveMotor2PWMChannel = 2;
