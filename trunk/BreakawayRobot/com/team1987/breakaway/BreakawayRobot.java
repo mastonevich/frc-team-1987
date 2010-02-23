@@ -228,7 +228,7 @@ public class BreakawayRobot extends IterativeRobot {
     public void teleopInit() {
         System.out.println("Feeding Watchdog - teleopInit");
         Watchdog.getInstance().feed();
-        kickerState = Constants.c_kickerReleased;
+        kickerState = Constants.c_kickerReturning;
         if(!m_LanceExtended.get()) {
         }
     }
@@ -263,7 +263,6 @@ public class BreakawayRobot extends IterativeRobot {
         }
 
         setKickerStrength();
-        kicker(); //Sets the state of the kicker and performs actions depending on state
         combine();
         LanceRaise();
         LanceExtend();
@@ -281,6 +280,7 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void teleopContinuous() {
+        kicker(); //Sets the state of the kicker and performs actions depending on state
     }
 
     public void camera() {
@@ -390,7 +390,10 @@ public class BreakawayRobot extends IterativeRobot {
                     //m_kickerWinderGearTooth.reset();
                     m_herderSolenoidsIn.set(true);
                     m_herderSolenoidsOut.set(false);
-                    if(Math.abs(Constants.c_kickerWinderLockVoltage - m_kickerWinderRevSensor.getVoltage()) <= .01) {
+                    if(!m_kickerSolenoidExtended.get()) {
+                        kickerState = Constants.c_kickerLocking;
+                    }
+                    else if(Math.abs(Constants.c_kickerWinderLockVoltage - m_kickerWinderRevSensor.getVoltage()) <= Constants.c_kickerWinderVoltageTolerance) {
                         m_kickerWinder.set(Constants.c_kickerStopWinding);
                         kickerState = Constants.c_kickerLocking;
                     }
@@ -418,7 +421,7 @@ public class BreakawayRobot extends IterativeRobot {
 
             case Constants.c_kickerWinding:
                 strKickerState = Constants.c_strKickerWinding;
-                if(Math.abs(m_kickerWinderRevSensor.getVoltage()) >= Constants.c_kickerWinderVoltageLimit) {
+                if(m_kickerWinderRevSensor.getVoltage() >= kickerWinderVoltageLimit) {
                     m_kickerWinder.set(Constants.c_kickerStopWinding);
                     kickerState = Constants.c_kickerReady;
                 }
@@ -458,7 +461,7 @@ public class BreakawayRobot extends IterativeRobot {
             m_DSLCD.println(DriverStationLCD.Line.kUser3, 1, "Kicker Strength=" + kickerStrength + "                    ");
             m_DSLCD.println(DriverStationLCD.Line.kUser4, 1, "Lance Extended=" + m_LanceExtended.get() + "                    ");
             m_DSLCD.println(DriverStationLCD.Line.kUser5, 1, "Lance Lowered=" + m_LanceLowered.get() + "                    ");
-            m_DSLCD.println(DriverStationLCD.Line.kUser6, 1, "                              ");
+            m_DSLCD.println(DriverStationLCD.Line.kUser6, 1, "KWSVoltage=" + m_kickerWinderRevSensor.getVoltage() + "          ");
         }
         m_DSLCD.updateLCD();
     }
@@ -468,40 +471,41 @@ public class BreakawayRobot extends IterativeRobot {
             kickerStrength = ~m_DSEIO.getDigitals() & Constants.c_kickerSwitchBits;
             switch(kickerStrength) {
                 case Constants.c_kickerSwitchPos1:
+                    kickerWinderVoltageLimit = 3.00;
                     break;
+
                 case Constants.c_kickerSwitchPos2:
+                    kickerWinderVoltageLimit = 3.15;
                     break;
+
                 case Constants.c_kickerSwitchPos3:
-                    kickerStrength = 3;
+                    kickerWinderVoltageLimit = 3.30;
                     break;
 
                 case Constants.c_kickerSwitchPos4:
-                    kickerStrength = 4;
+                    kickerWinderVoltageLimit = 3.45;
                     break;
 
                 case Constants.c_kickerSwitchPos5:
-                    kickerStrength = 5;
+                    kickerWinderVoltageLimit = 3.60;
                     break;
 
                 case Constants.c_kickerSwitchPos6:
-                    kickerStrength = 6;
+                    kickerWinderVoltageLimit = 3.75;
                     break;
 
                 case Constants.c_kickerSwitchPos7:
-                    kickerStrength = 7;
+                    kickerWinderVoltageLimit = 3.90;
                     break;
 
                 case Constants.c_kickerSwitchPos8:
-                    kickerStrength = 8;
+                    kickerWinderVoltageLimit = 4.6;
                     break;
             }
 
         } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
             ex.printStackTrace();
         }
-
-        kickerWinderVoltageLimit = kickerStrength / 8 * Constants.c_kickerWinderMaxVoltage;
-
     }
 
     public void winchControl() {

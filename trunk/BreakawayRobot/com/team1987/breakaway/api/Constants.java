@@ -15,17 +15,17 @@ public final class Constants {
     }
 
     //Analog Channels
-    public static final int c_kickerWinderRevSensorAnalogChannel = 1;
+    public static final int c_kickerWinderRevSensorAnalogChannel = 7;
     //Buttons
     public static final int c_kickerRightButton = 1;
     public static final int c_combineOffRightButton = 2;
     public static final int c_combineReverseRightButton = 4;
     public static final int c_combineForwardRightButton = 5;
-    public static final int c_LanceRaiseLeftButton = 7;
-    public static final int c_winchWindLeftButton = 8;
-    public static final int c_winchUnwindLeftButton = 9;
-    public static final int c_LanceRetractorLeftButton = 10;
-    public static final int c_LanceExtenderLeftButton = 11;
+    public static final int c_LanceRaiseLeftButton = 1;
+    public static final int c_winchWindLeftButton = 4;
+    public static final int c_winchUnwindLeftButton = 5;
+    public static final int c_LanceRetractorLeftButton = 2;
+    public static final int c_LanceExtenderLeftButton = 3;
     //Digital Channels
     public static final int c_leftDriveEncoderDigitalChannel1 = 1;
     public static final int c_leftDriveEncoderDigitalChannel2 = 2;
@@ -47,8 +47,8 @@ public final class Constants {
     public static final int c_joystickLeftPort = 1;
     //Kicker Winder
     public static final double c_kickerStopWinding = 0;
-    public static final double c_kickerReturningSpeed = .22;
-    public static final double c_kickerWindingSpeed = .22;
+    public static final double c_kickerReturningSpeed = .1;
+    public static final double c_kickerWindingSpeed = .45;
     //Motor PWM Channels
     public static final int c_leftDriveMotor1PWMChannel = 1;
     public static final int c_leftDriveMotor2PWMChannel = 2;
@@ -99,5 +99,6 @@ public final class Constants {
     public static final double c_kickerWinderMaxVoltage = 5/360*309;
     public static final double c_LanceExtendTime = 3;
     public static final int c_gearToothLimit = 6;
+    public static final double c_kickerWinderVoltageTolerance = .1;
 }
 
