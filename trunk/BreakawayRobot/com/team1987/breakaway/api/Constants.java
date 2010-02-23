@@ -14,6 +14,8 @@ public final class Constants {
     private Constants() {
     }
 
+    //Analog Channels
+    public static final int c_kickerWinderRevSensorAnalogChannel = 1;
     //Buttons
     public static final int c_kickerRightButton = 1;
     public static final int c_combineOffRightButton = 2;
@@ -45,8 +47,8 @@ public final class Constants {
     public static final int c_joystickLeftPort = 1;
     //Kicker Winder
     public static final double c_kickerStopWinding = 0;
-    public static final double c_kickerReturningSpeed = .15;
-    public static final double c_kickerWindingSpeed = .15;
+    public static final double c_kickerReturningSpeed = .22;
+    public static final double c_kickerWindingSpeed = .22;
     //Motor PWM Channels
     public static final int c_leftDriveMotor1PWMChannel = 1;
     public static final int c_leftDriveMotor2PWMChannel = 2;
@@ -77,22 +79,24 @@ public final class Constants {
     public static final int c_kickerSwitchPos8 = 128;
     //Kicker States
     public static final int c_kickerReady = 0;
-    public static final int c_kickerKicking = 1;
-    public static final int c_kickerReleased = 2;
-    public static final int c_kickerReturning = 3;
+    public static final int c_kickerReleased = 1;
+    public static final int c_kickerReturning = 2;
+    public static final int c_kickerLocking = 3;
     public static final int c_kickerLocked = 4;
     public static final int c_kickerWinding = 5;
     //Kicker Print Messages
     public static final String c_strKickerReady = "Kicker Ready";
-    public static final String c_strKickerKicking = "Kicker Kicking";
     public static final String c_strKickerReleased = "Kicker Released";
     public static final String c_strKickerReturning = "Returning";
+    public static final String c_strKickerLocking = "Kicker Locking";
     public static final String c_strKickerLocked = "Kicker Locked";
     public static final String c_strKickerWinding = "Kicker Winding";
     //Random Constants (delays, etc)
     public static final int c_kickerDelay = 1;
-    public static final int c_kickerSolenoidDelay = 2;
+    public static final int c_herderSolenoidDelay = 1;
     public static final int c_kickerEncoderMaxCounts = 50;
+    public static final double c_kickerWinderLockVoltage = .25;
+    public static final double c_kickerWinderMaxVoltage = 5/360*309;
     public static final double c_LanceExtendTime = 3;
     public static final int c_gearToothLimit = 6;
 }
