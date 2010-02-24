@@ -84,6 +84,7 @@ public class BreakawayRobot extends IterativeRobot {
     boolean kickerDelayLock;
     boolean autoKick;
     boolean activateLance;
+    boolean kickerTriggerTimerResetLock;
     double kScoreThreshold;
     int kickerState;
     int kickerStrength;
@@ -178,6 +179,7 @@ public class BreakawayRobot extends IterativeRobot {
         kScoreThreshold = .01;
         kickerDelayLock = false;
         autoKick = false;
+        kickerTriggerTimerResetLock = false;
     }
 
     public void robotInit() {
@@ -258,7 +260,7 @@ public class BreakawayRobot extends IterativeRobot {
         // feed the user watchdog
         Watchdog.getInstance().feed();
 
-        m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
+        //m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
 
 
     }
@@ -411,14 +413,14 @@ public class BreakawayRobot extends IterativeRobot {
                 if(m_kickerTriggerTimer.get() >= Constants.c_kickerTriggerDelay) {
                     if((m_rightStick.getRawButton(Constants.c_kickerRightButton)) || autoKick) {
                         m_kickerDelayTimer.reset();
-                        kickerState =
-                                Constants.c_kickerKicking;
+                        kickerState = Constants.c_kickerKicking;
                     }
 
                 }
                 break;
 
             case Constants.c_kickerKicking:
+                kickerTriggerTimerResetLock = false;
                 if(kickerLowTrajectory) {
                     m_herderSolenoidsIn.set(false);
                     m_herderSolenoidsOut.set(true);
@@ -447,13 +449,12 @@ public class BreakawayRobot extends IterativeRobot {
                 if(!m_kickerSolenoidExtended.get()) {
                     kickerState = Constants.c_kickerLocking;
                 }
-                else if((m_kickerWinderRevSensor.getVoltage() >= 4.9) || (m_kickerWinderRevSensor.getVoltage() <= .25)) {
+                else if((m_kickerWinderRevSensor.getVoltage() >= Constants.c_kickerWinderHomingVoltage) || (m_kickerWinderRevSensor.getVoltage() <= .25)) {
                     m_kickerWinder.set(Constants.c_kickerHomingSpeed);
                     if(Math.abs(Constants.c_kickerWinderLockVoltage - m_kickerWinderRevSensor.getVoltage()) <= Constants.c_kickerWinderVoltageTolerance) {
                         m_kickerWinder.set(Constants.c_kickerStopWinding);
                         m_kickerLockTimer.reset();
-                        kickerState =
-                                Constants.c_kickerLocking;
+                        kickerState = Constants.c_kickerLocking;
                     }
 
                 }
@@ -495,8 +496,11 @@ public class BreakawayRobot extends IterativeRobot {
 
         if(!m_kickerWinderEmergencyStop.get()) {
             m_kickerWinder.set(Constants.c_kickerStopWinding);
-            kickerState =
-                    Constants.c_kickerReady;
+            if(!kickerTriggerTimerResetLock) {
+                m_kickerTriggerTimer.reset();
+                kickerTriggerTimerResetLock = true;
+            }
+            kickerState =Constants.c_kickerReady;
         }
 
         if(m_herderSolenoidDelayTimer.get() >= Constants.c_herderSolenoidDelay) {
@@ -510,11 +514,10 @@ public class BreakawayRobot extends IterativeRobot {
     public void printMessages() {
         //Diagnostics: move right z axis up
         if(m_rightStick.getZ() < 0) {
-            m_DSLCD.println(DriverStationLCD.Line.kMain6, 1, "KSIn=" + m_kickerSolenoidReturned.get() + "                    ");
-            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "KSOut=" + m_kickerSolenoidExtended.get() + "                    ");
-            m_DSLCD.println(DriverStationLCD.Line.kUser3, 1, "Kicker Encoder= " + m_kickerEncoder.get() + "                    ");
-            m_DSLCD.println(DriverStationLCD.Line.kUser4, 1,
-                    "Kicker Geartooth= " + m_kickerWinderGearTooth.get() + "                    ");
+            m_DSLCD.println(DriverStationLCD.Line.kMain6, 1, "KTrigTimer=" + m_kickerTriggerTimer.get());
+            m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "KVoltage=" + m_kickerWinderRevSensor.getVoltage());
+            m_DSLCD.println(DriverStationLCD.Line.kUser3, 1, "Lance Extended=" + m_LanceExtended.get() + "                    ");
+            m_DSLCD.println(DriverStationLCD.Line.kUser4, 1, "Lance Lowered=" + m_LanceLowered.get() + "                    ");
             m_DSLCD.println(DriverStationLCD.Line.kUser5, 1, "LDE=" + m_leftDriveEncoder.get() + "                    ");
             m_DSLCD.println(DriverStationLCD.Line.kUser6, 1, "RDE=" + m_rightDriveEncoder.get() + "                    ");
 
@@ -528,10 +531,9 @@ public class BreakawayRobot extends IterativeRobot {
             else {
                 m_DSLCD.println(DriverStationLCD.Line.kUser2, 1, "Kicker Delayed                  ");
             }
-
             m_DSLCD.println(DriverStationLCD.Line.kUser3, 1, "K Strength=" + kickerStrength + "                    ");
-            m_DSLCD.println(DriverStationLCD.Line.kUser4, 1, "Lance Extended=" + m_LanceExtended.get() + "                    ");
-            m_DSLCD.println(DriverStationLCD.Line.kUser5, 1, "Lance Lowered=" + m_LanceLowered.get() + "                    ");
+            m_DSLCD.println(DriverStationLCD.Line.kUser4, 1, "Low Kick Traj=" + kickerLowTrajectory + "                     ");
+
             m_DSLCD.println(DriverStationLCD.Line.kUser6, 1,
                     "K%=" + m_kickerWinderRevSensor.getVoltage() / 5 * 100 + "%                    ");
         }

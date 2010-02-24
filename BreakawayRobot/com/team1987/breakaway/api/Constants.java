@@ -93,7 +93,7 @@ public final class Constants {
     public static final String c_strKickerWinding = "Kicker Winding";
     //Random Constants (delays, etc)
     public static final int c_kickerTriggerDelay = 2;
-    public static final double c_kickerDelay = .5;
+    public static final double c_kickerDelay = .25;
     public static final int c_herderSolenoidDelay = 1;
     public static final double c_kickerWinderLockVoltage = .25;
     public static final double c_kickerWinderMaxVoltage = 5 / 360 * 309;
@@ -101,11 +101,12 @@ public final class Constants {
     public static final int c_gearToothLimit = 6;
     public static final double c_kickerWinderVoltageTolerance = .1;
     public static final double c_kickerStopWinding = 0;
-    public static final double c_kickerReturningSpeed = .5;
-    public static final double c_kickerHomingSpeed = .1;
+    public static final double c_kickerReturningSpeed = .2;
+    public static final double c_kickerHomingSpeed = .07;
     public static final double c_kickerWindingSpeed = .6;
     public static final double c_autoDriveSpeed = .5;
     public static final double c_autoTurnSpeed = .5;
     public static final double c_kickerLockFailTime = 1.5;
+    public static final double c_kickerWinderHomingVoltage = 4.25;
 }
 
