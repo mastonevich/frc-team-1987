@@ -410,32 +410,32 @@ public class BreakawayRobot extends IterativeRobot {
         switch(kickerState) {
             case Constants.c_kickerReady:
                 strKickerState = Constants.c_strKickerReady;
-                if(m_kickerTriggerTimer.get() >= Constants.c_kickerTriggerDelay) {
-                    if((m_rightStick.getRawButton(Constants.c_kickerRightButton)) || autoKick) {
-                        m_kickerDelayTimer.reset();
-                        kickerState = Constants.c_kickerKicking;
-                    }
+                //if(m_kickerTriggerTimer.get() >= Constants.c_kickerTriggerDelay) {
+                if((m_rightStick.getRawButton(Constants.c_kickerRightButton))/* || autoKick*/) {
+                    if(kickerLowTrajectory) {
+                        m_herderSolenoidsIn.set(false);
+                        m_herderSolenoidsOut.set(true);
+                        m_herderSolenoidDelayTimer.reset();
+                        //m_kickerDelayTimer.reset();
+                        //if(m_kickerDelayTimer.get() >= Constants.c_kickerDelay) {
+                            m_kickerSolenoidIn.set(false);
+                            m_kickerSolenoidOut.set(true);
+                        //}
 
+                    }
+                    else {
+                        m_kickerSolenoidIn.set(false);
+                        m_kickerSolenoidOut.set(true);
+                    }
+                    kickerState = Constants.c_kickerKicking;
                 }
+
+
+                //}
                 break;
 
             case Constants.c_kickerKicking:
                 kickerTriggerTimerResetLock = false;
-                if(kickerLowTrajectory) {
-                    m_herderSolenoidsIn.set(false);
-                    m_herderSolenoidsOut.set(true);
-                    m_herderSolenoidDelayTimer.reset();
-                    if(m_kickerDelayTimer.get() >= Constants.c_kickerDelay) {
-                        m_kickerSolenoidIn.set(false);
-                        m_kickerSolenoidOut.set(true);
-                    }
-
-                }
-                else {
-                    m_kickerSolenoidIn.set(false);
-                    m_kickerSolenoidOut.set(true);
-                }
-
                 strKickerState = Constants.c_strKickerKicking;
                 if(!m_kickerSolenoidReturned.get()) {
                     kickerState = Constants.c_kickerReturning;
@@ -500,7 +500,8 @@ public class BreakawayRobot extends IterativeRobot {
                 m_kickerTriggerTimer.reset();
                 kickerTriggerTimerResetLock = true;
             }
-            kickerState =Constants.c_kickerReady;
+
+            kickerState = Constants.c_kickerReady;
         }
 
         if(m_herderSolenoidDelayTimer.get() >= Constants.c_herderSolenoidDelay) {
