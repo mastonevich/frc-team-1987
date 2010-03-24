@@ -25,8 +25,8 @@ public final class Constants {
     //Left JS Buttons
     public static final int c_LanceActivateLeftButton = 2;
     public static final int c_LanceDeactivateLeftButton = 3;
-    public static final int c_winchWindLeftButton = 6;
-    public static final int c_winchUnwindLeftButton = 7;
+    public static final int c_winchWindLeftButton = 4;
+    public static final int c_winchUnwindLeftButton = 5;
     //Digital Channels
     public static final int c_leftDriveEncoderDigitalChannel1 = 1;
     public static final int c_leftDriveEncoderDigitalChannel2 = 2;
