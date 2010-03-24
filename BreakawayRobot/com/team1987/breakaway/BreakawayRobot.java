@@ -351,50 +351,25 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void Lance() {
-        //Raising Override
-        if (m_leftStick.getRawButton(Constants.c_LanceRaiseLeftButton)) {
-            m_LanceRaiseSolenoidIn.set(false);
-            m_LanceRaiseSolenoidOut.set(true);
-        } else if (m_leftStick.getRawButton(Constants.c_LanceLowerLeftButton) && !m_LanceExtended.get()) {
-            m_LanceRaiseSolenoidIn.set(true);
-            m_LanceRaiseSolenoidOut.set(false);
-        }
-        //Extending override
-        if (m_leftStick.getRawButton(Constants.c_LanceRetractorLeftButton)) {
-            m_LanceExtenderRelay.set(Relay.Value.kForward);
-        } else if (m_leftStick.getRawButton(Constants.c_LanceExtenderLeftButton) && !m_LanceLowered.get()) {
-            m_LanceExtenderRelay.set(Relay.Value.kReverse);
-        } //Auto move lance
-        else if (m_leftStick.getRawButton(Constants.c_LanceActivateLeftButton)) {
 
-            if (activateLance) {
+        //Lower/Retract Lance
+        if(m_leftStick.getRawButton(Constants.c_LanceDeactivateLeftButton)) {
+            if(!m_LanceExtended.get()) {
+                m_LanceRaiseSolenoidIn.set(true);
+                m_LanceRaiseSolenoidOut.set(false);
+            }
+            else m_LanceExtenderRelay.set(Relay.Value.kForward);
+        }
+
+        //Raise/Extend Lance
+        else if(m_leftStick.getRawButton(Constants.c_LanceActivateLeftButton)) {
+            if(m_LanceLowered.get()) {
                 m_LanceRaiseSolenoidIn.set(false);
                 m_LanceRaiseSolenoidOut.set(true);
-                if (!m_LanceLowered.get()) {
-                    m_LanceExtenderRelay.set(Relay.Value.kReverse);
-                }
-            } else if (!activateLance) {
-                m_LanceExtenderRelay.set(Relay.Value.kForward);
-                if (!m_LanceExtended.get()) {
-                    m_LanceRaiseSolenoidIn.set(true);
-                    m_LanceRaiseSolenoidOut.set(false);
-                }
             }
-
+            else m_LanceExtenderRelay.set(Relay.Value.kReverse);
         }
-        //set state for auto moving
-        if (!m_leftStick.getRawButton(Constants.c_LanceActivateLeftButton)) {
-            if (!m_leftStick.getRawButton(Constants.c_LanceExtenderLeftButton) && !m_leftStick.getRawButton(
-                    Constants.c_LanceRetractorLeftButton)) {
-                m_LanceExtenderRelay.set(Relay.Value.kOff);
-            }
-            if (m_LanceLowered.get() && !m_LanceExtended.get()) {
-                activateLance = true;
-            } else if (!m_LanceLowered.get() && m_LanceExtended.get()) {
-                activateLance = false;
-            }
-        }
-
+        
     }
 
     public void kicker() {
