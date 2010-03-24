@@ -23,11 +23,8 @@ public final class Constants {
     public static final int c_combineReverseRightButton = 2;
     public static final int c_combineForwardRightButton = 3;
     //Left JS Buttons
-    public static final int c_LanceActivateLeftButton = 1;
-    public static final int c_LanceRetractorLeftButton = 2;
-    public static final int c_LanceExtenderLeftButton = 3;
-    public static final int c_LanceRaiseLeftButton = 4;
-    public static final int c_LanceLowerLeftButton = 5;
+    public static final int c_LanceActivateLeftButton = 2;
+    public static final int c_LanceDeactivateLeftButton = 3;
     public static final int c_winchWindLeftButton = 6;
     public static final int c_winchUnwindLeftButton = 7;
     //Digital Channels
