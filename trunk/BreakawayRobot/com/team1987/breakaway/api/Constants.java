@@ -22,9 +22,10 @@ public final class Constants {
     public static final int c_combineOffRightButton2 = 5;
     public static final int c_combineReverseRightButton = 2;
     public static final int c_combineForwardRightButton = 3;
+    public static final int c_herderTrajetoryRightButton = 7;
     //Left JS Buttons
-    public static final int c_LanceActivateLeftButton = 2;
-    public static final int c_LanceDeactivateLeftButton = 3;
+    public static final int c_LanceActivateLeftButton = 3;
+    public static final int c_LanceDeactivateLeftButton = 2;
     public static final int c_winchWindLeftButton = 4;
     public static final int c_winchUnwindLeftButton = 5;
     //Digital Channels
@@ -34,14 +35,13 @@ public final class Constants {
     public static final int c_rightDriveEncoderDigitalChannel2 = 4;
     public static final int c_kickerEncoderDigitalChannel1 = 5;
     public static final int c_kickerEncoderDigitalChannel2 = 6;
-    public static final int c_kickerWinderGearToothDigitalChannel = 7;
+    public static final int c_ballDetectorDigitalChannel = 7;
     public static final int c_LanceExtendedDigitalChannel = 8;
     public static final int c_kickerSolenoidReturnedDigitalChannel = 10;
     public static final int c_kickerSolenoidExtendedDigitalChannel = 9;
     public static final int c_compressorPressureSwitchDigitalChannel = 11;
     public static final int c_LanceRaisedDigitalChannel = 12;
     public static final int c_kickerWinderEmergencyStopDigitalChannel = 13;
-    public static final int c_ballDetectorDigitalChannel = 14;
     //Enhanced IO Channel
     public static final int c_kickerLowTrajectoryIOChannel = 9;
     //Joystick Ports
@@ -93,7 +93,7 @@ public final class Constants {
     public static final int c_kickerTriggerDelay = 2;
     public static final double c_kickerDelay = .25;
     public static final int c_herderSolenoidDelay = 1;
-    public static final double c_kickerWinderLockVoltage = .25;
+    public static final double c_kickerWinderLockVoltage = .25; //Recently changed from .25
     public static final double c_kickerWinderMaxVoltage = 5 / 360 * 309;
     public static final double c_LanceExtendTime = 3;
     public static final int c_gearToothLimit = 6;
@@ -102,9 +102,14 @@ public final class Constants {
     public static final double c_kickerReturningSpeed = .2;
     public static final double c_kickerHomingSpeed = .07;
     public static final double c_kickerWindingSpeed = .6;
-    public static final double c_autoDriveSpeed = .25;
-    public static final double c_autoTurnSpeed = .25;
-    public static final double c_autonomousSeekEncoderLimit = 1200;
+    public static final double c_autoDriveSpeed = -.3;
+    public static final double c_autoCloseInSpeed = -.15;
+    public static final double c_autoTurnSpeed = -.25;
+    public static final double c_autonomousSeekEncoderLimit = 2500; //Needs to be 1200, changed for now
+    public static final double c_autonomousZone3FirstBallEncoderCount = 1050;
+    public static final double c_autonomousZone3ConsecutiveBallEncoderCount = 1300;
+    public static final double c_autonomousZone1or2FirstBallEncoderCount = 500;
+    public static final double c_autonomousZone1or2ConsecutiveBallEncoderCount = 750;
     public static final double c_kickerLockFailTime = 1.5;
     public static final double c_kickerWinderHomingVoltage = 4.25;
 }
