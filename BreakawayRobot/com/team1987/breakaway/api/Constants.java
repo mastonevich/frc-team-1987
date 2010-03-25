@@ -102,9 +102,9 @@ public final class Constants {
     public static final double c_kickerReturningSpeed = .2;
     public static final double c_kickerHomingSpeed = .07;
     public static final double c_kickerWindingSpeed = .6;
-    public static final double c_autoDriveSpeed = .5;
-    public static final double c_autoTurnSpeed = .5;
-    public static final double c_autonomousSeekEncoderLimit =
+    public static final double c_autoDriveSpeed = .25;
+    public static final double c_autoTurnSpeed = .25;
+    public static final double c_autonomousSeekEncoderLimit = 1200;
     public static final double c_kickerLockFailTime = 1.5;
     public static final double c_kickerWinderHomingVoltage = 4.25;
 }

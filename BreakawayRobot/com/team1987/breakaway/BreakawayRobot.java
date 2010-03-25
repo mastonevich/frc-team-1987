@@ -271,9 +271,9 @@ public class BreakawayRobot extends IterativeRobot {
             m_robotDrive.tankDrive(0, 0);
             autoKick = true;
         }
-        /*if(m_leftDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit || m_rightDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit) {
+        else if(m_leftDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit || m_rightDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit) {
             m_robotDrive.tankDrive(0, 0);
-        }*/
+        }
 
 
 
