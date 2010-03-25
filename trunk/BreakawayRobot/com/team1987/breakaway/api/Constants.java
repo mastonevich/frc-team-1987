@@ -41,6 +41,7 @@ public final class Constants {
     public static final int c_compressorPressureSwitchDigitalChannel = 11;
     public static final int c_LanceRaisedDigitalChannel = 12;
     public static final int c_kickerWinderEmergencyStopDigitalChannel = 13;
+    public static final int c_ballDetectorDigitalChannel = 14;
     //Enhanced IO Channel
     public static final int c_kickerLowTrajectoryIOChannel = 9;
     //Joystick Ports
@@ -103,6 +104,7 @@ public final class Constants {
     public static final double c_kickerWindingSpeed = .6;
     public static final double c_autoDriveSpeed = .5;
     public static final double c_autoTurnSpeed = .5;
+    public static final double c_autonomousSeekEncoderLimit =
     public static final double c_kickerLockFailTime = 1.5;
     public static final double c_kickerWinderHomingVoltage = 4.25;
 }
