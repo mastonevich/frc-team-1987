@@ -357,8 +357,10 @@ public class BreakawayRobot extends IterativeRobot {
             if(!m_LanceExtended.get()) {
                 m_LanceRaiseSolenoidIn.set(true);
                 m_LanceRaiseSolenoidOut.set(false);
+                m_LanceExtenderRelay.set(Relay.Value.kOff);
             }
             else m_LanceExtenderRelay.set(Relay.Value.kForward);
+
         }
 
         //Raise/Extend Lance
@@ -369,6 +371,8 @@ public class BreakawayRobot extends IterativeRobot {
             }
             else m_LanceExtenderRelay.set(Relay.Value.kReverse);
         }
+
+        else m_LanceExtenderRelay.set(Relay.Value.kOff);
         
     }
 
