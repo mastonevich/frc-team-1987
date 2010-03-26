@@ -24,8 +24,12 @@ public final class Constants {
     public static final int c_combineForwardRightButton = 3;
     public static final int c_herderTrajetoryRightButton = 7;
     //Left JS Buttons
-    public static final int c_LanceActivateLeftButton = 3;
-    public static final int c_LanceDeactivateLeftButton = 2;
+    //public static final int c_LanceActivateLeftButton = 3;
+    //public static final int c_LanceDeactivateLeftButton = 2;
+    public static final int c_manualLanceExtendLeftButton = 3;
+    public static final int c_manualLanceRetractLeftButton = 2;
+    public static final int c_manualLanceRaiseLeftButton = 6;
+    public static final int c_manualLanceLowerLeftButton = 7;
     public static final int c_winchWindLeftButton = 1;
     public static final int c_winchUnwindLeftButton1 = 4;
     public static final int c_winchUnwindLeftButton2 = 5;
