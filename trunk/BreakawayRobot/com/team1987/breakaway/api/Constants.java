@@ -102,10 +102,10 @@ public final class Constants {
     public static final double c_kickerReturningSpeed = .2;
     public static final double c_kickerHomingSpeed = .07;
     public static final double c_kickerWindingSpeed = .6;
-    public static final double c_autoDriveSpeed = -.3;
-    public static final double c_autoCloseInSpeed = -.15;
+    public static final double c_autoDriveSpeed = -.7;
+    public static final double c_autoCloseInSpeed = -.5;
     public static final double c_autoTurnSpeed = -.25;
-    public static final double c_autonomousSeekEncoderLimit = 2500; //Needs to be 1200, changed for now
+    public static final double c_autonomousSeekEncoderLimit = 1200; //Needs to be 1200, changed for now
     public static final double c_autonomousZone3FirstBallEncoderCount = 1050;
     public static final double c_autonomousZone3ConsecutiveBallEncoderCount = 1300;
     public static final double c_autonomousZone1or2FirstBallEncoderCount = 500;
