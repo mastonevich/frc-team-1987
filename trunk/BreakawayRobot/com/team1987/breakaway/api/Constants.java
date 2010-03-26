@@ -105,7 +105,7 @@ public final class Constants {
     public static final double c_autoDriveSpeed = -.7;
     public static final double c_autoCloseInSpeed = -.5;
     public static final double c_autoTurnSpeed = -.25;
-    public static final double c_autonomousSeekEncoderLimit = 1200; //Needs to be 1200, changed for now
+    public static final double c_autonomousSeekEncoderLimit = 4000; //Needs to be 1200, changed for now
     public static final double c_autonomousZone3FirstBallEncoderCount = 1050;
     public static final double c_autonomousZone3ConsecutiveBallEncoderCount = 1300;
     public static final double c_autonomousZone1or2FirstBallEncoderCount = 500;

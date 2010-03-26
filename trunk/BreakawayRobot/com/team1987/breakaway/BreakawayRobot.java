@@ -101,6 +101,7 @@ public class BreakawayRobot extends IterativeRobot {
     int consecutiveBallLock;
     int autonomousBallKicks;
     boolean autoSpeedLock;
+    boolean LanceActivated;
     //Victors
     Victor m_kickerWinder;
     Victor m_winch;
@@ -194,6 +195,7 @@ public class BreakawayRobot extends IterativeRobot {
         firstBallLock = false;
         consecutiveBallLock = 0;
         autoSpeedLock = false;
+        LanceActivated = false;
     }
 
     public void robotInit() {
@@ -265,12 +267,19 @@ public class BreakawayRobot extends IterativeRobot {
         autoKickDelayLock = false;
 
         setAutonomousZone();
-        if(autoZone == 2) autoZone = 1;
-        else if(autoZone == 3 || autoZone == 4 || autoZone == 5) autoZone = 2;
-        else if(autoZone == 6 || autoZone == 7 || autoZone == 8) autoZone = 3;
+        if(autoZone == 2) {
+            autoZone = 1;
+        }
+        else if(autoZone == 3 || autoZone == 4 || autoZone == 5) {
+            autoZone = 2;
+        }
+        else if(autoZone == 6 || autoZone == 7 || autoZone == 8) {
+            autoZone = 3;
+        }
         autonomousBallKicks = autoZone;
         m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
         m_autoKickTimer.reset();
+
     }
 
     public void teleopInit() {
@@ -300,28 +309,24 @@ public class BreakawayRobot extends IterativeRobot {
         //for(int i = autoZone; i > 0; i--) {
         //}
         if(autoZone == 3) {
-            if(!firstBallLock && (m_leftDriveEncoder.get()  > Constants.c_autonomousZone3FirstBallEncoderCount
-                    || m_rightDriveEncoder.get()  > Constants.c_autonomousZone3FirstBallEncoderCount)) {
+            if(!firstBallLock && (m_leftDriveEncoder.get() > Constants.c_autonomousZone3FirstBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone3FirstBallEncoderCount)) {
                 m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
                 firstBallLock = true;
                 autoSpeedLock = true;
             }
-            if(consecutiveBallLock < 2 && (m_leftDriveEncoder.get()  > Constants.c_autonomousZone3ConsecutiveBallEncoderCount
-                    || m_rightDriveEncoder.get()  > Constants.c_autonomousZone3ConsecutiveBallEncoderCount)) {
+            if(consecutiveBallLock < 2 && (m_leftDriveEncoder.get() > Constants.c_autonomousZone3ConsecutiveBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone3ConsecutiveBallEncoderCount)) {
                 m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
                 consecutiveBallLock++;
                 autoSpeedLock = true;
             }
         }
         else {
-            if(!firstBallLock && (m_leftDriveEncoder.get()  > Constants.c_autonomousZone1or2FirstBallEncoderCount
-                    || m_rightDriveEncoder.get()  > Constants.c_autonomousZone1or2FirstBallEncoderCount)) {
+            if(!firstBallLock && (m_leftDriveEncoder.get() > Constants.c_autonomousZone1or2FirstBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone1or2FirstBallEncoderCount)) {
                 m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
                 firstBallLock = true;
                 autoSpeedLock = true;
             }
-            if(consecutiveBallLock < 2 && (m_leftDriveEncoder.get()  > Constants.c_autonomousZone1or2ConsecutiveBallEncoderCount
-                    || m_rightDriveEncoder.get()  > Constants.c_autonomousZone1or2ConsecutiveBallEncoderCount)) {
+            if(consecutiveBallLock < 2 && (m_leftDriveEncoder.get() > Constants.c_autonomousZone1or2ConsecutiveBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone1or2ConsecutiveBallEncoderCount)) {
                 m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
                 consecutiveBallLock++;
                 autoSpeedLock = true;
@@ -348,26 +353,19 @@ public class BreakawayRobot extends IterativeRobot {
         if(m_leftDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit || m_rightDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit) {
             m_robotDrive.tankDrive(0, 0);
         }
-
         else if(autonomousBallKicks > 0 && !autoSpeedLock) {
-                if(m_autoSpeedTimer.get() > 2) m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
-        }
-        printMessages();
-
-        /*switch(autoZone) {
-            case 1:
+            if(m_autoSpeedTimer.get() > 2) {
                 m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
-
-                if(!m_ballDetector.get()) {
-                    m_robotDrive.tankDrive(0,0);
-                    autoKick = true;
-                }
-                if(m_leftDriveEncoder.get() > Constants.c_autonomousZone1or2FirstBallEncoderCount && m_leftDriveEncoder.get() > Constants.c_autonomousZone1or2FirstBallEncoderCount) {
-                     m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
-                }
+            }
+        }
+        /*else if(autonomousBallKicks <= 0) {
+        if(m_leftDriveEncoder.get() > 250 || m_rightDriveEncoder.get() > 250) {
+        m_robotDrive.tankDrive(-1*Constants.c_autoDriveSpeed, -1*Constants.c_autoDriveSpeed);
+        }
+        else m_robotDrive.tankDrive(0, 0);
         }*/
 
-
+        printMessages();
 
     }
 
@@ -476,6 +474,7 @@ public class BreakawayRobot extends IterativeRobot {
             if(m_LanceLowered.get()) {
                 m_LanceRaiseSolenoidIn.set(false);
                 m_LanceRaiseSolenoidOut.set(true);
+                LanceActivated = true;
             }
             else {
                 m_LanceExtenderRelay.set(Relay.Value.kReverse);
@@ -633,71 +632,71 @@ public class BreakawayRobot extends IterativeRobot {
             kickerLowTrajectory = !kickerLowTrajectory;
         }
         /*try {
-            kickerLowTrajectory = m_DSEIO.getDigital(Constants.c_kickerLowTrajectoryIOChannel);
+        kickerLowTrajectory = m_DSEIO.getDigital(Constants.c_kickerLowTrajectoryIOChannel);
         } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
-            ex.printStackTrace();
+        ex.printStackTrace();
         }*/
     }
 
     public void setWinderVoltage() {
 
-            switch(kickerStrength) {
-                case 0:
-                    kickerWinderVoltageLimit =
-                            4.65;
-                    break;
-                case Constants.c_kickerSwitchPos1:
-                    kickerWinderVoltageLimit =
-                            2.0;
-                    break;
+        switch(kickerStrength) {
+            case 0:
+                kickerWinderVoltageLimit =
+                        4.65;
+                break;
+            case Constants.c_kickerSwitchPos1:
+                kickerWinderVoltageLimit =
+                        2.0;
+                break;
 
-                case Constants.c_kickerSwitchPos2:
-                    kickerWinderVoltageLimit =
-                            3.5;
-                    break;
+            case Constants.c_kickerSwitchPos2:
+                kickerWinderVoltageLimit =
+                        3.5;
+                break;
 
-                case Constants.c_kickerSwitchPos3:
-                    kickerStrength = 3;
-                    kickerWinderVoltageLimit =
-                            4.0;
-                    break;
+            case Constants.c_kickerSwitchPos3:
+                kickerStrength = 3;
+                kickerWinderVoltageLimit =
+                        4.0;
+                break;
 
-                case Constants.c_kickerSwitchPos4:
-                    kickerStrength = 4;
-                    kickerWinderVoltageLimit =
-                            4.5;
-                    break;
+            case Constants.c_kickerSwitchPos4:
+                kickerStrength = 4;
+                kickerWinderVoltageLimit =
+                        4.5;
+                break;
 
-                case Constants.c_kickerSwitchPos5:
-                    kickerStrength = 5;
-                    kickerWinderVoltageLimit =
-                            4.65;
-                    break;
+            case Constants.c_kickerSwitchPos5:
+                kickerStrength = 5;
+                kickerWinderVoltageLimit =
+                        4.65;
+                break;
 
-                case Constants.c_kickerSwitchPos6:
-                    kickerStrength = 6;
-                    kickerWinderVoltageLimit =
-                            4.75;
-                    break;
+            case Constants.c_kickerSwitchPos6:
+                kickerStrength = 6;
+                kickerWinderVoltageLimit =
+                        4.75;
+                break;
 
-                case Constants.c_kickerSwitchPos7:
-                    kickerStrength = 7;
-                    kickerWinderVoltageLimit =
-                            4.85;
-                    break;
+            case Constants.c_kickerSwitchPos7:
+                kickerStrength = 7;
+                kickerWinderVoltageLimit =
+                        4.85;
+                break;
 
-                case Constants.c_kickerSwitchPos8:
-                    kickerStrength = 8;
-                    kickerWinderVoltageLimit =
-                            4.96;
-                    break;
+            case Constants.c_kickerSwitchPos8:
+                kickerStrength = 8;
+                kickerWinderVoltageLimit =
+                        4.96;
+                break;
 
-            }
+        }
 
     }
 
     public void winchControl() {
-        if(m_leftStick.getRawButton(Constants.c_winchWindLeftButton) /*&& m_LanceLowered.get() && !m_LanceExtended.get()*/) {
+        if(m_leftStick.getRawButton(Constants.c_winchWindLeftButton) && LanceActivated == true/*&& m_LanceLowered.get() && !m_LanceExtended.get()*/) {
             m_winch.set(-1.0);
         }
         else if(m_leftStick.getRawButton(Constants.c_winchUnwindLeftButton)) {
