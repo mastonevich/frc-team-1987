@@ -79,6 +79,7 @@ public class BreakawayRobot extends IterativeRobot {
     Timer m_kickerLockTimer;
     Timer m_autoKickDelayTimer;
     Timer m_autoKickTimer;
+    Timer m_autoDetectorDelayTimer;
     //Variables
     boolean kickerLowTrajectory;
     boolean LanceExtendTimerLock;
@@ -99,9 +100,12 @@ public class BreakawayRobot extends IterativeRobot {
     boolean autoKickDelayLock;
     boolean firstBallLock;
     int consecutiveBallLock;
-    int autonomousBallKicks;
+    int autoBallKicks;
     boolean autoSpeedLock;
     boolean LanceActivated;
+    boolean autoDetectorDelayLock;
+    boolean autoKickDelayResetLock;
+
     //Victors
     Victor m_kickerWinder;
     Victor m_winch;
@@ -179,6 +183,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_kickerLockTimer = new Timer();
         m_autoKickDelayTimer = new Timer();
         m_autoKickTimer = new Timer();
+        m_autoDetectorDelayTimer = new Timer();
 
         //Instantiate tracker dashboard for camera
         trackerDashboard = new TrackerDashboard();
@@ -196,6 +201,7 @@ public class BreakawayRobot extends IterativeRobot {
         consecutiveBallLock = 0;
         autoSpeedLock = false;
         LanceActivated = false;
+        autoDetectorDelayLock = true;
     }
 
     public void robotInit() {
@@ -241,7 +247,8 @@ public class BreakawayRobot extends IterativeRobot {
         m_autoSpeedTimer.start();
         m_kickerLockTimer.start();
         m_autoKickDelayTimer.start();
-        m_autoKickDelayTimer.start();
+        m_autoKickTimer.start();
+        m_autoDetectorDelayTimer.start();
 
     }
 
@@ -266,19 +273,12 @@ public class BreakawayRobot extends IterativeRobot {
 
         autoKickDelayLock = false;
 
-        setAutonomousZone();
-        if(autoZone == 2) {
-            autoZone = 1;
-        }
-        else if(autoZone == 3 || autoZone == 4 || autoZone == 5) {
-            autoZone = 2;
-        }
-        else if(autoZone == 6 || autoZone == 7 || autoZone == 8) {
-            autoZone = 3;
-        }
-        autonomousBallKicks = autoZone;
-        m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
+        setAutoZone();
+        autoBallKicks = autoZone;
+        m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed); //Change to drive speed later
         m_autoKickTimer.reset();
+        m_autoDetectorDelayTimer.reset();
+        autoKickDelayResetLock = false;
 
     }
 
@@ -306,66 +306,27 @@ public class BreakawayRobot extends IterativeRobot {
     public void autonomousPeriodic() {
         // feed the user watchdog
         Watchdog.getInstance().feed();
-        //for(int i = autoZone; i > 0; i--) {
-        //}
-        if(autoZone == 3) {
-            if(!firstBallLock && (m_leftDriveEncoder.get() > Constants.c_autonomousZone3FirstBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone3FirstBallEncoderCount)) {
-                m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
-                firstBallLock = true;
-                autoSpeedLock = true;
-            }
-            if(consecutiveBallLock < 2 && (m_leftDriveEncoder.get() > Constants.c_autonomousZone3ConsecutiveBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone3ConsecutiveBallEncoderCount)) {
-                m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
-                consecutiveBallLock++;
-                autoSpeedLock = true;
-            }
-        }
-        else {
-            if(!firstBallLock && (m_leftDriveEncoder.get() > Constants.c_autonomousZone1or2FirstBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone1or2FirstBallEncoderCount)) {
-                m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
-                firstBallLock = true;
-                autoSpeedLock = true;
-            }
-            if(consecutiveBallLock < 2 && (m_leftDriveEncoder.get() > Constants.c_autonomousZone1or2ConsecutiveBallEncoderCount || m_rightDriveEncoder.get() > Constants.c_autonomousZone1or2ConsecutiveBallEncoderCount)) {
-                m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
-                consecutiveBallLock++;
-                autoSpeedLock = true;
-            }
-        }
-
-        if(m_ballDetector.get() && m_autoKickTimer.get() > 2) {
-            m_combineRelay.set(Relay.Value.kReverse);
-            if(!autoKickDelayLock) {
-                m_robotDrive.tankDrive(0, 0);
-                m_autoKickDelayTimer.reset();
-                autoKickDelayLock = true;
-            }
-            else if(kickerState == Constants.c_kickerReady && m_autoKickDelayTimer.get() > 2) {
-                autoKick = true;
-                m_autoSpeedTimer.reset();
-                autoKickDelayLock = false;
-                m_combineRelay.set(Relay.Value.kOff);
-                autonomousBallKicks--;
-                autoSpeedLock = false;
-                m_autoKickTimer.reset();
-            }
-        }
-        if(m_leftDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit || m_rightDriveEncoder.get() > Constants.c_autonomousSeekEncoderLimit) {
-            m_robotDrive.tankDrive(0, 0);
-        }
-        else if(autonomousBallKicks > 0 && !autoSpeedLock) {
-            if(m_autoSpeedTimer.get() > 2) {
-                m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
-            }
-        }
-        /*else if(autonomousBallKicks <= 0) {
-        if(m_leftDriveEncoder.get() > 250 || m_rightDriveEncoder.get() > 250) {
-        m_robotDrive.tankDrive(-1*Constants.c_autoDriveSpeed, -1*Constants.c_autoDriveSpeed);
-        }
-        else m_robotDrive.tankDrive(0, 0);
-        }*/
-
         printMessages();
+
+        if(m_ballDetector.get()) { //if ball is detected
+            m_combineRelay.set(Relay.Value.kReverse); //turn on combine
+            if(!autoKickDelayResetLock) { //if the delay timer is locked
+                m_autoKickDelayTimer.reset(); //reset the timer used to delay the kicker so that the ball can be centered
+                autoKickDelayResetLock = true; //"lock" the timer to make sure the timer is only reset once
+            }
+            else if(m_autoKickDelayTimer.get() > Constants.c_autoKickSequenceStopDelay) { //if the time since ball was detected is enough to get the ball to the combine
+                m_robotDrive.tankDrive(0, 0); //stop the robot
+            }
+            else if(kickerState == Constants.c_kickerReady && m_autoKickDelayTimer.get() > 2) { //if the time since the ball as detected is enough to center the ball
+                m_combineRelay.set(Relay.Value.kOff); //turn off combine
+                autoKick = true; //kick the ball
+                autoKickDelayResetLock = false; //"unlock" the timer reset
+            }
+        }
+        if(m_leftDriveEncoder.get() > Constants.c_autoECLimit || m_rightDriveEncoder.get() > Constants.c_autoECLimit) { //if either encoder count is larger than the distance to one ball
+            m_robotDrive.tankDrive(0, 0); //stop the robot
+        }
+
 
     }
 
@@ -477,6 +438,7 @@ public class BreakawayRobot extends IterativeRobot {
                 LanceActivated = true;
             }
             else {
+                //if(!LanceTimerLock) m_LanceExtendTimer.reset();
                 m_LanceExtenderRelay.set(Relay.Value.kReverse);
             }
         }
@@ -610,11 +572,21 @@ public class BreakawayRobot extends IterativeRobot {
         m_DSLCD.updateLCD();
     }
 
-    public void setAutonomousZone() {
+    public void setAutoZone() {
         try {
             autoZone = ~m_DSEIO.getDigitals() & Constants.c_kickerSwitchBits;
         } catch(DriverStationEnhancedIO.EnhancedIOException ex) {
             ex.printStackTrace();
+        }
+
+        if(autoZone == 2) {
+            autoZone = 1;
+        }
+        else if(autoZone == 3 || autoZone == 4 || autoZone == 5) {
+            autoZone = 2;
+        }
+        else if(autoZone == 6 || autoZone == 7 || autoZone == 8) {
+            autoZone = 3;
         }
     }
 
@@ -696,11 +668,12 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void winchControl() {
-        if(m_leftStick.getRawButton(Constants.c_winchWindLeftButton) && LanceActivated == true/*&& m_LanceLowered.get() && !m_LanceExtended.get()*/) {
-            m_winch.set(-1.0);
-        }
-        else if(m_leftStick.getRawButton(Constants.c_winchUnwindLeftButton)) {
+        if(m_leftStick.getRawButton(Constants.c_winchUnwindLeftButton1) || m_leftStick.getRawButton(
+                Constants.c_winchUnwindLeftButton2)) {
             m_winch.set(1.0);
+        }
+        else if(m_leftStick.getRawButton(Constants.c_winchWindLeftButton) && LanceActivated == true/*&& m_LanceLowered.get() && !m_LanceExtended.get()*/) {
+            m_winch.set(-1.0);
         }
         else {
             m_winch.set(0);

@@ -26,8 +26,9 @@ public final class Constants {
     //Left JS Buttons
     public static final int c_LanceActivateLeftButton = 3;
     public static final int c_LanceDeactivateLeftButton = 2;
-    public static final int c_winchWindLeftButton = 4;
-    public static final int c_winchUnwindLeftButton = 5;
+    public static final int c_winchWindLeftButton = 1;
+    public static final int c_winchUnwindLeftButton1 = 4;
+    public static final int c_winchUnwindLeftButton2 = 5;
     //Digital Channels
     public static final int c_leftDriveEncoderDigitalChannel1 = 1;
     public static final int c_leftDriveEncoderDigitalChannel2 = 2;
@@ -105,11 +106,12 @@ public final class Constants {
     public static final double c_autoDriveSpeed = -.7;
     public static final double c_autoCloseInSpeed = -.5;
     public static final double c_autoTurnSpeed = -.25;
-    public static final double c_autonomousSeekEncoderLimit = 4000; //Needs to be 1200, changed for now
-    public static final double c_autonomousZone3FirstBallEncoderCount = 1050;
-    public static final double c_autonomousZone3ConsecutiveBallEncoderCount = 1300;
-    public static final double c_autonomousZone1or2FirstBallEncoderCount = 500;
-    public static final double c_autonomousZone1or2ConsecutiveBallEncoderCount = 750;
+    public static final double c_autoKickSequenceStopDelay = 1;
+    public static final double c_autoECLimit = 1300; //Needs to be 4000ish, changed for now
+    public static final double c_autoZone3FirstBallEncoderCount = 1050;
+    public static final double c_autoZone3ConsecBallEncoderCount = 1300;
+    public static final double c_autoZone1or2FirstBallEncoderCount = 500;
+    public static final double c_autoZone1or2ConsecEncoderCount = 750;
     public static final double c_kickerLockFailTime = 1.5;
     public static final double c_kickerWinderHomingVoltage = 4.25;
 }
