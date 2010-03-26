@@ -417,7 +417,27 @@ public class BreakawayRobot extends IterativeRobot {
     }
 
     public void Lance() {
+        
+        //MANUAL LANCE CONTROLS
+        if(m_leftStick.getRawButton(Constants.c_manualLanceRaiseLeftButton)) {
+            m_LanceRaiseSolenoidIn.set(false);
+                m_LanceRaiseSolenoidOut.set(true);
+                LanceActivated = true;
+        }
+        else if(m_leftStick.getRawButton(Constants.c_manualLanceLowerLeftButton)) {
+            m_LanceRaiseSolenoidIn.set(true);
+                m_LanceRaiseSolenoidOut.set(false);
+        }
+        
+        if(m_leftStick.getRawButton(Constants.c_manualLanceRetractLeftButton)) {
+            m_LanceExtenderRelay.set(Relay.Value.kForward);
+        }
+        else if(m_leftStick.getRawButton(Constants.c_manualLanceExtendLeftButton)) {
+            m_LanceExtenderRelay.set(Relay.Value.kReverse);
+        }
+        else m_LanceExtenderRelay.set(Relay.Value.kOff);
 
+        /*
         //Lower/Retract Lance
         if(m_leftStick.getRawButton(Constants.c_LanceDeactivateLeftButton)) {
             if(!m_LanceExtended.get()) {
@@ -446,6 +466,7 @@ public class BreakawayRobot extends IterativeRobot {
             m_LanceExtenderRelay.set(Relay.Value.kOff);
         }
 
+        */
     }
 
     public void kicker() {
