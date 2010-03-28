@@ -71,11 +71,8 @@ public class BreakawayRobot extends IterativeRobot {
     //Timers
     Timer m_LanceExtenderTimer;
     Timer m_kickerTriggerTimer;
-    Timer m_kickerDelayTimer;
-    Timer m_autoSpeedTimer;
     Timer m_kickerLockTimer;
     Timer m_autoKickSequenceTimer;
-    Timer m_autoKickTimer;
     Timer m_autoDetectorDelayTimer;
     //Variables
     boolean kickerLowTrajectory;
@@ -174,11 +171,8 @@ public class BreakawayRobot extends IterativeRobot {
         //Instantiate Timers
         m_LanceExtenderTimer = new Timer();
         m_kickerTriggerTimer = new Timer();
-        m_kickerDelayTimer = new Timer();
-        m_autoSpeedTimer = new Timer();
         m_kickerLockTimer = new Timer();
         m_autoKickSequenceTimer = new Timer();
-        m_autoKickTimer = new Timer();
         m_autoDetectorDelayTimer = new Timer();
 
         //Instantiate tracker dashboard for camera
@@ -239,11 +233,8 @@ public class BreakawayRobot extends IterativeRobot {
 
         m_LanceExtenderTimer.start();
         m_kickerTriggerTimer.start();
-        m_kickerDelayTimer.start();
-        m_autoSpeedTimer.start();
         m_kickerLockTimer.start();
         //m_autoKickSequenceTimer.start();
-        m_autoKickTimer.start();
         m_autoDetectorDelayTimer.start();
 
     }
@@ -260,9 +251,6 @@ public class BreakawayRobot extends IterativeRobot {
         setWinderVoltage();
         kickerState = Constants.c_kickerReturning;
         autoKickSequence = 0;
-
-
-        m_autoSpeedTimer.reset();
 
         m_leftDriveEncoder.reset();
         m_rightDriveEncoder.reset();
@@ -509,7 +497,6 @@ public class BreakawayRobot extends IterativeRobot {
                 strKickerState = Constants.c_strKickerReady;
                 if(m_kickerTriggerTimer.get() >= Constants.c_kickerTriggerDelay) {
                     if((m_rightStick.getRawButton(Constants.c_kickerRightButton)) || autoKick) {
-                        m_kickerDelayTimer.reset();
                         kickerState = Constants.c_kickerKicking;
                     }
                 }
