@@ -94,8 +94,6 @@ public final class Constants {
     public static final String c_strKickerLocking = "Kicker Locking";
     public static final String c_strKickerLocked = "Kicker Locked";
     public static final String c_strKickerWinding = "Kicker Winding";
-    //Autonomous Kick Sequence States
-    public static final int c_
     //Random Constants (delays, etc)
     public static final int c_kickerTriggerDelay = 2;
     public static final double c_kickerDelay = .25;
