@@ -94,6 +94,8 @@ public final class Constants {
     public static final String c_strKickerLocking = "Kicker Locking";
     public static final String c_strKickerLocked = "Kicker Locked";
     public static final String c_strKickerWinding = "Kicker Winding";
+    //Autonomous Kick Sequence States
+    public static final int c_
     //Random Constants (delays, etc)
     public static final int c_kickerTriggerDelay = 2;
     public static final double c_kickerDelay = .25;
@@ -110,13 +112,14 @@ public final class Constants {
     public static final double c_autoDriveSpeed = -.7;
     public static final double c_autoCloseInSpeed = -.5;
     public static final double c_autoTurnSpeed = -.25;
-    public static final double c_autoKickSequenceStopDelay = 1;
-    public static final double c_autoECLimit = 4000; //Needs to be 4000ish, changed for now
+    public static final double c_autoKickSequenceStopDelay = .5;
+    public static final double c_autoECLimit = 3500;
     public static final double c_autoZone3FirstBallEncoderCount = 1050;
     public static final double c_autoZone3ConsecBallEncoderCount = 1300;
     public static final double c_autoZone1or2FirstBallEncoderCount = 500;
     public static final double c_autoZone1or2ConsecEncoderCount = 750;
     public static final double c_kickerLockFailTime = 1.5;
     public static final double c_kickerWinderHomingVoltage = 4.25;
+    public static final double c_driveStraightDeadband = 50;
 }
 
