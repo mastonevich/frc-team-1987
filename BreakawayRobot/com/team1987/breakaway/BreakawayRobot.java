@@ -106,6 +106,8 @@ public class BreakawayRobot extends IterativeRobot {
     boolean autoDetectorDelayLock;
     boolean autoKickDelayResetLock;
     int autoKickSequence;
+    double leftSpeed;
+    double rightSpeed;
     //Victors
     Victor m_kickerWinder;
     Victor m_winch;
@@ -202,6 +204,8 @@ public class BreakawayRobot extends IterativeRobot {
         autoSpeedLock = false;
         LanceActivated = false;
         autoDetectorDelayLock = true;
+        leftSpeed = Constants.c_autoCloseInSpeed;
+        rightSpeed = Constants.c_autoCloseInSpeed;
     }
 
     public void robotInit() {
@@ -247,7 +251,7 @@ public class BreakawayRobot extends IterativeRobot {
         m_kickerDelayTimer.start();
         m_autoSpeedTimer.start();
         m_kickerLockTimer.start();
-        m_autoKickSequenceTimer.start();
+        //m_autoKickSequenceTimer.start();
         m_autoKickTimer.start();
         m_autoDetectorDelayTimer.start();
 
@@ -283,7 +287,7 @@ public class BreakawayRobot extends IterativeRobot {
         //m_autoSpeedTimer.reset();
         m_autoKickSequenceTimer.reset();
         System.out.println("In autonomous init");
-        
+
 
     }
 
@@ -312,48 +316,61 @@ public class BreakawayRobot extends IterativeRobot {
         // feed the user watchdog
         Watchdog.getInstance().feed();
         printMessages();
-        System.out.println("In autonomous periodic");
+        driveStraight();
+        //System.out.println("In autonomous periodic");
+
+
 
         switch(autoKickSequence) {
             case 0:
                 m_combineRelay.set(Relay.Value.kReverse);
-                m_robotDrive.tankDrive(Constants.c_autoDriveSpeed, Constants.c_autoDriveSpeed);
+                m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed/* + .015*/, Constants.c_autoCloseInSpeed);
                 ++autoKickSequence;
-
+                System.out.println("case=" + autoKickSequence + "ball sensor" + m_ballDetector.get());
+                m_autoKickSequenceTimer.start();
+                break;
             case 1:
-                if(m_ballDetector.get()) {
-                    m_combineRelay.set(Relay.Value.kReverse);
+                if(m_ballDetector.get() && m_autoDetectorDelayTimer.get() > 2.5) {
                     m_autoKickSequenceTimer.reset();
                     ++autoKickSequence;
-                    break;
+                    System.out.println("case=" + autoKickSequence + "ball sensor" + m_ballDetector.get());
                 }
+                break;
             case 2:
                 if(m_autoKickSequenceTimer.get() > Constants.c_autoKickSequenceStopDelay) {
                     m_robotDrive.tankDrive(0, 0);
                     ++autoKickSequence;
-                    break;
+                    System.out.println("case=" + autoKickSequence + "ball sensor" + m_ballDetector.get());
                 }
+                break;
             case 3:
                 if(m_autoKickSequenceTimer.get() > 2) {
-                    m_combineRelay.set(Relay.Value.kOff);
+                    m_autoDetectorDelayTimer.reset();
                     autoKick = true;
                     ++autoKickSequence;
-                    break;
+                    System.out.println("case=" + autoKickSequence + "ball sensor" + m_ballDetector.get());
+                    //m_autoDetectorDelay.reset();
+
                 }
+                break;
             case 4:
-                if(m_autoKickSequenceTimer.get() > 4) {
-                    m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed, Constants.c_autoCloseInSpeed);
+                if(m_autoKickSequenceTimer.get() > 2) {
+                    m_robotDrive.tankDrive(Constants.c_autoCloseInSpeed/* + .015*/, Constants.c_autoCloseInSpeed);
                     autoKickSequence = 1;
-                    break;
+                    System.out.println("case=" + autoKickSequence + "ball sensor" + m_ballDetector.get());
                 }
+                break;
             case 5:
                 m_robotDrive.tankDrive(0, 0);
+                System.out.println("case=" + autoKickSequence + "ball sensor" + m_ballDetector.get());
                 break;
         }
 
         if(m_leftDriveEncoder.get() > Constants.c_autoECLimit || m_rightDriveEncoder.get() > Constants.c_autoECLimit) {
             autoKickSequence = 5;
         }
+
+        //System.out.println("ball sensor = " + m_ballDetector.get());
 
     }
 
@@ -731,6 +748,19 @@ public class BreakawayRobot extends IterativeRobot {
         }
         else {
             m_winch.set(0);
+        }
+    }
+
+    void driveStraight() {
+        if(m_leftDriveEncoder.get() > Constants.c_driveStraightDeadband) {
+            if(m_leftDriveEncoder.get() - Constants.c_driveStraightDeadband > m_rightDriveEncoder.get()) {
+                leftSpeed = Constants.c_autoCloseInSpeed * 0.8;
+            }
+        }
+        if(m_rightDriveEncoder.get() > Constants.c_driveStraightDeadband) {
+            if(m_rightDriveEncoder.get() - Constants.c_driveStraightDeadband > m_leftDriveEncoder.get()) {
+                rightSpeed = Constants.c_autoCloseInSpeed * 0.8;
+            }
         }
     }
 
