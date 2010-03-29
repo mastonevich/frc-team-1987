@@ -111,7 +111,7 @@ public final class Constants {
     public static final double c_autoCloseInSpeed = -.5;
     public static final double c_autoTurnSpeed = -.25;
     public static final double c_autoKickSequenceStopDelay = .5;
-    public static final double c_autoECLimit = 3500;
+    public static final double c_autoECLimit = 3500; //Less than measured encoder count, but worked in autonomous(?)
     public static final double c_autoZone3FirstBallEncoderCount = 1050;
     public static final double c_autoZone3ConsecBallEncoderCount = 1300;
     public static final double c_autoZone1or2FirstBallEncoderCount = 500;
@@ -120,4 +120,3 @@ public final class Constants {
     public static final double c_kickerWinderHomingVoltage = 4.25;
     public static final double c_driveStraightDeadband = 50;
 }
-
