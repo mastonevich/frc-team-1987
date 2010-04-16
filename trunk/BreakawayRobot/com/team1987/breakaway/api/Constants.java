@@ -24,8 +24,8 @@ public final class Constants {
     public static final int c_combineForwardRightButton = 3;
     public static final int c_herderTrajetoryRightButton = 7;
     //Left JS Buttons
-    //public static final int c_LanceActivateLeftButton = 3;
-    //public static final int c_LanceDeactivateLeftButton = 2;
+    public static final int c_LanceActivateLeftButton = 3;
+    public static final int c_LanceDeactivateLeftButton = 2;
     public static final int c_manualLanceExtendLeftButton = 3;
     public static final int c_manualLanceRetractLeftButton = 2;
     public static final int c_manualLanceRaiseLeftButton = 6;
@@ -84,9 +84,10 @@ public final class Constants {
     public static final int c_kickerReady = 0;
     public static final int c_kickerKicking = 1;
     public static final int c_kickerReturning = 2;
-    public static final int c_kickerLocking = 3;
-    public static final int c_kickerLocked = 4;
-    public static final int c_kickerWinding = 5;
+    public static final int c_kickerLockWaiting = 3;
+    public static final int c_kickerLocking = 4;
+    public static final int c_kickerLocked = 5;
+    public static final int c_kickerWinding = 6;
     //Kicker Print Messages
     public static final String c_strKickerReady = "Kicker Ready";
     public static final String c_strKickerKicking = "Kicker Kicking";
