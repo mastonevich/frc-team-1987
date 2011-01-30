@@ -63,7 +63,7 @@ public:
 					}
 					else if (TrackL->Get() && TrackR->Get()) { // if the left and right sensors read a value then strafes 
 						speed = .7 * TRACKINGSPEED;
-						turn = 1.2 * TRACKINGSPEED;
+						turn = 1.2 * -TRACKINGSPEED;
 						//printf("TrackL and TrackR\n");
 					}
 					else if (TrackL->Get()) { // if only the left sensor reads a value then it turns left
