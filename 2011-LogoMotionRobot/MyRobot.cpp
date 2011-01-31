@@ -19,6 +19,7 @@ private:
 	DigitalInput *TrackL;
 	DigitalInput *TrackC;
 	DigitalInput *TrackR;
+	DriverStation *ds;
 	
 public:
 	RobotDemo(void):
@@ -34,7 +35,7 @@ public:
 		TrackL = new DigitalInput(4,1);
 	    TrackC = new DigitalInput(4,2);
 		TrackR = new DigitalInput(4,3);
-		
+		ds = DriverStation::GetInstance();
 	}
 
 	/**
@@ -45,6 +46,7 @@ public:
 		float speed = 0;
 		float turn = 0;
 		float slide = 0;
+		bool fork = 0;
 		int autoStep = 1;
 		
 		while (IsAutonomous() && IsEnabled()) {
@@ -61,7 +63,12 @@ public:
 						turn = 0; 
 						//printf ("TrackC\n");
 					}
-					else if (TrackL->Get() && TrackR->Get()) { // if the left and right sensors read a value then strafes 
+					else if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then strafes 
+						speed = .7 * TRACKINGSPEED;
+						turn = 1.2 * TRACKINGSPEED;
+						//printf("TrackL and TrackR\n");
+					}
+					else if (TrackL->Get() && TrackR->Get() && fork == 1) { // if the left and right sensors read a value then strafes 
 						speed = .7 * TRACKINGSPEED;
 						turn = 1.2 * -TRACKINGSPEED;
 						//printf("TrackL and TrackR\n");
@@ -77,7 +84,7 @@ public:
 						//printf ("TrackR\n");
 					}
 					else if (TrackL->Get() && TrackR->Get() && TrackC->Get()) {
-						speed = 0;
+						speed = -.17;
 						turn = 0;
 						slide = 0;
 					}
@@ -94,12 +101,11 @@ public:
 					FL->Set(-speed-turn-slide);
 					BL->Set(-speed-turn+slide);
 					
-					if (stick1.GetRawButton(4)) {
-					printf("FR = %f FL = %f BR = %f BL %f", FR->Get(), FL->Get(), BR->Get(), BL->Get());
+					if (ds->GetDigitalIn(1)) {
+						printf ("Digital In 1");
+						fork = 1;
 					}
-					else {
-					printf("Speed = %f Slide = %f Turn = %f\n", speed, slide, turn);
-					}
+
 					
 					/*if (distance == reached){
 						speed = 0;
