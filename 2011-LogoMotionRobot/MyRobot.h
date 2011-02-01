@@ -2,6 +2,7 @@
 #define MYROBOT_H_
 
 #define TRACKINGSPEED  .16;
+#define TRACKINGTURN .19;
 
 class MyRobot;
 
