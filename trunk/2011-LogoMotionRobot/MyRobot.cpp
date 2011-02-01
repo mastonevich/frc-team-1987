@@ -56,42 +56,44 @@ public:
 					autoStep++;
 					break;
 				case 2: 
-					// locate line/ drive
+					// locate line and drive
 					
-					if (TrackC->Get()) { // if centeral tracker reads a value the speed is at .2
+					if (TrackC->Get()) { // if central tracker reads a value the speed is at .2
 						speed = TRACKINGSPEED;
 						turn = 0; 
 						//printf ("TrackC\n");
 					}
 					else if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then strafes 
 						speed = .7 * TRACKINGSPEED;
-						turn = 1.2 * TRACKINGSPEED;
+						turn = TRACKINGTURN;
 						//printf("TrackL and TrackR\n");
 					}
 					else if (TrackL->Get() && TrackR->Get() && fork == 1) { // if the left and right sensors read a value then strafes 
 						speed = .7 * TRACKINGSPEED;
-						turn = 1.2 * -TRACKINGSPEED;
+						turn = -TRACKINGTURN;
 						//printf("TrackL and TrackR\n");
 					}
 					else if (TrackL->Get()) { // if only the left sensor reads a value then it turns left
 						speed = .7 * TRACKINGSPEED;
-						turn = 1.2 * -TRACKINGSPEED;
+						turn = -TRACKINGTURN;
 						//printf ("TrackL\n");
 					}
 					else if (TrackR->Get()) { // if only the right sensor reads a value the it turns right 
 						speed = .7 * TRACKINGSPEED;
-						turn = 1.2 * TRACKINGSPEED;
+						turn = TRACKINGTURN;
 						//printf ("TrackR\n");
 					}
 					else if (TrackL->Get() && TrackR->Get() && TrackC->Get()) {
-						speed = -.17;
+						speed = -.18;
 						turn = 0;
 						slide = 0;
+						//printf ("Track All\n")
 					}
 					else {
 						speed = 0;
 						turn = 0;
 						slide = 0;
+						//printf(No Track\n"
 					}
 					
 					
@@ -102,8 +104,12 @@ public:
 					BL->Set(-speed-turn+slide);
 					
 					if (ds->GetDigitalIn(1)) {
-						printf ("Digital In 1");
+						printf ("Will go right.");
 						fork = 1;
+					}
+					else {
+						fork = 0;
+						printf ("Will go left.");
 					}
 
 					
