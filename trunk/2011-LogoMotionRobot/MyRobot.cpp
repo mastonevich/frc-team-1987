@@ -12,6 +12,7 @@ private:
 	
 	RobotDrive myRobot; // robot drive system
 	Joystick stick1; // only joystick
+	Joystick stick2;
 	Victor *FR;
 	Victor *FL;
 	Victor *BR;
@@ -19,12 +20,30 @@ private:
 	DigitalInput *TrackL;
 	DigitalInput *TrackC;
 	DigitalInput *TrackR;
+	/*
+	DigitalInput *ElevatorMax;
+	DigitalInput *ElevatorMin;
+	DigitalInput *ElevatorHeight;
+	DigitalInput *ClawOpen;
+	DigitalInput *ClawShut;
+	*/
 	DriverStation *ds;
+	Jaguar *EL;
+	Jaguar *ER;
+	/*
+	Solenoid *Shoulder;
+	Solenoid *Wrist;
+	Solenoid *Claw;
+	Solenoid *MiniL;
+	Solenoid *MiniR;
+	Compressor *Air;
+	*/
 	
 public:
 	RobotDemo(void):
 		myRobot(1, 3, 2, 4),	// these must be initialized in the same order
-		stick1(1)		// as they are declared above.
+		stick1(1),				// as they are declared above.
+		stick2(2)
 	{
 		
 		FL = new Victor(1);
@@ -35,9 +54,28 @@ public:
 		TrackL = new DigitalInput(4,1);
 	    TrackC = new DigitalInput(4,2);
 		TrackR = new DigitalInput(4,3);
+		/*
+		ElevatorMax = new DigitalInput(?,?);
+		ElevatorMin = new DigitalInput(?,?);
+		ElevatorHeight = new DigitalInput(?,?);
+		ClawOpen = new DigitalInput(?,?);
+		ClawShut = new DigitalInput(?,?);
+		*/
 		ds = DriverStation::GetInstance();
+		EL = new Jaguar(5);
+		ER = new Jaguar(6);
+		/*
+		Shoulder = new Solenoid(?);
+		Wrist = new Solenoid(?);
+		Claw = new Solenoid(?);
+		MiniL = new Solenoid(?);
+		MiniR = new Solenoid(?);
+		Air = new Compressor(?);
+		*/
 	}
-
+		
+		
+	
 	/**
 	 * Drive left & right motors for 2 seconds then stop
 	 */
@@ -50,6 +88,9 @@ public:
 		int autoStep = 1;
 		
 		while (IsAutonomous() && IsEnabled()) {
+			
+			ds->GetBatteryVoltage();
+			
 			switch(autoStep) {
 				case 1:
 					// transformation 
@@ -150,6 +191,8 @@ public:
 		while (IsOperatorControl())
 		{
 			
+			ds->GetBatteryVoltage();
+			
 			speed = Deadband(-stick1.GetY(), -0.01, 0.01);
 			turn = Deadband(stick1.GetZ(), -0.01, 0.01);
 			slide = Deadband(stick1.GetX(), -0.01, 0.01);
@@ -157,11 +200,52 @@ public:
 			if(stick1.GetRawButton(7)) slide=-.2;
 			else if(stick1.GetRawButton(8)) slide=.2;
 			
+			if(stick2.GetRawButton(10)) 
+			{
+				EL->Set(.2);
+				ER->Set(-.2);
+				 
+			}
+			else if(stick2.GetRawButton(11))
+			{
+				EL->Set(-.2);
+				ER->Set(.2);
+			}
+			
 			FR->Set(speed-turn-slide);
 			BR->Set(speed-turn+slide);
 			FL->Set(-speed-turn-slide);
 			BL->Set(-speed-turn+slide);
 			
+			/*
+			if(stick2.GetRawButton(6))
+			{
+				Shoulder->Set(1);
+			}
+			else if(stick2.GetRawButton(7))
+			{
+				Shoulder->Set(0);
+			}
+			
+			if(stick2.GetRawButton(3))
+			{
+				Wrist->Set(1);
+			}
+			else if(stick2.GetRawButton(2))
+			{
+				Wrist->Set(0);
+			{
+			
+			if(stick2.GetRawButton(8))
+			{
+				Claw->Set(1);
+			}
+			else if(stick2.GetRawButton(9))
+			{
+				Claw->Set(0);
+			{
+			
+			*/
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
 			
