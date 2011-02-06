@@ -99,34 +99,35 @@ public:
 				case 2: 
 					// locate line and drive
 					
-					if (TrackL->Get() && TrackR->Get() && TrackC->Get()) {// if all read then reverse for a sec to stop moving
-						speed = -.18;
+					/*if (TrackL->Get() && TrackR->Get() && TrackC->Get()) {// if all read then reverse for a sec to stop moving
+						speed = .18;
 						turn = 0;
 						slide = 0;
 						//printf ("Track All\n");
 					}
-					else if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then strafes 
-						speed = .7 * TRACKINGSPEED;
+					*/
+					if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then strafes 
+						speed = -.7 * TRACKINGSPEED;
 						turn = TRACKINGTURN;
 						//printf("TrackL and TrackR\n");
 					}
 					else if (TrackL->Get() && TrackR->Get() && fork == 1) { // if the left and right sensors read a value then strafes 
-						speed = .7 * TRACKINGSPEED;
+						speed = -.7 * TRACKINGSPEED;
 						turn = -TRACKINGTURN;
 						//printf("TrackL and TrackR\n");
 					}
 					else if (TrackC->Get()) { // if central tracker reads a value the speed is at .2
-						speed = TRACKINGSPEED;
+						speed = -TRACKINGSPEED;
 						turn = 0; 
 						//printf ("TrackC\n");
 					}
 					else if (TrackR->Get()) { // if only the right sensor reads a value the it turns right 
-						speed = .7 * TRACKINGSPEED;
+						speed = -.7 * TRACKINGSPEED;
 						turn = TRACKINGTURN;
 						//printf ("TrackR\n");
 					}
 					else if (TrackL->Get()) { // if only the left sensor reads a value then it turns left
-						speed = .7 * TRACKINGSPEED;
+						speed = -.7 * TRACKINGSPEED;
 						turn = -TRACKINGTURN;
 						//printf ("TrackL\n");
 					}
@@ -212,10 +213,10 @@ public:
 				ER->Set(.2);
 			}
 			
-			FR->Set(speed-turn-slide);
-			BR->Set(speed-turn+slide);
-			FL->Set(-speed-turn-slide);
-			BL->Set(-speed-turn+slide);
+			FR->Set(-speed-turn-slide);
+			BR->Set(-speed-turn+slide);
+			FL->Set(speed-turn-slide);
+			BL->Set(speed-turn+slide);
 			
 			/*
 			if(stick2.GetRawButton(6))
