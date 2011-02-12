@@ -9,7 +9,6 @@
 class RobotDemo : public SimpleRobot
 {
 private:
-	
 	RobotDrive myRobot; // robot drive system
 	Joystick stick1; // only joystick
 	Joystick stick2;
@@ -20,24 +19,33 @@ private:
 	DigitalInput *TrackL;
 	DigitalInput *TrackC;
 	DigitalInput *TrackR;
-	/*
 	DigitalInput *ElevatorMax;
 	DigitalInput *ElevatorMin;
 	DigitalInput *ElevatorHeight;
 	DigitalInput *ClawOpen;
 	DigitalInput *ClawShut;
-	*/
 	DriverStation *ds;
 	Jaguar *EL;
 	Jaguar *ER;
-	/*
+	AnalogChannel *ElevatorPOT;
+	AnalogChannel *analog5VIn;
+	PIDController *ElevatorPID;
 	Solenoid *Shoulder;
 	Solenoid *Wrist;
 	Solenoid *Claw;
 	Solenoid *MiniL;
 	Solenoid *MiniR;
 	Compressor *Air;
-	*/
+	bool WristToggle;
+	bool ClawToggle;
+	bool ShoulderToggle;
+	bool MiniToggle;
+	float Lvl1;
+	float Lvl2;
+	float Lvl3;
+	float Lvl4;
+	float Lvl5;
+	float Lvl6;
 	
 public:
 	RobotDemo(void):
@@ -45,7 +53,16 @@ public:
 		stick1(1),				// as they are declared above.
 		stick2(2)
 	{
-		
+		WristToggle = false;
+		ClawToggle = false;
+		ShoulderToggle = false;
+		MiniToggle = false;
+		Lvl1 = 100;
+		Lvl2 = 200;
+		Lvl3 = 300;
+		Lvl4 = 400;
+		Lvl5 = 500;
+		Lvl6 = 600;
 		FL = new Victor(1);
 		FR = new Victor(2);
 		BL = new Victor(3);
@@ -54,24 +71,36 @@ public:
 		TrackL = new DigitalInput(4,1);
 	    TrackC = new DigitalInput(4,2);
 		TrackR = new DigitalInput(4,3);
-		/*
-		ElevatorMax = new DigitalInput(?,?);
-		ElevatorMin = new DigitalInput(?,?);
-		ElevatorHeight = new DigitalInput(?,?);
-		ClawOpen = new DigitalInput(?,?);
-		ClawShut = new DigitalInput(?,?);
-		*/
+		// ElevatorMax = new DigitalInput(?,?);
+		// ElevatorMin = new DigitalInput(?,?);
+		// ClawOpen = new DigitalInput(?,?);
+		// ClawShut = new DigitalInput(?,?);
 		ds = DriverStation::GetInstance();
 		EL = new Jaguar(5);
 		ER = new Jaguar(6);
-		/*
-		Shoulder = new Solenoid(?);
-		Wrist = new Solenoid(?);
-		Claw = new Solenoid(?);
-		MiniL = new Solenoid(?);
-		MiniR = new Solenoid(?);
-		Air = new Compressor(?);
-		*/
+		ElevatorPOT = new AnalogChannel(1, 1);
+		analog5VIn = new AnalogChannel(1, 7);
+		analog5VIn->SetAverageBits(3);
+		
+		ElevatorPID = new PIDController(0, 0, 0, ElevatorPOT, EL, 0.025);
+		ElevatorPID->SetInputRange(0, 1);
+		ElevatorPID->SetOutputRange(-1, 1);
+		
+		// if (maximumPot5V < 800) {	// AIN7 jumper was accidentally removed set default value to 986
+		// maximumPot5V = 986;
+		// }
+		
+		// if (stick1.GetRawButton(12)){tensionEnable();tensionPID->SetSetpoint(tHome);}
+		// 0.025,0.0001   -0.2,-0.001
+		// maximumPot5V = analog5VIn->GetAverageValue();
+		// lg->Log(Logger::kINFO,"+5V ADC %1.0f at %1.2f Volts",maximumPot5V,analog5VIn->GetAverageVoltage());
+
+		Shoulder = new Solenoid(8, 1);
+		Wrist = new Solenoid(8, 2);
+		Claw = new Solenoid(8, 3);
+		MiniL = new Solenoid(8, 4);
+		MiniR = new Solenoid(8, 5);
+		// Air = new Compressor(?,?);
 	}
 		
 		
@@ -198,55 +227,121 @@ public:
 			turn = Deadband(stick1.GetZ(), -0.01, 0.01);
 			slide = Deadband(stick1.GetX(), -0.01, 0.01);
 			
-			if(stick1.GetRawButton(7)) slide=-.2;
-			else if(stick1.GetRawButton(8)) slide=.2;
+			if(stick1.GetRawButton(5)) slide=-.2;
+			else if(stick1.GetRawButton(6)) slide=.2;
 			
-			if(stick2.GetRawButton(10)) 
+			if(stick2.GetRawButton(6)) 
 			{
-				EL->Set(.2);
-				ER->Set(-.2);
-				 
-			}
-			else if(stick2.GetRawButton(11))
-			{
-				EL->Set(-.2);
-				ER->Set(.2);
-			}
-			
-			FR->Set(-speed-turn-slide);
-			BR->Set(-speed-turn+slide);
-			FL->Set(speed-turn-slide);
-			BL->Set(speed-turn+slide);
-			
-			/*
-			if(stick2.GetRawButton(6))
-			{
-				Shoulder->Set(1);
+				ElevatorPID->Disable();
+				ElevatorControl(.2); 
 			}
 			else if(stick2.GetRawButton(7))
 			{
-				Shoulder->Set(0);
+				ElevatorPID->Disable();
+				ElevatorControl(-.2);
 			}
 			
-			if(stick2.GetRawButton(3))
+			FR->Set(-speed-turn+slide);
+			BR->Set(-speed-turn-slide);
+			FL->Set(speed-turn+slide);
+			BL->Set(speed-turn-slide);
+			
+			if(stick1.GetRawButton(7))
+			{
+				Shoulder->Set(1);
+				Wrist->Set(1);
+				Claw->Set(1);
+				ElevatorPID->Enable();	
+				ElevatorPID->SetSetpoint(Lvl1);
+				ER->Set(-EL->Get());	
+			}
+			if(stick1.GetRawButton(8))
+			{
+				Shoulder->Set(1);
+				Wrist->Set(1);
+				Claw->Set(1);
+				ElevatorPID->Enable();	
+				ElevatorPID->SetSetpoint(Lvl2);
+				ER->Set(-EL->Get());	
+			}
+			if(stick1.GetRawButton(9))
+			{
+				Shoulder->Set(1);
+				Wrist->Set(1);
+				Claw->Set(1);
+				ElevatorPID->Enable();	
+				ElevatorPID->SetSetpoint(Lvl3);
+				ER->Set(-EL->Get());	
+			}	
+			if(stick1.GetRawButton(10))
+			{
+				Shoulder->Set(1);
+				Wrist->Set(1);
+				Claw->Set(1);
+				ElevatorPID->Enable();	
+				ElevatorPID->SetSetpoint(Lvl4);
+				ER->Set(-EL->Get());	
+			}
+			if(stick1.GetRawButton(11))
+			{
+				Shoulder->Set(1);
+				Wrist->Set(1);
+				Claw->Set(1);
+				ElevatorPID->Enable();	
+				ElevatorPID->SetSetpoint(Lvl5);
+				ER->Set(-EL->Get());	
+			}
+			if(stick1.GetRawButton(12))
+			{
+				Shoulder->Set(1);
+				Wrist->Set(1);
+				Claw->Set(1);
+				ElevatorPID->Enable();	
+				ElevatorPID->SetSetpoint(Lvl6);
+				ER->Set(-EL->Get());	
+			}		
+			
+			//Manual Control
+			
+			if(stick2.GetRawButton(3) && WristToggle == false)
 			{
 				Wrist->Set(1);
+				WristToggle = true;
 			}
-			else if(stick2.GetRawButton(2))
+			else if(stick2.GetRawButton(3) && WristToggle == true)
 			{
 				Wrist->Set(0);
-			{
-			
-			if(stick2.GetRawButton(8))
+				WristToggle = false;
+			}
+			if(stick2.GetRawButton(1) && ClawToggle == false)
 			{
 				Claw->Set(1);
+				ClawToggle = true;
 			}
-			else if(stick2.GetRawButton(9))
+			else if(stick2.GetRawButton(1) && ClawToggle == true)
 			{
 				Claw->Set(0);
+				ClawToggle = false;
+			}
+			if(stick2.GetRawButton(2) && ShoulderToggle == false)
 			{
-			
-			*/
+				Shoulder->Set(1);
+				ShoulderToggle = true;
+			}
+			else if(stick2.GetRawButton(2) && ShoulderToggle == true)
+			{
+				Shoulder->Set(0);
+				ShoulderToggle = false;
+			}
+			if(stick2.GetRawButton(10))
+			{
+				MiniL->Set(0);
+				MiniToggle = true;
+			}
+			if(stick2.GetRawButton(11) && MiniToggle == true)
+			{
+				MiniR->Set(1);
+			}
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
 			
@@ -265,7 +360,13 @@ public:
 	float Deadband(float val, float min, float max) {
 		if(val>min && val<max) return 0;
 		return val;
-			
+		
+	}
+	
+	float ElevatorControl(float val) {
+		EL->Set(val);
+		ER->Set(-val);	
+		return 0;
 	}
 	
 };
