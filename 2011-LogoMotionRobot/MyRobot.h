@@ -3,6 +3,9 @@
 
 #define TRACKINGSPEED  .165;
 #define TRACKINGTURN .19;
+#define maximumPot5V ;
+#define ElevatorSpeed ;
+
 
 class MyRobot;
 

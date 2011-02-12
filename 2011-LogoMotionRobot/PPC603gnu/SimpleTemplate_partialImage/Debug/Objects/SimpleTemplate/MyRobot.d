@@ -130,6 +130,7 @@ SimpleTemplate_partialImage/Debug/Objects/SimpleTemplate/MyRobot.o:  \
   c:/windriver/gnu/3.4.4-vxworks-6.3/x86-win32/lib/gcc/../../../x86-win32/include/c++/3.4.4/string \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/PIDSource.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/ADXL345_I2C.h \
+  C:/WindRiver/vxworks-6.3/target/h/WPILib/ADXL345_SPI.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/AnalogModule.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Module.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/AnalogTrigger.h \
@@ -156,6 +157,9 @@ SimpleTemplate_partialImage/Debug/Objects/SimpleTemplate/MyRobot.o:  \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/DigitalInput.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/DigitalModule.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/DigitalOutput.h \
+  C:/WindRiver/vxworks-6.3/target/h/WPILib/DoubleSolenoid.h \
+  C:/WindRiver/vxworks-6.3/target/h/WPILib/SolenoidBase.h \
+  C:/WindRiver/vxworks-6.3/target/h/WPILib/Resource.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/DriverStation.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/DriverStationEnhancedIO.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/DriverStationLCD.h \
@@ -175,7 +179,6 @@ SimpleTemplate_partialImage/Debug/Objects/SimpleTemplate/MyRobot.o:  \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Joystick.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Notifier.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/PIDController.h \
-  C:/WindRiver/vxworks-6.3/target/h/WPILib/Resource.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/RobotDrive.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/SerialPort.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Servo.h \
@@ -185,6 +188,7 @@ SimpleTemplate_partialImage/Debug/Objects/SimpleTemplate/MyRobot.o:  \
   c:/windriver/gnu/3.4.4-vxworks-6.3/x86-win32/lib/gcc/../../../x86-win32/include/c++/3.4.4/xtree \
   c:/windriver/gnu/3.4.4-vxworks-6.3/x86-win32/lib/gcc/../../../x86-win32/include/c++/3.4.4/functional \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Solenoid.h \
+  C:/WindRiver/vxworks-6.3/target/h/WPILib/SPI.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Synchronized.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Ultrasonic.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Utility.h \
@@ -529,6 +533,8 @@ C:/WindRiver/vxworks-6.3/target/h/WPILib/PIDSource.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/ADXL345_I2C.h:
 
+C:/WindRiver/vxworks-6.3/target/h/WPILib/ADXL345_SPI.h:
+
 C:/WindRiver/vxworks-6.3/target/h/WPILib/AnalogModule.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/Module.h:
@@ -581,6 +587,12 @@ C:/WindRiver/vxworks-6.3/target/h/WPILib/DigitalModule.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/DigitalOutput.h:
 
+C:/WindRiver/vxworks-6.3/target/h/WPILib/DoubleSolenoid.h:
+
+C:/WindRiver/vxworks-6.3/target/h/WPILib/SolenoidBase.h:
+
+C:/WindRiver/vxworks-6.3/target/h/WPILib/Resource.h:
+
 C:/WindRiver/vxworks-6.3/target/h/WPILib/DriverStation.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/DriverStationEnhancedIO.h:
@@ -619,8 +631,6 @@ C:/WindRiver/vxworks-6.3/target/h/WPILib/Notifier.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/PIDController.h:
 
-C:/WindRiver/vxworks-6.3/target/h/WPILib/Resource.h:
-
 C:/WindRiver/vxworks-6.3/target/h/WPILib/RobotDrive.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/SerialPort.h:
@@ -638,6 +648,8 @@ c:/windriver/gnu/3.4.4-vxworks-6.3/x86-win32/lib/gcc/../../../x86-win32/include/
 c:/windriver/gnu/3.4.4-vxworks-6.3/x86-win32/lib/gcc/../../../x86-win32/include/c++/3.4.4/functional:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/Solenoid.h:
+
+C:/WindRiver/vxworks-6.3/target/h/WPILib/SPI.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/Synchronized.h:
 
