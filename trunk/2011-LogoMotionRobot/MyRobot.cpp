@@ -25,27 +25,21 @@ private:
 	DigitalInput *ClawOpen;
 	DigitalInput *ClawShut;
 	DriverStation *ds;
-	Jaguar *EL;
-	Jaguar *ER;
+	Jaguar *EM;
+	// Jaguar *ER;
 	AnalogChannel *ElevatorPOT;
 	AnalogChannel *analog5VIn;
 	PIDController *ElevatorPID;
 	Solenoid *Shoulder;
 	Solenoid *Wrist;
 	Solenoid *Claw;
-	Solenoid *MiniL;
-	Solenoid *MiniR;
-	Compressor *Air;
+	Solenoid *MinibotLock;
+	Solenoid *MinibotArm;
+	Compressor *AirComp;
 	bool WristToggle;
 	bool ClawToggle;
 	bool ShoulderToggle;
 	bool MiniToggle;
-	float Lvl1;
-	float Lvl2;
-	float Lvl3;
-	float Lvl4;
-	float Lvl5;
-	float Lvl6;
 	
 public:
 	RobotDemo(void):
@@ -57,12 +51,6 @@ public:
 		ClawToggle = false;
 		ShoulderToggle = false;
 		MiniToggle = false;
-		Lvl1 = 100;
-		Lvl2 = 200;
-		Lvl3 = 300;
-		Lvl4 = 400;
-		Lvl5 = 500;
-		Lvl6 = 600;
 		FL = new Victor(1);
 		FR = new Victor(2);
 		BL = new Victor(3);
@@ -75,14 +63,15 @@ public:
 		// ElevatorMin = new DigitalInput(?,?);
 		// ClawOpen = new DigitalInput(?,?);
 		// ClawShut = new DigitalInput(?,?);
+		AirComp = new Compressor(1,1,1,1);
 		ds = DriverStation::GetInstance();
-		EL = new Jaguar(5);
-		ER = new Jaguar(6);
+		EM = new Jaguar(5);
+		//ER = new Jaguar(6);
 		ElevatorPOT = new AnalogChannel(1, 1);
 		analog5VIn = new AnalogChannel(1, 7);
 		analog5VIn->SetAverageBits(3);
 		
-		ElevatorPID = new PIDController(0, 0, 0, ElevatorPOT, EL, 0.025);
+		ElevatorPID = new PIDController(0.0025, 0.0001, 0, ElevatorPOT, EM, 0.025);
 		ElevatorPID->SetInputRange(0, 1);
 		ElevatorPID->SetOutputRange(-1, 1);
 		
@@ -95,12 +84,13 @@ public:
 		// maximumPot5V = analog5VIn->GetAverageValue();
 		// lg->Log(Logger::kINFO,"+5V ADC %1.0f at %1.2f Volts",maximumPot5V,analog5VIn->GetAverageVoltage());
 
+		/*
 		Shoulder = new Solenoid(8, 1);
 		Wrist = new Solenoid(8, 2);
 		Claw = new Solenoid(8, 3);
-		MiniL = new Solenoid(8, 4);
-		MiniR = new Solenoid(8, 5);
-		// Air = new Compressor(?,?);
+		MinibotLock = new Solenoid(8, 4);
+		MinibotArm = new Solenoid(8, 5);
+		*/
 	}
 		
 		
@@ -115,10 +105,19 @@ public:
 		float slide = 0;
 		bool fork = 0;
 		int autoStep = 1;
-		
+
 		while (IsAutonomous() && IsEnabled()) {
 			
 			ds->GetBatteryVoltage();
+			
+			if(AirComp->GetPressureSwitchValue() == 0)
+			{
+				AirComp->Start();
+			}
+			else if(AirComp->GetPressureSwitchValue() == 1)
+			{
+				AirComp->Stop();
+			}
 			
 			switch(autoStep) {
 				case 1:
@@ -223,6 +222,15 @@ public:
 			
 			ds->GetBatteryVoltage();
 			
+			if(AirComp->GetPressureSwitchValue() == 0)
+			{
+				AirComp->Start();
+			}
+			else if(AirComp->GetPressureSwitchValue() == 1)
+			{
+				AirComp->Stop();
+			}			
+			
 			speed = Deadband(-stick1.GetY(), -0.01, 0.01);
 			turn = Deadband(stick1.GetZ(), -0.01, 0.01);
 			slide = Deadband(stick1.GetX(), -0.01, 0.01);
@@ -233,12 +241,12 @@ public:
 			if(stick2.GetRawButton(6)) 
 			{
 				ElevatorPID->Disable();
-				ElevatorControl(.2); 
+				EM->Set(.5); 
 			}
 			else if(stick2.GetRawButton(7))
 			{
 				ElevatorPID->Disable();
-				ElevatorControl(-.2);
+				EM->Set(-.5);
 			}
 			
 			FR->Set(-speed-turn+slide);
@@ -253,7 +261,7 @@ public:
 				Claw->Set(1);
 				ElevatorPID->Enable();	
 				ElevatorPID->SetSetpoint(Lvl1);
-				ER->Set(-EL->Get());	
+				//ER->Set(-EL->Get());	
 			}
 			if(stick1.GetRawButton(8))
 			{
@@ -262,7 +270,7 @@ public:
 				Claw->Set(1);
 				ElevatorPID->Enable();	
 				ElevatorPID->SetSetpoint(Lvl2);
-				ER->Set(-EL->Get());	
+				//ER->Set(-EL->Get());	
 			}
 			if(stick1.GetRawButton(9))
 			{
@@ -271,7 +279,7 @@ public:
 				Claw->Set(1);
 				ElevatorPID->Enable();	
 				ElevatorPID->SetSetpoint(Lvl3);
-				ER->Set(-EL->Get());	
+				//ER->Set(-EL->Get());	
 			}	
 			if(stick1.GetRawButton(10))
 			{
@@ -280,7 +288,7 @@ public:
 				Claw->Set(1);
 				ElevatorPID->Enable();	
 				ElevatorPID->SetSetpoint(Lvl4);
-				ER->Set(-EL->Get());	
+				//ER->Set(-EL->Get());	
 			}
 			if(stick1.GetRawButton(11))
 			{
@@ -289,7 +297,7 @@ public:
 				Claw->Set(1);
 				ElevatorPID->Enable();	
 				ElevatorPID->SetSetpoint(Lvl5);
-				ER->Set(-EL->Get());	
+				//ER->Set(-EL->Get());	
 			}
 			if(stick1.GetRawButton(12))
 			{
@@ -298,7 +306,7 @@ public:
 				Claw->Set(1);
 				ElevatorPID->Enable();	
 				ElevatorPID->SetSetpoint(Lvl6);
-				ER->Set(-EL->Get());	
+				//ER->Set(-EL->Get());	
 			}		
 			
 			//Manual Control
@@ -335,12 +343,12 @@ public:
 			}
 			if(stick2.GetRawButton(10))
 			{
-				MiniL->Set(0);
+				MinibotLock->Set(0);
 				MiniToggle = true;
 			}
 			if(stick2.GetRawButton(11) && MiniToggle == true)
 			{
-				MiniR->Set(1);
+				MinibotArm->Set(1);
 			}
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
@@ -362,13 +370,7 @@ public:
 		return val;
 		
 	}
-	
-	float ElevatorControl(float val) {
-		EL->Set(val);
-		ER->Set(-val);	
-		return 0;
-	}
-	
+		
 };
 
 START_ROBOT_CLASS(RobotDemo);
