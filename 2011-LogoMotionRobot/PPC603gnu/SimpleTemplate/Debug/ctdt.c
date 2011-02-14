@@ -7,7 +7,7 @@
 /*       -fdollars-in-identifiers flag.                   */
 
 
-void _GLOBAL__I__Z20FRC_userClassFactoryv();
+void _GLOBAL__I_Lvl1();
 
 void _GLOBAL__I__ZN9ErrorBase16globalErrorMutexE();
 
@@ -22,7 +22,7 @@ void _GLOBAL__I_AxisCamera_debugFlag();
 extern void (*_ctors[])();
 void (*_ctors[])() =
     {
-    _GLOBAL__I__Z20FRC_userClassFactoryv,
+    _GLOBAL__I_Lvl1,
     _GLOBAL__I__ZN9ErrorBase16globalErrorMutexE,
     _GLOBAL__I__ZN9RobotBase10m_instanceE,
     _GLOBAL__I__ZN14SmartDashboard11BUFFER_SIZEE,
@@ -31,7 +31,7 @@ void (*_ctors[])() =
     0
     };
 
-void _GLOBAL__D__Z20FRC_userClassFactoryv();
+void _GLOBAL__D_Lvl1();
 
 void _GLOBAL__D__ZN9ErrorBase16globalErrorMutexE();
 
@@ -44,7 +44,7 @@ void _GLOBAL__D_AxisCamera_debugFlag();
 extern void (*_dtors[])();
 void (*_dtors[])() =
     {
-    _GLOBAL__D__Z20FRC_userClassFactoryv,
+    _GLOBAL__D_Lvl1,
     _GLOBAL__D__ZN9ErrorBase16globalErrorMutexE,
     _GLOBAL__D__ZN9RobotBase10m_instanceE,
     _GLOBAL__D__ZN10Ultrasonic9kPingTimeE,
