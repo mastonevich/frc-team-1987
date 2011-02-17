@@ -24,6 +24,10 @@ private:
 	DigitalInput *ElevatorHeight;
 	DigitalInput *ClawOpen;
 	DigitalInput *ClawShut;
+	Encoder *FREncoder;
+	Encoder *FLEncoder;
+	Encoder *BREncoder;
+	Encoder *BLEncoder;
 	DriverStation *ds;
 	Jaguar *EM;
 	// Jaguar *ER;
@@ -52,8 +56,8 @@ public:
 		ShoulderToggle = false;
 		MiniToggle = false;
 		FL = new Victor(1);
-		FR = new Victor(2);
-		BL = new Victor(3);
+		FR = new Victor(3);
+		BL = new Victor(2);
 		BR = new Victor(4);
 		myRobot.SetExpiration(0.1);
 		TrackL = new DigitalInput(4,1);
@@ -63,6 +67,10 @@ public:
 		// ElevatorMin = new DigitalInput(?,?);
 		// ClawOpen = new DigitalInput(?,?);
 		// ClawShut = new DigitalInput(?,?);
+		FREncoder = new Encoder(4,6);
+		FLEncoder = new Encoder(4,7);
+		BREncoder = new Encoder(4,8);
+		BLEncoder = new Encoder(4,9);
 		AirComp = new Compressor(1,1,1,1);
 		ds = DriverStation::GetInstance();
 		EM = new Jaguar(5);
@@ -121,41 +129,71 @@ public:
 			
 			switch(autoStep) {
 				case 1:
-					// transformation 
-					autoStep++;
+					// transformation
+					
+					FLEncoder->Start();
+					FREncoder->Start();
+					BREncoder->Start();
+					BLEncoder->Start();
+					
+					if(ds->GetDigitalIn(2))
+					{
+						ElevatorPID->Enable();
+						ElevatorPID->SetSetpoint(100);
+					}
+					else if(ds->GetDigitalIn(3))
+					{
+						ElevatorPID->Enable();
+						ElevatorPID->SetSetpoint(200);
+					}
+					else if(ds->GetDigitalIn(4))
+					{
+						ElevatorPID->Enable();
+						ElevatorPID->SetSetpoint(300);
+					}
+					else if(ds->GetDigitalIn(5))
+					{
+						ElevatorPID->Enable();
+						ElevatorPID->SetSetpoint(400);
+					}
+					else if(ds->GetDigitalIn(6))
+					{
+						ElevatorPID->Enable();
+						ElevatorPID->SetSetpoint(500);
+					}
+					else if(ds->GetDigitalIn(7));
+					{
+						ElevatorPID->Enable();
+						ElevatorPID->SetSetpoint(600);
+					}
+						autoStep++;
 					break;
 				case 2: 
-					// locate line and drive
+					// locate line and drive					
+					ElevatorPID->Disable();
 					
-					/*if (TrackL->Get() && TrackR->Get() && TrackC->Get()) {// if all read then reverse for a sec to stop moving
-						speed = .18;
-						turn = 0;
-						slide = 0;
-						//printf ("Track All\n");
-					}
-					*/
-					if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then strafes 
-						speed = -.7 * TRACKINGSPEED;
+					if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then turns right 
+						speed = .7 * TRACKINGSPEED;
 						turn = TRACKINGTURN;
 						//printf("TrackL and TrackR\n");
 					}
-					else if (TrackL->Get() && TrackR->Get() && fork == 1) { // if the left and right sensors read a value then strafes 
-						speed = -.7 * TRACKINGSPEED;
+					else if (TrackL->Get() && TrackR->Get() && fork == 1) { // if the left and right sensors read a value then turns left 
+						speed = .7 * TRACKINGSPEED;
 						turn = -TRACKINGTURN;
 						//printf("TrackL and TrackR\n");
 					}
 					else if (TrackC->Get()) { // if central tracker reads a value the speed is at .2
-						speed = -TRACKINGSPEED;
+						speed = TRACKINGSPEED;
 						turn = 0; 
 						//printf ("TrackC\n");
 					}
 					else if (TrackR->Get()) { // if only the right sensor reads a value the it turns right 
-						speed = -.7 * TRACKINGSPEED;
+						speed = .7 * TRACKINGSPEED;
 						turn = TRACKINGTURN;
 						//printf ("TrackR\n");
 					}
 					else if (TrackL->Get()) { // if only the left sensor reads a value then it turns left
-						speed = -.7 * TRACKINGSPEED;
+						speed = .7 * TRACKINGSPEED;
 						turn = -TRACKINGTURN;
 						//printf ("TrackL\n");
 					}
@@ -166,10 +204,10 @@ public:
 						//printf(No Track\n");
 					}
 					
-					FR->Set(speed-turn-slide);
-					BR->Set(speed-turn+slide);
-					FL->Set(-speed-turn-slide);
-					BL->Set(-speed-turn+slide);
+					FR->Set(-speed-turn-slide);
+					BR->Set(-speed-turn+slide);
+					FL->Set(speed-turn-slide);
+					BL->Set(speed-turn+slide);
 					
 					if (ds->GetDigitalIn(1)) {
 						fork = 1;
@@ -179,11 +217,19 @@ public:
 						fork = 0;
 						//printf ("Will go left.");
 					}
-
-					/*if (distance || T == reached){
-						speed = 0;
+					
+					if(FREncoder->Get() == 100 || FLEncoder->Get() == 100 || BREncoder->Get() == 100 || BLEncoder->Get() == 100)
+					{
+						FR->Set(0);
+						BR->Set(0);
+						FL->Set(0);
+						BL->Set(0);
 						autoStep++;
-					}*/
+					}
+					//else if(TrackL->Get() && TrackC->Get() && TrackR->Get())
+					//{
+					//	autostep++;
+					//}
 					break;
 				/*case 3:
 					// targeting
@@ -231,12 +277,14 @@ public:
 				AirComp->Stop();
 			}			
 			
-			speed = Deadband(-stick1.GetY(), -0.01, 0.01);
+			speed = Deadband(stick1.GetY(), -0.01, 0.01);
 			turn = Deadband(stick1.GetZ(), -0.01, 0.01);
 			slide = Deadband(stick1.GetX(), -0.01, 0.01);
 			
 			if(stick1.GetRawButton(5)) slide=-.2;
 			else if(stick1.GetRawButton(6)) slide=.2;
+			
+			// printf("Y Axis = %f \n", stick1.GetY());
 			
 			if(stick2.GetRawButton(6)) 
 			{
@@ -249,10 +297,10 @@ public:
 				EM->Set(-.5);
 			}
 			
-			FR->Set(-speed-turn+slide);
-			BR->Set(-speed-turn-slide);
-			FL->Set(speed-turn+slide);
-			BL->Set(speed-turn-slide);
+			FR->Set(-speed-turn-slide);
+			BR->Set(-speed-turn+slide);
+			FL->Set(speed-turn-slide);
+			BL->Set(speed-turn+slide);
 			
 			if(stick1.GetRawButton(7))
 			{
