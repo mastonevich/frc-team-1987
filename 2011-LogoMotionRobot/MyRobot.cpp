@@ -71,7 +71,7 @@ public:
 		FLEncoder = new Encoder(4,7);
 		BREncoder = new Encoder(4,8);
 		BLEncoder = new Encoder(4,9);
-		AirComp = new Compressor(1,1,1,1);
+		AirComp = new Compressor(4,11,4,1);
 		ds = DriverStation::GetInstance();
 		EM = new Jaguar(5);
 		//ER = new Jaguar(6);
@@ -271,10 +271,12 @@ public:
 			if(AirComp->GetPressureSwitchValue() == 0)
 			{
 				AirComp->Start();
+				//printf("Pressure = 0 \n");
 			}
 			else if(AirComp->GetPressureSwitchValue() == 1)
 			{
 				AirComp->Stop();
+				//printf("Pressure = %d \n", AirComp->GetPressureSwitchValue());
 			}			
 			
 			speed = Deadband(stick1.GetY(), -0.01, 0.01);
