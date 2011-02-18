@@ -92,13 +92,12 @@ public:
 		// maximumPot5V = analog5VIn->GetAverageValue();
 		// lg->Log(Logger::kINFO,"+5V ADC %1.0f at %1.2f Volts",maximumPot5V,analog5VIn->GetAverageVoltage());
 
-		/*
-		Shoulder = new Solenoid(8, 1);
+		Shoulder = new Solenoid(8, 3);
 		Wrist = new Solenoid(8, 2);
-		Claw = new Solenoid(8, 3);
-		MinibotLock = new Solenoid(8, 4);
-		MinibotArm = new Solenoid(8, 5);
-		*/
+		Claw = new Solenoid(8, 1);
+		//MinibotLock = new Solenoid(8, 4);
+		//MinibotArm = new Solenoid(8, 5);
+		
 	}
 		
 		
@@ -288,15 +287,24 @@ public:
 			
 			// printf("Y Axis = %f \n", stick1.GetY());
 			
+			if(ds->GetDigitalIn(8))
+			{
+			printf("StringPOT = %d \n", ElevatorPOT->GetValue());
+			}
+			
 			if(stick2.GetRawButton(6)) 
 			{
 				ElevatorPID->Disable();
-				EM->Set(.5); 
+				EM->Set(.7); 
 			}
 			else if(stick2.GetRawButton(7))
 			{
 				ElevatorPID->Disable();
-				EM->Set(-.5);
+				EM->Set(-.7);
+			}
+			else
+			{
+				EM->Set(0);
 			}
 			
 			FR->Set(-speed-turn-slide);

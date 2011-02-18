@@ -6,12 +6,12 @@
 #define maximumPot5V ;
 #define ElevatorSpeed ;
 
-float Lvl1 = 100;
-float Lvl2 = 200;
-float Lvl3 = 300;
-float Lvl4 = 400;
-float Lvl5 = 500;
-float Lvl6 = 600;
+float Lvl1 = 900;
+float Lvl2 = 920;
+float Lvl3 = 600;
+float Lvl4 = 620;
+float Lvl5 = 300;
+float Lvl6 = 300;
 
 class MyRobot;
 
