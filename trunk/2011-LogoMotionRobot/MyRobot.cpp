@@ -44,6 +44,14 @@ private:
 	bool ClawToggle;
 	bool ShoulderToggle;
 	bool MiniToggle;
+	bool lastButton1;
+	bool lastButton2;
+	bool lastButton3;
+	bool lastButton10;
+	bool lastButton11;
+	float maximumPot5V;
+	float EleState;
+	
 	
 public:
 	RobotDemo(void):
@@ -55,14 +63,21 @@ public:
 		ClawToggle = false;
 		ShoulderToggle = false;
 		MiniToggle = false;
+		lastButton1 = false;
+		lastButton2 = false;
+		lastButton3 = false;
+		lastButton10 = false;
+		lastButton11 = false;
+		EleState = Lvl1;
+		
 		FL = new Victor(1);
 		FR = new Victor(3);
 		BL = new Victor(2);
 		BR = new Victor(4);
 		myRobot.SetExpiration(0.1);
-		TrackL = new DigitalInput(4,1);
-	    TrackC = new DigitalInput(4,2);
-		TrackR = new DigitalInput(4,3);
+		TrackL = new DigitalInput(4,12);
+	    TrackC = new DigitalInput(4,13);
+		TrackR = new DigitalInput(4,14);
 		// ElevatorMax = new DigitalInput(?,?);
 		// ElevatorMin = new DigitalInput(?,?);
 		// ClawOpen = new DigitalInput(?,?);
@@ -79,24 +94,23 @@ public:
 		analog5VIn = new AnalogChannel(1, 7);
 		analog5VIn->SetAverageBits(3);
 		
-		ElevatorPID = new PIDController(0.0025, 0.0001, 0, ElevatorPOT, EM, 0.025);
-		ElevatorPID->SetInputRange(0, 1);
-		ElevatorPID->SetOutputRange(-1, 1);
+		ElevatorPID = new PIDController(-0.6, -0.0001, 0, ElevatorPOT, EM, 0.005);
+		ElevatorPID->SetInputRange(0, 986);
+		ElevatorPID->SetOutputRange(-0.5, 1);
 		
-		// if (maximumPot5V < 800) {	// AIN7 jumper was accidentally removed set default value to 986
-		// maximumPot5V = 986;
-		// }
+		//if (maximumPot5V < 800) {	// AIN7 jumper was accidentally removed set default value to 986
+		//maximumPot5V = 986;
+		//}
 		
 		// if (stick1.GetRawButton(12)){tensionEnable();tensionPID->SetSetpoint(tHome);}
 		// 0.025,0.0001   -0.2,-0.001
-		// maximumPot5V = analog5VIn->GetAverageValue();
 		// lg->Log(Logger::kINFO,"+5V ADC %1.0f at %1.2f Volts",maximumPot5V,analog5VIn->GetAverageVoltage());
 
 		Shoulder = new Solenoid(8, 3);
 		Wrist = new Solenoid(8, 2);
 		Claw = new Solenoid(8, 1);
-		//MinibotLock = new Solenoid(8, 4);
-		//MinibotArm = new Solenoid(8, 5);
+		MinibotLock = new Solenoid(8, 4);
+		MinibotArm = new Solenoid(8, 5);
 		
 	}
 		
@@ -285,129 +299,123 @@ public:
 			if(stick1.GetRawButton(5)) slide=-.2;
 			else if(stick1.GetRawButton(6)) slide=.2;
 			
-			// printf("Y Axis = %f \n", stick1.GetY());
 			
-			if(ds->GetDigitalIn(8))
-			{
-			printf("StringPOT = %d \n", ElevatorPOT->GetValue());
-			}
-			
-			if(stick2.GetRawButton(6)) 
-			{
-				ElevatorPID->Disable();
-				EM->Set(.7); 
-			}
-			else if(stick2.GetRawButton(7))
-			{
-				ElevatorPID->Disable();
-				EM->Set(-.7);
-			}
-			else
-			{
-				EM->Set(0);
-			}
+			// maximumPot5V = analog5VIn->GetAverageValue();
 			
 			FR->Set(-speed-turn-slide);
 			BR->Set(-speed-turn+slide);
 			FL->Set(speed-turn-slide);
 			BL->Set(speed-turn+slide);
-			
-			if(stick1.GetRawButton(7))
+
+			if(stick1.GetRawButton(11))
 			{
-				Shoulder->Set(1);
+				Shoulder->Set(0);
 				Wrist->Set(1);
-				Claw->Set(1);
-				ElevatorPID->Enable();	
-				ElevatorPID->SetSetpoint(Lvl1);
-				//ER->Set(-EL->Get());	
+				EleState = Lvl1;	
 			}
-			if(stick1.GetRawButton(8))
+			if(stick1.GetRawButton(12))
 			{
-				Shoulder->Set(1);
+				Shoulder->Set(0);
 				Wrist->Set(1);
-				Claw->Set(1);
-				ElevatorPID->Enable();	
-				ElevatorPID->SetSetpoint(Lvl2);
-				//ER->Set(-EL->Get());	
+				EleState = Lvl2;
 			}
 			if(stick1.GetRawButton(9))
 			{
 				Shoulder->Set(1);
-				Wrist->Set(1);
-				Claw->Set(1);
-				ElevatorPID->Enable();	
-				ElevatorPID->SetSetpoint(Lvl3);
-				//ER->Set(-EL->Get());	
+				Wrist->Set(0);
+				EleState = Lvl3;
 			}	
 			if(stick1.GetRawButton(10))
 			{
 				Shoulder->Set(1);
-				Wrist->Set(1);
-				Claw->Set(1);
-				ElevatorPID->Enable();	
-				ElevatorPID->SetSetpoint(Lvl4);
-				//ER->Set(-EL->Get());	
+				Wrist->Set(0);
+				EleState = Lvl4;
 			}
-			if(stick1.GetRawButton(11))
+			if(stick1.GetRawButton(7))
 			{
 				Shoulder->Set(1);
-				Wrist->Set(1);
-				Claw->Set(1);
-				ElevatorPID->Enable();	
-				ElevatorPID->SetSetpoint(Lvl5);
-				//ER->Set(-EL->Get());	
+				Wrist->Set(0);
+				EleState = Lvl5;
 			}
-			if(stick1.GetRawButton(12))
+			if(stick1.GetRawButton(8))
 			{
 				Shoulder->Set(1);
-				Wrist->Set(1);
-				Claw->Set(1);
-				ElevatorPID->Enable();	
-				ElevatorPID->SetSetpoint(Lvl6);
-				//ER->Set(-EL->Get());	
-			}		
+				Wrist->Set(0);
+				EleState = Lvl6;
+			}	
+			
+			EleSet(EleState);
+			
+			
+			
 			
 			//Manual Control
 			
-			if(stick2.GetRawButton(3) && WristToggle == false)
+			if(stick2.GetRawButton(3) && WristToggle == false && !lastButton3)
 			{
 				Wrist->Set(1);
 				WristToggle = true;
 			}
-			else if(stick2.GetRawButton(3) && WristToggle == true)
+			else if(stick2.GetRawButton(3) && WristToggle == true && !lastButton3)
 			{
 				Wrist->Set(0);
 				WristToggle = false;
 			}
-			if(stick2.GetRawButton(1) && ClawToggle == false)
+			if(stick2.GetRawButton(1) && ClawToggle == false && !lastButton1)
 			{
 				Claw->Set(1);
 				ClawToggle = true;
+				//printf("Claw opening \n");
 			}
-			else if(stick2.GetRawButton(1) && ClawToggle == true)
+			else if(stick2.GetRawButton(1) && ClawToggle == true && !lastButton1)
 			{
 				Claw->Set(0);
 				ClawToggle = false;
+				//printf("Claw closing \n");
 			}
-			if(stick2.GetRawButton(2) && ShoulderToggle == false)
+			if(stick2.GetRawButton(2) && ShoulderToggle == false && !lastButton2)
 			{
 				Shoulder->Set(1);
 				ShoulderToggle = true;
 			}
-			else if(stick2.GetRawButton(2) && ShoulderToggle == true)
+			else if(stick2.GetRawButton(2) && ShoulderToggle == true && !lastButton2)
 			{
 				Shoulder->Set(0);
 				ShoulderToggle = false;
 			}
-			if(stick2.GetRawButton(10))
+			if(stick2.GetRawButton(10) && !lastButton10)
 			{
 				MinibotLock->Set(0);
 				MiniToggle = true;
 			}
-			if(stick2.GetRawButton(11) && MiniToggle == true)
+			if(stick2.GetRawButton(11) && MiniToggle == true  && !lastButton11)
 			{
 				MinibotArm->Set(1);
 			}
+			
+			lastButton1 = stick2.GetRawButton(1);
+			lastButton2 = stick2.GetRawButton(2);
+			lastButton3 = stick2.GetRawButton(3);
+			lastButton10 = stick2.GetRawButton(10);
+			lastButton11 = stick2.GetRawButton(11);
+			
+			if(stick2.GetRawButton(6)) 
+			{
+				//EleState = (ElevatorPOT->GetValue() + 5);
+				EM->Set(.7); 
+			}
+			else if(stick2.GetRawButton(7))
+			{
+				//EleState = (ElevatorPOT->GetValue() - 5);
+				EM->Set(-.7);
+			}
+			else
+			{
+				//EleState = (ElevatorPOT->GetValue());
+				EM->Set(0);
+			}
+			
+			
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
 			
@@ -416,6 +424,11 @@ public:
 			//TrackR->Get() ? printf("TrackR\n") : printf("\t\n");
 			
 			//printf("track1= %b track2= %b track3= %b \n", Track1->Get(), Track2->Get(), Track3->Get() ); 
+			// printf("Y Axis = %f \n", stick1.GetY());
+			// printf("maximumPot5V = %f ", maximumPot5V);
+			// printf("POT = %d \n", ElevatorPOT->GetValue());
+			// printf("SP = %f \t", ElevatorPID->GetSetpoint());
+			// printf("PIDErr = %f \n", ElevatorPID->GetError());
 			
 			//myRobot.ArcadeDrive(stick1.getRawAxis(1), stick1.getRawAxis(2), true); // drive with arcade style (use right stick)
 			//myRobot.MecanumDrive_Polar(stick1.GetRawAxis(1))
@@ -423,9 +436,42 @@ public:
 		}
 	}
 	
-	float Deadband(float val, float min, float max) {
+	float Deadband(float val, float min, float max) 
+	{
 		if(val>min && val<max) return 0;
-		return val;
+		return val;	
+	}
+	
+	void EleIdle(void)
+	{
+		float val = ElevatorPID->GetSetpoint();
+		if((ElevatorPOT->GetValue() >= (val - 5)) && (ElevatorPOT->GetValue() <= (val + 5)))
+		{
+			printf("IDLE");
+			ElevatorPID->Disable();	
+		}		
+
+	}
+	
+	void EleSet(float val)
+	{
+		float EleCurrent = ElevatorPOT->GetValue();
+		if(val <= EleMax && val >= EleMin)
+		{
+			if(val <= (EleCurrent + 5) && val >= (EleCurrent - 5))
+			{
+				EM->Set(0);
+			}
+			else if(val > (EleCurrent-5))
+			{
+				EM->Set(1);	
+			}
+			else if(val < (EleCurrent+5))
+			{
+				EM->Set(-1);	
+			}
+		}
+		return;
 		
 	}
 		
