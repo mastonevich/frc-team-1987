@@ -78,7 +78,7 @@ public:
 		lastButton11 = false;
 		lastButton8 = false;
 		EleManUse = false;
-		EleState = EleMin;	
+		EleState = Floor;	
 		
 		FL = new Victor(1);
 		FR = new Victor(3);
@@ -323,7 +323,7 @@ public:
 				Shoulder->Set(1);
 				Claw->Set(1);
 				Wrist->Set(0);
-				EleState = EleMin;
+				EleState = Floor;
 			}
 			if(stick1.GetRawButton(11))
 			{
@@ -470,7 +470,7 @@ public:
 			// printf("maximumPot5V = %f ", maximumPot5V);
 			// printf("SP = %f \t", ElevatorPID->GetSetpoint());
 			// printf("PIDErr = %f \n", ElevatorPID->GetError());
-			///printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
+			printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
 			printf("State = %f \t", EleState);
 			printf("Dir = %i \n", EMDir);
 			// printf("Count = %d \t", EleCycle);
@@ -516,7 +516,7 @@ public:
 				EMDir = 0;
 				//printf("1");				
 			}
-			else if(val > (eleCurr-5))
+			else if(val > (eleCurr-2))
 			{
 				//printf("2");
 				EM->Set(EleSpeedControl());
@@ -550,7 +550,7 @@ public:
 					}
 				}
 			}
-			else if(val < (eleCurr+5))
+			else if(val < (eleCurr+2))
 			{
 				//printf("6");
 				EM->Set(EleSpeedControl());	
@@ -588,6 +588,10 @@ public:
 		if(error == true && EMDir == 1 && !EleDead() && EleCountStat)
 		{
 			EleState = eleCurr - 50;
+			if(EleState <= EleMin)
+			{
+				EleState = Floor;
+			}
 			printf("x1");
 			EleCountStat = 0;
 			error = false;
@@ -595,6 +599,10 @@ public:
 		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat)
 		{
 			EleState = eleCurr + 50;
+			if(EleState >= EleMax)
+			{
+				EleState = EleMax;
+			}
 			printf("x2");
 			EleCountStat = 0;
 			error = false;
