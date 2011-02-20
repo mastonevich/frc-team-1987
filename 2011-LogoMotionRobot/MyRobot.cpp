@@ -44,15 +44,18 @@ private:
 	bool ClawToggle;
 	bool ShoulderToggle;
 	bool MiniToggle;
+	bool AutoToggle;
 	bool lastButton1a;
 	bool lastButton1b;
 	bool lastButton2;
 	bool lastButton3;
 	bool lastButton10;
 	bool lastButton11;
+	bool lastButton8;
 	bool EleManUse; 
 	float maximumPot5V;
 	float EleState;
+	float eleCurr;
 	
 	
 	
@@ -66,14 +69,16 @@ public:
 		ClawToggle = false;
 		ShoulderToggle = false;
 		MiniToggle = false;
+		AutoToggle = false;
 		lastButton1a = false;
 		lastButton1b = false;
 		lastButton2 = false;
 		lastButton3 = false;
 		lastButton10 = false;
 		lastButton11 = false;
+		lastButton8 = false;
 		EleManUse = false;
-		EleState = EleMin;		
+		EleState = EleMin;	
 		
 		FL = new Victor(1);
 		FR = new Victor(3);
@@ -357,10 +362,45 @@ public:
 				EleState = Lvl6;
 			}	
 			
-			EleSet(EleState);
-
+			if(EleAuto == false)
+			{
+				if(stick2.GetRawButton(6)) 
+				{
+					//EleState = (ElevatorPOT->GetValue() + 5);
+					EM->Set(.7); 
+					EleManUse = true; 
+					EleAuto = false;
+				}
+				else if(stick2.GetRawButton(7))
+				{
+					//EleState = (ElevatorPOT->GetValue() - 5);
+					EM->Set(-.5);
+					EleManUse = true; 
+				}
+				else if(EleManUse == true)
+				{
+					EM->Set(0);
+					EleState = ElevatorPOT->GetValue();
+					EleManUse = false; 
+				}
+			}
+			else if(EleAuto == true)
+			{
+				EleSet(EleState);
+			}
 			
-			
+			if(stick2.GetRawButton(8) && !lastButton8 && AutoToggle == false)
+			{
+				EleAuto = false;
+				AutoToggle = true;
+			}
+			else if(stick2.GetRawButton(8) && !lastButton8 && AutoToggle == true)
+			{
+				EleAuto = true;
+				AutoToggle = false;
+			}
+				
+				
 			//Manual Control
 			
 			if(stick2.GetRawButton(3) && WristToggle == false && !lastButton3)
@@ -413,26 +453,9 @@ public:
 			lastButton3 = stick2.GetRawButton(3);
 			lastButton10 = stick2.GetRawButton(10);
 			lastButton11 = stick2.GetRawButton(11);
+			lastButton8 = stick2.GetRawButton(8);
 			
-			if(stick2.GetRawButton(6) && error != true) 
-			{
-				//EleState = (ElevatorPOT->GetValue() + 5);
-				EM->Set(.7); 
-				EleManUse = true; 
-			}
-			else if(stick2.GetRawButton(7) && error != true)
-			{
-				//EleState = (ElevatorPOT->GetValue() - 5);
-				EM->Set(-.7);
-				EleManUse = true; 
-			}
-			else if(EleManUse == true)
-			{
-				EleState = (ElevatorPOT->GetAverageValue());
-				//EM->Set(0);
-				EleManUse = false; 
-			}
-			
+			EleCount();
 			
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
@@ -445,11 +468,17 @@ public:
 			// printf("err = %i", error);
 			// printf("Y Axis = %f \n", stick1.GetY());
 			// printf("maximumPot5V = %f ", maximumPot5V);
-			// printf("POT = %d \n", ElevatorPOT->GetValue());
 			// printf("SP = %f \t", ElevatorPID->GetSetpoint());
 			// printf("PIDErr = %f \n", ElevatorPID->GetError());
-			// printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
-			// printf("POT = %d \n", ElevatorPOT->GetValue());
+			///printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
+			printf("State = %f \t", EleState);
+			printf("Dir = %i \n", EMDir);
+			// printf("Count = %d \t", EleCycle);
+			// printf("Dead = %d \t", EleDead());
+			// printf("Status = %d \n", EleCountStat);
+			//printf("POT = %d \n", ElevatorPOT->GetValue());
+			// printf("EMS = %f\n", EM->Get());
+			// printf("throttle = %f \n", stick2.GetThrottle());
 			// myRobot.ArcadeDrive(stick1.getRawAxis(1), stick1.getRawAxis(2), true); // drive with arcade style (use right stick)
 			// myRobot.MecanumDrive_Polar(stick1.GetRawAxis(1))
 			Wait(0.005);				// wait for a motor update time
@@ -462,9 +491,14 @@ public:
 		return val;	
 	}
 	
+	bool EleDead(void)
+	{
+		return !(EleMin <= ElevatorPOT->GetAverageValue() && ElevatorPOT->GetAverageValue() <= EleMax);
+	}
+	
 	void EleSet(float val)
 	{
-		float eleCurr = ElevatorPOT->GetAverageValue();
+		eleCurr = ElevatorPOT->GetAverageValue();
 		//printf("Curr = %f \n", eleCurr);
 		
 		if(init == false)
@@ -479,13 +513,15 @@ public:
 			if(val <= (eleCurr + 5) && val >= (eleCurr - 5))
 			{
 				EM->Set(0);
-				printf("1");				
+				EMDir = 0;
+				//printf("1");				
 			}
 			else if(val > (eleCurr-5))
 			{
-				printf("2");
-				EM->Set(1);
-				EleCycle++;
+				//printf("2");
+				EM->Set(EleSpeedControl());
+				EMDir = 1;
+				//EleCycle++;
 				//printf("Temp = %f \t", eleTemp);
 				//printf("Cycle = %i \t", EleCycle);
 				//printf("POT = %d \t", ElevatorPOT->GetValue());
@@ -493,7 +529,7 @@ public:
 				
 				if(EleCycle > NumCycle)
 				{
-					printf("3");
+					//printf("3");
 					eleTemp = eleCurr;
 					EleCycle = 0;
 					//printf("reset \n");
@@ -503,12 +539,12 @@ public:
 				//printf("err = %i \n", error);
 				if (EM->Get() != 0 && error == false)
 				{
-					printf("4");
+					//printf("4");
 					//printf("IF\t");
 					//eleCurr = ElevatorPOT->GetAverageValue();
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
-						printf("5");
+						//printf("5");
 						error = true;
 						//printf("***********Err************\n");
 					}
@@ -516,9 +552,9 @@ public:
 			}
 			else if(val < (eleCurr+5))
 			{
-				printf("6");
-				EM->Set(-0.5);	
-				EleCycle++;
+				//printf("6");
+				EM->Set(EleSpeedControl());	
+				EMDir = -1;
 				//printf("Temp = %f \t", eleTemp);
 				//printf("Cycle = %i \t", EleCycle);
 				//printf("POT = %d \t", ElevatorPOT->GetValue());
@@ -526,7 +562,7 @@ public:
 				
 				if(EleCycle > NumCycle)
 				{
-					printf("7");
+					//printf("7");
 					eleTemp = eleCurr;
 					EleCycle = 0;
 					//printf("reset \n");
@@ -538,25 +574,93 @@ public:
 				{
 					//printf("IF\t");
 					//eleCurr = ElevatorPOT->GetAverageValue();
-					printf("8");
+					//printf("8");
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
-						printf("9");
+						printf("1");
 						error = true;
 						//printf("***********Err************\n");
 					}
 				}
 			}
 		}
-		if(error == true || val < EleMin || val > EleMax)
+
+		if(error == true && EMDir == 1 && !EleDead() && EleCountStat)
+		{
+			EleState = eleCurr - 50;
+			printf("x1");
+			EleCountStat = 0;
+			error = false;
+		}
+		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat)
+		{
+			EleState = eleCurr + 50;
+			printf("x2");
+			EleCountStat = 0;
+			error = false;
+		}
+		else if(EleDead())
 		{
 			EM->Set(0);
-			//printf("STOP\n");
-			printf("10\n");
+			printf("x3");
 		}
+		else if(error == true || val < EleMin || val > EleMax)
+		{
+			printf("2");
+			EleCycle = 0;
+		}
+		
 
 	}
-		
+	
+	void EleCount(void)
+	{
+		if(EleCountStat)
+			EleCycle++;
+		else if(EleState == eleCurr && EleCountStat == 0)
+		{
+			EleCycle = 0;
+			EleCountStat = 1;
+			error = false; 
+			printf("3");
+			//printf("******Count Resumed*****\n");
+		}
+	}
+	
+	float EleSpeedControl(void)
+	{
+		float SpeedRequest = (EleState - eleCurr)/EleRange;
+		//printf("SR = %f /t", SpeedRequest);
+		if(0 < SpeedRequest && SpeedRequest <= .1)
+		{
+			return .5;
+		}
+		else if(.1 < SpeedRequest && SpeedRequest <= .6)
+		{
+			return .8;
+		}
+		else if(1 >= SpeedRequest && SpeedRequest > .6)
+		{
+			return 1;
+		}
+		else if(-1 <= SpeedRequest && SpeedRequest <= -.7)
+		{
+			return -.7;
+		}
+		else if(-.7 < SpeedRequest && SpeedRequest < -.4)
+		{
+			return SpeedRequest;
+		}
+		else if(-.4 <= SpeedRequest && SpeedRequest < 0)
+		{
+			return -.4;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	
 };
 
 START_ROBOT_CLASS(RobotDemo);

@@ -14,14 +14,17 @@ float Lvl6 = 605;
 float EleMin = 75;
 float EleMax = 620;
 float eleTemp;
+float EleRange = (EleMax - EleMin);
 
 bool init = false;
 bool error = false; 
+bool EleAuto = true;
 
 int eleTol = 1;
 int EleCycle = 0;
-int NumCycle = 35;
-
+int NumCycle = 37;
+int EMDir = 0;
+int EleCountStat = 1;
 
 class MyRobot;
 
@@ -31,7 +34,10 @@ class MyRobot : public GenericHID
 public:
 	
 	float Deadband(float val, float min, float max);
+	bool EleDead(void);
 	void EleSet(float val);
+	void EleCount(void);
+	float EleSpeedControl(void);
 	
 private:
 	
