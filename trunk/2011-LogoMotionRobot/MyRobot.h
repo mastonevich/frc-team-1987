@@ -11,8 +11,8 @@ float Lvl3 = 190;		//lvl 1 middle
 float Lvl4 = 260;		//lvl 2 middle
 float Lvl5 = 535;		//lvl 3 outside
 float Lvl6 = 605;		//lvl 3 middle
-float Floor = 75;
-float EleMin = 70;
+float Floor = 70;
+float EleMin = 60;
 float EleMax = 620;
 float eleTemp;
 float EleRange = (EleMax - EleMin);

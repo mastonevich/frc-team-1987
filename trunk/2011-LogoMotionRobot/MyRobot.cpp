@@ -37,7 +37,8 @@ private:
 	Solenoid *Shoulder;
 	Solenoid *Wrist;
 	Solenoid *Claw;
-	Solenoid *MinibotLock;
+	Solenoid *MinibotLockIn;
+	Solenoid *MinibotLockOut;
 	Solenoid *MinibotArm;
 	Compressor *AirComp;
 	bool WristToggle;
@@ -120,8 +121,9 @@ public:
 		Shoulder = new Solenoid(8, 3);
 		Wrist = new Solenoid(8, 2);
 		Claw = new Solenoid(8, 1);
-		MinibotLock = new Solenoid(8, 4);
-		MinibotArm = new Solenoid(8, 5);
+		MinibotLockIn = new Solenoid(5);
+		MinibotLockOut = new Solenoid(6);
+		MinibotArm = new Solenoid(8, 4);
 		
 	}
 		
@@ -515,9 +517,10 @@ public:
 				Shoulder->Set(1);
 				ShoulderToggle = false;
 			}
-			if(stick2.GetRawButton(10) && !lastButton10)
+			if(stick2.GetRawButton(10) && MiniToggle == false && !lastButton10)
 			{
-				MinibotLock->Set(0);
+				MinibotLockIn->Set(true);
+				MinibotLockOut->Set(false);
 				MiniToggle = true;
 			}
 			if(stick2.GetRawButton(11) && MiniToggle == true  && !lastButton11)
@@ -543,9 +546,9 @@ public:
 			
 			// printf("track1= %b track2= %b track3= %b \n", Track1->Get(), Track2->Get(), Track3->Get() ); 
 			// printf("err = %i \t", error);
-			printf("C %f \t", eleCurr);
+			// printf("C %f \t", eleCurr);
 			// printf("S %f \t", EleState);
-			printf(" T %f \n", eleTemp);
+			// printf(" T %f \n", eleTemp);
 			// printf("Ct %d \t", EleCycle);
 			// printf("D %i \n", EMDir);
 		
@@ -601,11 +604,7 @@ public:
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
 						error = true;
-						printf("***************************Err***********************\n");
-						printf("***************************Err***********************\n");
-						printf("***************************Err***********************\n");
-						printf("***************************Err***********************\n");
-						printf("***************************Err***********************\n");						
+						// printf("***************************Err***********************\n");				
 					}
 				}
 			}
@@ -623,11 +622,7 @@ public:
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
 						error = true;
-						printf("***************************Err DOWN***********************\n");
-						printf("***************************Err DOWN***********************\n");
-						printf("***************************Err DOWN***********************\n");
-						printf("***************************Err DOWN***********************\n");
-						printf("***************************Err DOWN***********************\n");
+						// printf("***************************Err DOWN***********************\n");
 					}
 				}
 			}
@@ -640,7 +635,7 @@ public:
 			{
 				EleState = Floor;
 			}
-			printf("Setadj, stop counter, going up\n");
+			// printf("Setadj, stop counter, going up\n");
 			EleCountStat = 0;
 			error = false;
 			EM->Set(0);
@@ -652,7 +647,7 @@ public:
 			{
 				EleState = EleMax;
 			}
-			printf("Setadj, stop counter, going down\n");
+			// printf("Setadj, stop counter, going down\n");
 			EleCountStat = 0;
 			error = false;
 			EM->Set(0);
@@ -660,11 +655,11 @@ public:
 		else if(EleDead())
 		{
 			EM->Set(0);
-			printf("XXXXXXXXXXXXXXXXX DEAD XXXXXXXXXXXXXXXXXX\n");
+			// printf("XXXXXXXXXXXXXXXXX DEAD XXXXXXXXXXXXXXXXXX\n");
 		}
 		else if(error == true || val < EleMin || val > EleMax)
 		{
-			printf("Set cycle = 0");
+			// printf("Set cycle = 0");
 			EleCycle = 0;
 		}
 	}
@@ -679,9 +674,8 @@ public:
 		{
 			EleCycle = 0;
 			EleCountStat = 1;
-			error = false; 
-			//printf("3");
-			printf("******Count Resumed*****\n");
+			error = false;
+			// printf("******Count Resumed*****\n");
 		}
 	}
 	
