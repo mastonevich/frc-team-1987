@@ -384,8 +384,8 @@ public:
 			turn = Deadband(stick1.GetZ(), -0.01, 0.01);
 			slide = Deadband(stick1.GetX(), -0.01, 0.01);
 			
-			if(stick1.GetRawButton(5)) slide=-.2;
-			else if(stick1.GetRawButton(6)) slide=.2;
+			if(stick1.GetRawButton(5)) slide=-.4;
+			else if(stick1.GetRawButton(6)) slide=.4;
 			
 			
 			// maximumPot5V = analog5VIn->GetAverageValue();
@@ -397,21 +397,21 @@ public:
 			
 			if(stick1.GetRawButton(2) && error == false)
 			{
-				Shoulder->Set(0);
+				Shoulder->Set(1);
 				Claw->Set(1);
 				Wrist->Set(0);
 				EleState = Floor;
 			}
 			if(stick1.GetRawButton(11) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				Shoulder->Set(1);
+				Wrist->Set(1);
 				EleState = Lvl1;	
 			}
 			if(stick1.GetRawButton(12) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				Shoulder->Set(1);
+				Wrist->Set(1);
 				EleState = Lvl2;
 			}
 			if(stick1.GetRawButton(9) && error == false)
@@ -441,17 +441,17 @@ public:
 			
 			if(EleAuto == false)
 			{
-				if(stick2.GetRawButton(6)) 
+				if(stick2.GetRawButton(6) && ElevatorPOT->GetAverageValue() < EleMax) 
 				{
 					//EleState = (ElevatorPOT->GetValue() + 5);
-					EM->Set(.7); 
+					EM->Set(1); 
 					EleManUse = true; 
 					EleAuto = false;
 				}
-				else if(stick2.GetRawButton(7))
+				else if(stick2.GetRawButton(7) && ElevatorPOT->GetAverageValue() > EleMin)
 				{
 					//EleState = (ElevatorPOT->GetValue() - 5);
-					EM->Set(-.5);
+					EM->Set(-.7);
 					EleManUse = true; 
 				}
 				else if(EleManUse == true)
@@ -643,7 +643,7 @@ public:
 			printf("Setadj, stop counter, going up\n");
 			EleCountStat = 0;
 			error = false;
-			// EM->Set(0);
+			EM->Set(0);
 		}
 		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat == 1)
 		{
@@ -655,7 +655,7 @@ public:
 			printf("Setadj, stop counter, going down\n");
 			EleCountStat = 0;
 			error = false;
-			// EM->Set(0);
+			EM->Set(0);
 		}
 		else if(EleDead())
 		{
