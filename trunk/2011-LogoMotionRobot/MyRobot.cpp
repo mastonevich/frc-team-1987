@@ -125,6 +125,11 @@ public:
 		
 	}
 		
+	
+	
+	
+	
+	
 		
 	
 	/**
@@ -132,13 +137,33 @@ public:
 	 */
 	void Autonomous(void)
 	{
-		float speed = 0;
+		float speed = .3;
 		float turn = 0;
 		float slide = 0;
-		bool fork = 0;
+		bool AStr = ds->GetDigitalIn(1);
+		bool AFL = ds->GetDigitalIn(2);
+		bool AFR = ds->GetDigitalIn(3);
+		bool Mid = ds->GetDigitalIn(5);
+		bool Top = ds->GetDigitalIn(6);
 		int autoStep = 1;
 
 		while (IsAutonomous() && IsEnabled()) {
+			/*
+			printf("AStr = %i \n", AStr);
+			printf("AFL = %i \t", AFL);
+			printf("AFR = %i \t", AFR);
+			printf("Mid = %i \t", Mid);
+			printf("Top = %i \t", Top);
+			
+			printf("L-%i \t",TrackL->Get());
+			printf("C-%i \t",TrackC->Get());
+			printf("R-%i \t",TrackR->Get());
+			printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
+			*/
+			printf("State = %f \t", EleState);
+			
+			
+			EleSet(EleState);		
 			
 			ds->GetBatteryVoltage();
 			
@@ -152,75 +177,124 @@ public:
 			}
 			
 			switch(autoStep) {
-				case 1:
-					// transformation
-					
+				case 1:  // transformation
+					Claw->Set(0);
 					FLEncoder->Start();
 					FREncoder->Start();
 					BREncoder->Start();
 					BLEncoder->Start();
 					
-					if(ds->GetDigitalIn(2))
+					if(Mid)
 					{
-						ElevatorPID->Enable();
-						ElevatorPID->SetSetpoint(100);
+						if (AStr && !(AFL || AFR) && error == false)
+						{
+							EleState = Lvl4;
+							Wrist->Set(0);
+							Shoulder->Set(0);
+							printf("1");
+							ForkPass = true;
+						}
+						else if((AFL || AFR) && !AStr && error == false)
+						{
+							EleState = Lvl2;
+							Wrist->Set(0);
+							Shoulder->Set(0);
+							printf("2");
+						}
 					}
-					else if(ds->GetDigitalIn(3))
+					else if(Top)
 					{
-						ElevatorPID->Enable();
-						ElevatorPID->SetSetpoint(200);
+						if (AStr && !(AFL || AFR) && error == false)
+						{
+							EleState = Lvl6;
+							Wrist->Set(0);
+							Shoulder->Set(0);
+							printf("3");
+							ForkPass = true;
+						}
+						else if((AFL || AFR) && !AStr && error == false)
+						{
+							EleState = Lvl5;
+							Wrist->Set(0);
+							Shoulder->Set(0);
+							printf("4");
+						}
 					}
-					else if(ds->GetDigitalIn(4))
+					else if(error == false)
 					{
-						ElevatorPID->Enable();
-						ElevatorPID->SetSetpoint(300);
+						EleState = Floor;
+						Wrist->Set(0);
+						Shoulder->Set(0);
+						Claw->Set(1);
+						printf("5");
+						break;
 					}
-					else if(ds->GetDigitalIn(5))
+					/*
+					if(EleState > (eleCurr + 5) || EleState < (eleCurr - 5))
 					{
-						ElevatorPID->Enable();
-						ElevatorPID->SetSetpoint(400);
+						//EleSet(EleState);
+						printf("Setting Elevator");
 					}
-					else if(ds->GetDigitalIn(6))
+					*/
+					if(EleState <= (eleCurr + 5) && EleState >= (eleCurr - 5))
 					{
-						ElevatorPID->Enable();
-						ElevatorPID->SetSetpoint(500);
-					}
-					else if(ds->GetDigitalIn(7));
-					{
-						ElevatorPID->Enable();
-						ElevatorPID->SetSetpoint(600);
-					}
-						autoStep++;
+						autoStep++;		
+						printf("Case 2");
+					}	
+					autoStep++;
 					break;
 				case 2: 
 					// locate line and drive					
-					ElevatorPID->Disable();
 					
-					if (TrackL->Get() && TrackR->Get() && fork == 0) { // if the left and right sensors read a value then turns right 
-						speed = .7 * TRACKINGSPEED;
-						turn = TRACKINGTURN;
+					if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == true) // if all three read stop
+					{
+						FR->Set(-.2);
+						BR->Set(-.2);
+						FL->Set(-.2);
+						BL->Set(-.2);
+						autoStep++;
+						break;
+					}
+					if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == false)
+					{
+						ForkPass = true;
+						FR->Set(-.5);
+						BR->Set(-.5);
+						FL->Set(-.5);
+						BL->Set(-.5);
+						
+					}
+					else if (TrackL->Get() && TrackR->Get() && AFR) { // if the left and right sensors read a value then turns right 
+						speed = 0;
+						turn = .7;
+						ForkPass = true;
 						//printf("TrackL and TrackR\n");
 					}
-					else if (TrackL->Get() && TrackR->Get() && fork == 1) { // if the left and right sensors read a value then turns left 
-						speed = .7 * TRACKINGSPEED;
-						turn = -TRACKINGTURN;
+					else if (TrackL->Get() && TrackR->Get() && AFL) { // if the left and right sensors read a value then turns left 
+						speed = 0;
+						turn = -.7;
+						ForkPass = true;
 						//printf("TrackL and TrackR\n");
 					}
-					else if (TrackC->Get()) { // if central tracker reads a value the speed is at .2
+					else if (TrackC->Get()) { // if central tracker reads a value the speed is at .2 forward
 						speed = TRACKINGSPEED;
 						turn = 0; 
+						// printf("STRAIGHT \n");
 						//printf ("TrackC\n");
 					}
 					else if (TrackR->Get()) { // if only the right sensor reads a value the it turns right 
 						speed = .7 * TRACKINGSPEED;
 						turn = TRACKINGTURN;
+						// printf("RIGHT \n");
 						//printf ("TrackR\n");
 					}
 					else if (TrackL->Get()) { // if only the left sensor reads a value then it turns left
 						speed = .7 * TRACKINGSPEED;
 						turn = -TRACKINGTURN;
+						// printf("LEFT \n");
 						//printf ("TrackL\n");
 					}
+					
 					else { // if nothing is read motors stop
 						speed = 0;
 						turn = 0;
@@ -233,15 +307,8 @@ public:
 					FL->Set(speed-turn-slide);
 					BL->Set(speed-turn+slide);
 					
-					if (ds->GetDigitalIn(1)) {
-						fork = 1;
-						//printf ("Will go right.");
-					}
-					else {
-						fork = 0;
-						//printf ("Will go left.");
-					}
 					
+					/*
 					if(FREncoder->Get() == 100 || FLEncoder->Get() == 100 || BREncoder->Get() == 100 || BLEncoder->Get() == 100)
 					{
 						FR->Set(0);
@@ -250,20 +317,21 @@ public:
 						BL->Set(0);
 						autoStep++;
 					}
+					*/
 					//else if(TrackL->Get() && TrackC->Get() && TrackR->Get())
 					//{
 					//	autostep++;
 					//}
 					break;
-				/*case 3:
-					// targeting
+				case 3:				// place tube
+					Wait(1.0);
+					Claw->Set(0);
+					printf("********SCORE********");
 					autoStep++;
 					break;
-				case 4:
-					// place tube
-					autoStep = 1;
-					break;*/
-			}
+
+			}	
+		printf("EleCycle = %i \n", EleCycle);
 		/*myRobot.SetSafetyEnabled(false);
 		myRobot.Drive(0.5, 0.0); 	// drive forwards half speed
 		Wait(2.0); 					// for 2 seconds
@@ -277,6 +345,15 @@ public:
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Runs the motors with arcade steering. 
 	 */
@@ -318,44 +395,44 @@ public:
 			FL->Set(speed-turn-slide);
 			BL->Set(speed-turn+slide);
 			
-			if(stick1.GetRawButton(2))
+			if(stick1.GetRawButton(2) && error == false)
 			{
-				Shoulder->Set(1);
+				Shoulder->Set(0);
 				Claw->Set(1);
 				Wrist->Set(0);
 				EleState = Floor;
 			}
-			if(stick1.GetRawButton(11))
+			if(stick1.GetRawButton(11) && error == false)
 			{
-				Shoulder->Set(1);
-				Wrist->Set(1);
+				Shoulder->Set(0);
+				Wrist->Set(0);
 				EleState = Lvl1;	
 			}
-			if(stick1.GetRawButton(12))
+			if(stick1.GetRawButton(12) && error == false)
 			{
-				Shoulder->Set(1);
-				Wrist->Set(1);
+				Shoulder->Set(0);
+				Wrist->Set(0);
 				EleState = Lvl2;
 			}
-			if(stick1.GetRawButton(9))
+			if(stick1.GetRawButton(9) && error == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
 				EleState = Lvl3;
 			}	
-			if(stick1.GetRawButton(10))
+			if(stick1.GetRawButton(10) && error == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
 				EleState = Lvl4;
 			}
-			if(stick1.GetRawButton(7))
+			if(stick1.GetRawButton(7) && error == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
 				EleState = Lvl5;
 			}
-			if(stick1.GetRawButton(8))
+			if(stick1.GetRawButton(8) && error == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
@@ -382,6 +459,7 @@ public:
 					EM->Set(0);
 					EleState = ElevatorPOT->GetValue();
 					EleManUse = false; 
+					error = false;
 				}
 			}
 			else if(EleAuto == true)
@@ -454,8 +532,7 @@ public:
 			lastButton10 = stick2.GetRawButton(10);
 			lastButton11 = stick2.GetRawButton(11);
 			lastButton8 = stick2.GetRawButton(8);
-			
-			EleCount();
+
 			
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
@@ -465,18 +542,16 @@ public:
 			//TrackR->Get() ? printf("TrackR\n") : printf("\t\n");
 			
 			// printf("track1= %b track2= %b track3= %b \n", Track1->Get(), Track2->Get(), Track3->Get() ); 
-			// printf("err = %i", error);
-			// printf("Y Axis = %f \n", stick1.GetY());
-			// printf("maximumPot5V = %f ", maximumPot5V);
-			// printf("SP = %f \t", ElevatorPID->GetSetpoint());
-			// printf("PIDErr = %f \n", ElevatorPID->GetError());
-			printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
-			printf("State = %f \t", EleState);
-			printf("Dir = %i \n", EMDir);
-			// printf("Count = %d \t", EleCycle);
+			// printf("err = %i \t", error);
+			printf("C %f \t", eleCurr);
+			// printf("S %f \t", EleState);
+			printf(" T %f \n", eleTemp);
+			// printf("Ct %d \t", EleCycle);
+			// printf("D %i \n", EMDir);
+		
 			// printf("Dead = %d \t", EleDead());
 			// printf("Status = %d \n", EleCountStat);
-			//printf("POT = %d \n", ElevatorPOT->GetValue());
+			// printf("POT = %d \t", ElevatorPOT->GetValue());
 			// printf("EMS = %f\n", EM->Get());
 			// printf("throttle = %f \n", stick2.GetThrottle());
 			// myRobot.ArcadeDrive(stick1.getRawAxis(1), stick1.getRawAxis(2), true); // drive with arcade style (use right stick)
@@ -493,145 +568,120 @@ public:
 	
 	bool EleDead(void)
 	{
-		return !(EleMin <= ElevatorPOT->GetAverageValue() && ElevatorPOT->GetAverageValue() <= EleMax);
+		return !(LowEleDead <= ElevatorPOT->GetAverageValue() && ElevatorPOT->GetAverageValue() <= HighEleDead);
 	}
 	
 	void EleSet(float val)
 	{
-		eleCurr = ElevatorPOT->GetAverageValue();
-		//printf("Curr = %f \n", eleCurr);
-		
+		EleCount();
+		eleCurr = ElevatorPOT->GetAverageValue();		
 		if(init == false)
 		{
 			eleTemp = eleCurr;
-			//printf("eleTemp = %f", eleTemp);
 			init = true;
 		}
-		
 		if(val <= EleMax && val >= EleMin && error == false)
 		{
 			if(val <= (eleCurr + 5) && val >= (eleCurr - 5))
 			{
 				EM->Set(0);
-				EMDir = 0;
-				//printf("1");				
+				EMDir = 0;			
 			}
-			else if(val > (eleCurr-2))
+			else if(val > (eleCurr - eleTol))
 			{
-				//printf("2");
 				EM->Set(EleSpeedControl());
-				EMDir = 1;
-				//EleCycle++;
-				//printf("Temp = %f \t", eleTemp);
-				//printf("Cycle = %i \t", EleCycle);
-				//printf("POT = %d \t", ElevatorPOT->GetValue());
-
-				
+				EMDir = 1;				
 				if(EleCycle > NumCycle)
 				{
-					//printf("3");
 					eleTemp = eleCurr;
 					EleCycle = 0;
-					//printf("reset \n");
-
 				}
-				//printf("EM = %f \t", EM->Get());
-				//printf("err = %i \n", error);
 				if (EM->Get() != 0 && error == false)
 				{
-					//printf("4");
-					//printf("IF\t");
-					//eleCurr = ElevatorPOT->GetAverageValue();
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
-						//printf("5");
 						error = true;
-						//printf("***********Err************\n");
+						printf("***************************Err***********************\n");
+						printf("***************************Err***********************\n");
+						printf("***************************Err***********************\n");
+						printf("***************************Err***********************\n");
+						printf("***************************Err***********************\n");						
 					}
 				}
 			}
-			else if(val < (eleCurr+2))
+			else if(val < (eleCurr + eleTol))
 			{
-				//printf("6");
 				EM->Set(EleSpeedControl());	
-				EMDir = -1;
-				//printf("Temp = %f \t", eleTemp);
-				//printf("Cycle = %i \t", EleCycle);
-				//printf("POT = %d \t", ElevatorPOT->GetValue());
-
-				
+				EMDir = -1;				
 				if(EleCycle > NumCycle)
 				{
-					//printf("7");
 					eleTemp = eleCurr;
 					EleCycle = 0;
-					//printf("reset \n");
-
 				}
-				//printf("EM = %f \t", EM->Get());
-				//printf("err = %i \n", error);
 				if (EM->Get() != 0 && error == false)
 				{
-					//printf("IF\t");
-					//eleCurr = ElevatorPOT->GetAverageValue();
-					//printf("8");
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
-						printf("1");
 						error = true;
-						//printf("***********Err************\n");
+						printf("***************************Err DOWN***********************\n");
+						printf("***************************Err DOWN***********************\n");
+						printf("***************************Err DOWN***********************\n");
+						printf("***************************Err DOWN***********************\n");
+						printf("***************************Err DOWN***********************\n");
 					}
 				}
 			}
 		}
 
-		if(error == true && EMDir == 1 && !EleDead() && EleCountStat)
+		if(error == true && EMDir == 1 && !EleDead() && EleCountStat == 1)
 		{
-			EleState = eleCurr - 50;
+			EleState = eleCurr - EleErrorAdj;
 			if(EleState <= EleMin)
 			{
 				EleState = Floor;
 			}
-			printf("x1");
+			printf("Setadj, stop counter, going up\n");
 			EleCountStat = 0;
 			error = false;
+			// EM->Set(0);
 		}
-		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat)
+		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat == 1)
 		{
-			EleState = eleCurr + 50;
+			EleState = eleCurr + EleErrorAdj;
 			if(EleState >= EleMax)
 			{
 				EleState = EleMax;
 			}
-			printf("x2");
+			printf("Setadj, stop counter, going down\n");
 			EleCountStat = 0;
 			error = false;
+			// EM->Set(0);
 		}
 		else if(EleDead())
 		{
 			EM->Set(0);
-			printf("x3");
+			printf("XXXXXXXXXXXXXXXXX DEAD XXXXXXXXXXXXXXXXXX\n");
 		}
 		else if(error == true || val < EleMin || val > EleMax)
 		{
-			printf("2");
+			printf("Set cycle = 0");
 			EleCycle = 0;
 		}
-		
-
 	}
 	
 	void EleCount(void)
 	{
-		if(EleCountStat)
+		if(EleCountStat == 1)
+		{
 			EleCycle++;
+		}
 		else if(EleState == eleCurr && EleCountStat == 0)
 		{
 			EleCycle = 0;
 			EleCountStat = 1;
 			error = false; 
-			printf("3");
-			//printf("******Count Resumed*****\n");
+			//printf("3");
+			printf("******Count Resumed*****\n");
 		}
 	}
 	
@@ -641,7 +691,7 @@ public:
 		//printf("SR = %f /t", SpeedRequest);
 		if(0 < SpeedRequest && SpeedRequest <= .1)
 		{
-			return .5;
+			return .65;
 		}
 		else if(.1 < SpeedRequest && SpeedRequest <= .6)
 		{
