@@ -41,10 +41,12 @@ private:
 	Solenoid *MinibotLockOut;
 	Solenoid *MinibotArm;
 	Compressor *AirComp;
+	bool ArmDown;
 	bool WristToggle;
 	bool ClawToggle;
 	bool ShoulderToggle;
 	bool MiniToggle;
+	bool MiniArmToggle;
 	bool AutoToggle;
 	bool lastButton1a;
 	bool lastButton1b;
@@ -66,10 +68,12 @@ public:
 		stick1(1),				// as they are declared above.
 		stick2(2)
 	{
+		AxisCamera &camera = AxisCamera::GetInstance();
 		WristToggle = false;
 		ClawToggle = false;
 		ShoulderToggle = false;
 		MiniToggle = false;
+		MiniArmToggle = false;
 		AutoToggle = false;
 		lastButton1a = false;
 		lastButton1b = false;
@@ -80,6 +84,9 @@ public:
 		lastButton8 = false;
 		EleManUse = false;
 		EleState = Floor;	
+		ArmDown = false;
+		
+		
 		
 		FL = new Victor(1);
 		FR = new Victor(3);
@@ -122,7 +129,9 @@ public:
 		Wrist = new Solenoid(8, 2);
 		Claw = new Solenoid(8, 1);
 		MinibotLockIn = new Solenoid(5);
+		MinibotLockIn->Set(false);
 		MinibotLockOut = new Solenoid(6);
+		MinibotLockOut->Set(true);
 		MinibotArm = new Solenoid(8, 4);
 		
 	}
@@ -139,7 +148,7 @@ public:
 	 */
 	void Autonomous(void)
 	{
-		float speed = .3;
+		float speed = .6;
 		float turn = 0;
 		float slide = 0;
 		bool AStr = ds->GetDigitalIn(1);
@@ -148,6 +157,11 @@ public:
 		bool Mid = ds->GetDigitalIn(5);
 		bool Top = ds->GetDigitalIn(6);
 		int autoStep = 1;
+		bool ForkPass = false;
+		bool TPass = false;
+		bool AtFork = false;
+		//bool LCRWait = false;
+		int LCR = 1;
 
 		while (IsAutonomous() && IsEnabled()) {
 			/*
@@ -162,7 +176,7 @@ public:
 			printf("R-%i \t",TrackR->Get());
 			printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
 			*/
-			printf("State = %f \t", EleState);
+			//printf("State = %f \t", EleState);
 			
 			
 			EleSet(EleState);		
@@ -198,7 +212,7 @@ public:
 						}
 						else if((AFL || AFR) && !AStr && error == false)
 						{
-							EleState = Lvl2;
+							EleState = Lvl3;
 							Wrist->Set(0);
 							Shoulder->Set(0);
 							printf("2");
@@ -241,99 +255,100 @@ public:
 					if(EleState <= (eleCurr + 5) && EleState >= (eleCurr - 5))
 					{
 						autoStep++;		
-						printf("Case 2");
+						printf("Case 2\n");						
 					}	
-					autoStep++;
 					break;
 				case 2: 
-					// locate line and drive					
-					
-					if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == true) // if all three read stop
+					// locate line and drive	
+					switch (LCR)
 					{
-						FR->Set(-.2);
-						BR->Set(-.2);
-						FL->Set(-.2);
-						BL->Set(-.2);
-						autoStep++;
+					case 1:
+						if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == false)
+						{
+							speed = 0;
+							turn = -.5;
+							slide = 0;
+							printf("AT FORK\n");
+							AtFork = true;
+						}
+						else if(AtFork == true)
+						{
+							ForkPass = true;
+							LCR++;
+							printf("past fork\n");
+						}
+						break;
+					case 2:
 						break;
 					}
-					if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == false)
+					if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == true && TPass == false) // if all three read stop
 					{
-						ForkPass = true;
-						FR->Set(-.5);
-						BR->Set(-.5);
-						FL->Set(-.5);
-						BL->Set(-.5);
-						
-					}
-					else if (TrackL->Get() && TrackR->Get() && AFR) { // if the left and right sensors read a value then turns right 
-						speed = 0;
-						turn = .7;
-						ForkPass = true;
-						//printf("TrackL and TrackR\n");
-					}
-					else if (TrackL->Get() && TrackR->Get() && AFL) { // if the left and right sensors read a value then turns left 
-						speed = 0;
-						turn = -.7;
-						ForkPass = true;
-						//printf("TrackL and TrackR\n");
-					}
-					else if (TrackC->Get()) { // if central tracker reads a value the speed is at .2 forward
-						speed = TRACKINGSPEED;
-						turn = 0; 
-						// printf("STRAIGHT \n");
-						//printf ("TrackC\n");
-					}
-					else if (TrackR->Get()) { // if only the right sensor reads a value the it turns right 
-						speed = .7 * TRACKINGSPEED;
-						turn = TRACKINGTURN;
-						// printf("RIGHT \n");
-						//printf ("TrackR\n");
-					}
-					else if (TrackL->Get()) { // if only the left sensor reads a value then it turns left
-						speed = .7 * TRACKINGSPEED;
-						turn = -TRACKINGTURN;
-						// printf("LEFT \n");
-						//printf ("TrackL\n");
-					}
-					
-					else { // if nothing is read motors stop
-						speed = 0;
+						speed = 1;
 						turn = 0;
 						slide = 0;
-						//printf(No Track\n");
+						printf("3+fork\n");
+						TPass = true;
 					}
-					
-					FR->Set(-speed-turn-slide);
-					BR->Set(-speed-turn+slide);
-					FL->Set(speed-turn-slide);
-					BL->Set(speed-turn+slide);
-					
-					
-					/*
-					if(FREncoder->Get() == 100 || FLEncoder->Get() == 100 || BREncoder->Get() == 100 || BLEncoder->Get() == 100)
+					else if(TPass == true && (TrackL->Get() || TrackC->Get() || TrackR->Get()))
 					{
 						FR->Set(0);
 						BR->Set(0);
 						FL->Set(0);
 						BL->Set(0);
 						autoStep++;
+						printf("3+TPass\n");
 					}
-					*/
-					//else if(TrackL->Get() && TrackC->Get() && TrackR->Get())
-					//{
-					//	autostep++;
-					//}
+					
+					else if (TrackL->Get() && TrackR->Get() && AFR && ForkPass == true) { // if the left and right sensors read a value then turns right 
+						speed = 0;
+						turn = .7;
+						ForkPass = true;
+						printf("TrackL and TrackR\n");
+					}
+					else if (TrackL->Get() && TrackR->Get() && AFL && ForkPass == true) { // if the left and right sensors read a value then turns left 
+						speed = 0;
+						turn = -.7;
+						ForkPass = true;
+						printf("TrackL and TrackR\n");
+					}
+					else if (TrackC->Get() && !(TrackL->Get() && TrackR->Get())) { // if central tracker reads a value the speed is at .2 forward
+						speed = TRACKINGSPEED;
+						turn = 0; 
+						printf("STRAIGHT \n");
+					}
+					else if (TrackR->Get() && !(TrackC->Get() && TrackL->Get())) { // if only the right sensor reads a value the it turns right 
+						speed = 0;
+						turn = TRACKINGTURN;
+						printf("RIGHT \n");
+					}
+					else if (TrackL->Get() && !(TrackC->Get() && TrackR->Get())) { // if only the left sensor reads a value then it turns left
+						speed = 0;
+						turn = -TRACKINGTURN;
+						printf("LEFT \n");
+					}
+					
+					else if (TPass == false && ForkPass == false)// if nothing is read motors stop
+					{
+						speed = 0;
+						turn = 0;
+						slide = 0;
+						printf("No Track\n");
+					}
+					
+					FR->Set(-speed-turn-slide);
+					BR->Set(-speed-turn+slide);
+					FL->Set(speed-turn-slide);
+					BL->Set(speed-turn+slide);
+
 					break;
 				case 3:				// place tube
-					Wait(1.0);
-					Claw->Set(0);
-					printf("********SCORE********");
+					Claw->Set(1);
+					Wait(.5);
+					printf("********SCORE********\n");
 					autoStep++;
 					break;
 
-			}	
-		printf("EleCycle = %i \n", EleCycle);
+			}
 		/*myRobot.SetSafetyEnabled(false);
 		myRobot.Drive(0.5, 0.0); 	// drive forwards half speed
 		Wait(2.0); 					// for 2 seconds
@@ -397,44 +412,44 @@ public:
 			FL->Set(speed-turn-slide);
 			BL->Set(speed-turn+slide);
 			
-			if(stick1.GetRawButton(2) && error == false)
+			if(stick1.GetRawButton(2) && error == false && ArmDown == false)
 			{
-				Shoulder->Set(1);
+				Shoulder->Set(0);
 				Claw->Set(1);
 				Wrist->Set(0);
 				EleState = Floor;
 			}
-			if(stick1.GetRawButton(11) && error == false)
+			if(stick1.GetRawButton(11) && error == false && ArmDown == false)
 			{
-				Shoulder->Set(1);
-				Wrist->Set(1);
+				Shoulder->Set(0);
+				Wrist->Set(0);
 				EleState = Lvl1;	
 			}
-			if(stick1.GetRawButton(12) && error == false)
+			if(stick1.GetRawButton(12) && error == false && ArmDown == false)
 			{
-				Shoulder->Set(1);
-				Wrist->Set(1);
+				Shoulder->Set(0);
+				Wrist->Set(0);
 				EleState = Lvl2;
 			}
-			if(stick1.GetRawButton(9) && error == false)
+			if(stick1.GetRawButton(9) && error == false && ArmDown == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
 				EleState = Lvl3;
 			}	
-			if(stick1.GetRawButton(10) && error == false)
+			if(stick1.GetRawButton(10) && error == false && ArmDown == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
 				EleState = Lvl4;
 			}
-			if(stick1.GetRawButton(7) && error == false)
+			if(stick1.GetRawButton(7) && error == false && ArmDown == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
 				EleState = Lvl5;
 			}
-			if(stick1.GetRawButton(8) && error == false)
+			if(stick1.GetRawButton(8) && error == false && ArmDown == false)
 			{
 				Shoulder->Set(0);
 				Wrist->Set(0);
@@ -445,6 +460,7 @@ public:
 			{
 				if(stick2.GetRawButton(6) && ElevatorPOT->GetAverageValue() < EleMax) 
 				{
+					
 					//EleState = (ElevatorPOT->GetValue() + 5);
 					EM->Set(1); 
 					EleManUse = true; 
@@ -511,11 +527,13 @@ public:
 			{
 				Shoulder->Set(0);
 				ShoulderToggle = true;
+				ArmDown = false;
 			}
 			else if(stick2.GetRawButton(2) && ShoulderToggle == true && !lastButton2)
 			{
 				Shoulder->Set(1);
 				ShoulderToggle = false;
+				ArmDown = true;
 			}
 			if(stick2.GetRawButton(10) && MiniToggle == false && !lastButton10)
 			{
@@ -523,9 +541,21 @@ public:
 				MinibotLockOut->Set(false);
 				MiniToggle = true;
 			}
-			if(stick2.GetRawButton(11) && MiniToggle == true  && !lastButton11)
+			else if(stick2.GetRawButton(10) && MiniToggle == true && !lastButton10)
+			{
+				MinibotLockIn->Set(false);
+				MinibotLockOut->Set(true);
+				MiniToggle = false;
+			}
+			if(stick2.GetRawButton(11) && MiniToggle == true  && !lastButton11 && MiniArmToggle == false)
 			{
 				MinibotArm->Set(1);
+				MiniArmToggle = true;
+			}
+			else if (stick2.GetRawButton(11) && !lastButton11 && MiniArmToggle == true)
+			{
+				MinibotArm->Set(0);
+				MiniArmToggle = false;
 			}
 			
 			lastButton1a = stick2.GetRawButton(1);
@@ -699,13 +729,13 @@ public:
 		{
 			return -.7;
 		}
-		else if(-.7 < SpeedRequest && SpeedRequest < -.4)
+		else if(-.7 < SpeedRequest && SpeedRequest < -.5)
 		{
 			return SpeedRequest;
 		}
-		else if(-.4 <= SpeedRequest && SpeedRequest < 0)
+		else if(-.5 <= SpeedRequest && SpeedRequest < 0)
 		{
-			return -.4;
+			return -.5;
 		}
 		else
 		{
