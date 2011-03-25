@@ -589,6 +589,11 @@ public:
 			{
 				MissCounter++;
 				//printf("2");
+				
+				//ELSEN COMMENT
+				//EleState = Floor + a little;
+				//EleSet(EleState);
+				
 				if(MissCounter <= 200)
 				{
 					EM->Set(.7);
@@ -613,6 +618,10 @@ public:
 			{
 				MissCounter++;
 				printf("2\n");
+				
+				//ELSEN COMMENT
+				//EleState = Floor;
+				//EleSet(EleState);
 				if(MissCounter <= 200 && Miss == true)
 				{
 					EM->Set(-.7);
