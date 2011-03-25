@@ -1,7 +1,7 @@
 #ifndef MYROBOT_H_
 #define MYROBOT_H_
 
-#define TRACKINGSPEED  -.2;
+#define TRACKINGSPEED  -.26;
 #define TRACKINGTURN .2;
 #define ElevatorSpeed ;
 
