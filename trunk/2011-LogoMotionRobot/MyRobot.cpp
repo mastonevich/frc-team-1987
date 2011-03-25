@@ -55,7 +55,14 @@ private:
 	bool lastButton10;
 	bool lastButton11;
 	bool lastButton8;
+	bool lastButton4;
 	bool EleManUse; 
+	bool reShoulder;
+	bool reWrist;
+	bool Miss;
+	bool MissOn;
+	bool MissOff;
+	int MissCounter;
 	float maximumPot5V;
 	float EleState;
 	float eleCurr;
@@ -68,7 +75,7 @@ public:
 		stick1(1),				// as they are declared above.
 		stick2(2)
 	{
-		AxisCamera &camera = AxisCamera::GetInstance();
+		//AxisCamera &camera = AxisCamera::GetInstance();
 		WristToggle = false;
 		ClawToggle = false;
 		ShoulderToggle = false;
@@ -82,11 +89,17 @@ public:
 		lastButton10 = false;
 		lastButton11 = false;
 		lastButton8 = false;
+		lastButton4 = false;
 		EleManUse = false;
 		EleState = Floor;	
 		ArmDown = false;
+		reShoulder = 0;
+		reWrist = 0;
 		
-		
+		Miss = false;
+		MissOn = false;
+		MissOff = false;
+		MissCounter = 0;
 		
 		FL = new Victor(1);
 		FR = new Victor(3);
@@ -205,16 +218,16 @@ public:
 						if (AStr && !(AFL || AFR) && error == false)
 						{
 							EleState = Lvl4;
-							Wrist->Set(0);
-							Shoulder->Set(0);
+							reWrist = 0;
+							reShoulder = 0;
 							printf("1");
 							ForkPass = true;
 						}
 						else if((AFL || AFR) && !AStr && error == false)
 						{
 							EleState = Lvl3;
-							Wrist->Set(0);
-							Shoulder->Set(0);
+							reWrist = 0;
+							reShoulder = 0;
 							printf("2");
 						}
 					}
@@ -223,24 +236,24 @@ public:
 						if (AStr && !(AFL || AFR) && error == false)
 						{
 							EleState = Lvl6;
-							Wrist->Set(0);
-							Shoulder->Set(0);
+							reWrist = 0;
+							reShoulder = 0;
 							printf("3");
 							ForkPass = true;
 						}
 						else if((AFL || AFR) && !AStr && error == false)
 						{
 							EleState = Lvl5;
-							Wrist->Set(0);
-							Shoulder->Set(0);
+							reWrist = 0;
+							reShoulder = 0;
 							printf("4");
 						}
 					}
 					else if(error == false)
 					{
 						EleState = Floor;
-						Wrist->Set(0);
-						Shoulder->Set(0);
+						reWrist = 0;
+						reShoulder = 0;
 						Claw->Set(1);
 						printf("5");
 						break;
@@ -252,6 +265,7 @@ public:
 						printf("Setting Elevator");
 					}
 					*/
+					
 					if(EleState <= (eleCurr + 5) && EleState >= (eleCurr - 5))
 					{
 						autoStep++;		
@@ -263,6 +277,7 @@ public:
 					switch (LCR)
 					{
 					case 1:
+						
 						if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == false)
 						{
 							speed = 0;
@@ -343,7 +358,7 @@ public:
 					break;
 				case 3:				// place tube
 					Claw->Set(1);
-					Wait(.5);
+					//Wait(.5);
 					printf("********SCORE********\n");
 					autoStep++;
 					break;
@@ -362,10 +377,6 @@ public:
 		}
 	}
 
-	
-	
-	
-	
 	
 	
 	
@@ -398,7 +409,7 @@ public:
 			}			
 			
 			speed = Deadband(stick1.GetY(), -0.01, 0.01);
-			turn = Deadband(stick1.GetZ(), -0.01, 0.01);
+			turn = (Deadband(stick1.GetZ(), -0.01, 0.01)*.8);
 			slide = Deadband(stick1.GetX(), -0.01, 0.01);
 			
 			if(stick1.GetRawButton(5)) slide=-.4;
@@ -412,47 +423,47 @@ public:
 			FL->Set(speed-turn-slide);
 			BL->Set(speed-turn+slide);
 			
-			if(stick1.GetRawButton(2) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(2) && error == false)
 			{
-				Shoulder->Set(0);
+				reShoulder = 1;
 				Claw->Set(1);
-				Wrist->Set(0);
+				reWrist = 0;
 				EleState = Floor;
 			}
-			if(stick1.GetRawButton(11) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(11) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				reShoulder = 1;
+				reWrist = 1 ;
 				EleState = Lvl1;	
 			}
-			if(stick1.GetRawButton(12) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(12) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				reShoulder = 1;
+				reWrist = 1;
 				EleState = Lvl2;
 			}
-			if(stick1.GetRawButton(9) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(9) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				reShoulder = 0;
+				reWrist = 0;
 				EleState = Lvl3;
 			}	
-			if(stick1.GetRawButton(10) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(10) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				reShoulder = 0;
+				reWrist = 0;
 				EleState = Lvl4;
 			}
-			if(stick1.GetRawButton(7) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(7) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				reShoulder = 0;
+				reWrist = 0;
 				EleState = Lvl5;
 			}
-			if(stick1.GetRawButton(8) && error == false && ArmDown == false)
+			if(stick1.GetRawButton(8) && error == false)
 			{
-				Shoulder->Set(0);
-				Wrist->Set(0);
+				reShoulder = 0;
+				reWrist = 0;
 				EleState = Lvl6;
 			}	
 			
@@ -565,7 +576,62 @@ public:
 			lastButton10 = stick2.GetRawButton(10);
 			lastButton11 = stick2.GetRawButton(11);
 			lastButton8 = stick2.GetRawButton(8);
+			
+			
+			//printf("MissOn = %f, MissOff = %f, Miss = %f", MissOn, MissOff, Miss);
+			
+			if(stick1.GetRawButton(4) && !lastButton4 && Miss == false)
+			{
+				MissOn = true;
+				//printf("1");
+			}
+			if(MissOn == true)
+			{
+				MissCounter++;
+				//printf("2");
+				if(MissCounter <= 200)
+				{
+					EM->Set(.7);
+					//printf("3");
+				}
+				else if(MissCounter > 200)
+				{
+					EM->Set(0);
+					EleState = ElevatorPOT->GetAverageValue();
+					MissCounter = 0;
+					Miss = true;
+					MissOn = false;
+				}
+			}
+			
+			if(stick2.GetRawButton(4) && !lastButton4 && Miss == true)
+			{
+				MissOff = true;
+				printf("1\n");
+			}
+			if(MissOff == true)
+			{
+				MissCounter++;
+				printf("2\n");
+				if(MissCounter <= 200 && Miss == true)
+				{
+					EM->Set(-.7);
+					printf("3\n");
+				}
+				else
+				{
+					EM->Set(0);
+					EleState = ElevatorPOT->GetAverageValue();
+					MissCounter = 0;
+					Miss = false;
+					MissOff = false;
+					printf("4\n");
+				}
+			}
 
+			lastButton4 = stick1.GetRawButton(4);
+			
+			
 			
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
@@ -715,26 +781,38 @@ public:
 		//printf("SR = %f /t", SpeedRequest);
 		if(0 < SpeedRequest && SpeedRequest <= .1)
 		{
+			Shoulder->Set(reShoulder);
+			Wrist->Set(reWrist);
 			return .65;
 		}
 		else if(.1 < SpeedRequest && SpeedRequest <= .6)
 		{
+			Shoulder->Set(0);
+			Wrist->Set(0);			
 			return .8;
 		}
 		else if(1 >= SpeedRequest && SpeedRequest > .6)
 		{
+			Shoulder->Set(0);
+			Wrist->Set(0);			
 			return 1;
 		}
 		else if(-1 <= SpeedRequest && SpeedRequest <= -.7)
 		{
+			Shoulder->Set(0);
+			Wrist->Set(0);			
 			return -.7;
 		}
 		else if(-.7 < SpeedRequest && SpeedRequest < -.5)
 		{
+			Shoulder->Set(0);
+			Wrist->Set(0);
 			return SpeedRequest;
 		}
 		else if(-.5 <= SpeedRequest && SpeedRequest < 0)
 		{
+			Shoulder->Set(reShoulder);
+			Wrist->Set(reWrist);
 			return -.5;
 		}
 		else
