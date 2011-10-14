@@ -37,9 +37,15 @@ private:
 	Solenoid *Shoulder;
 	Solenoid *Wrist;
 	Solenoid *Claw;
+	
+	Solenoid *MinibotElbow;
+	Solenoid *MinibotLockIn;
+	Solenoid *MinibotLockOut;
+	/*
 	Solenoid *MinibotLockIn;
 	Solenoid *MinibotLockOut;
 	Solenoid *MinibotArm;
+	*/
 	Compressor *AirComp;
 	bool ArmDown;
 	bool WristToggle;
@@ -75,7 +81,7 @@ public:
 		stick1(1),				// as they are declared above.
 		stick2(2)
 	{
-		//AxisCamera &camera = AxisCamera::GetInstance();
+		AxisCamera &camera = AxisCamera::GetInstance();
 		WristToggle = false;
 		ClawToggle = false;
 		ShoulderToggle = false;
@@ -90,8 +96,7 @@ public:
 		lastButton11 = false;
 		lastButton8 = false;
 		lastButton4 = false;
-		EleManUse = false;
-		EleState = Floor;	
+		EleManUse = false;	
 		ArmDown = false;
 		reShoulder = 0;
 		reWrist = 0;
@@ -126,6 +131,8 @@ public:
 		analog5VIn = new AnalogChannel(1, 7);
 		analog5VIn->SetAverageBits(3);
 		
+		EleState = ElevatorPOT->GetAverageValue(); //Floor;
+		
 		//ElevatorPID = new PIDController(-0.6, -0.0001, 0, ElevatorPOT, EM, 0.005);
 		//ElevatorPID->SetInputRange(0, 986);
 		//ElevatorPID->SetOutputRange(-0.5, 1);
@@ -138,15 +145,23 @@ public:
 		// 0.025,0.0001   -0.2,-0.001
 		// lg->Log(Logger::kINFO,"+5V ADC %1.0f at %1.2f Volts",maximumPot5V,analog5VIn->GetAverageVoltage());
 
-		Shoulder = new Solenoid(8, 3);
-		Wrist = new Solenoid(8, 2);
-		Claw = new Solenoid(8, 1);
+		Shoulder = new Solenoid(8, 5);
+		Wrist = new Solenoid(8, 7);
+		Claw = new Solenoid(8, 6);
+		
+		
+		MinibotLockIn = new Solenoid(8,2);
+		MinibotLockIn->Set(1); 
+		MinibotLockOut = new Solenoid(8,3);
+		MinibotElbow = new Solenoid(8,5);
+		
+		/*
 		MinibotLockIn = new Solenoid(5);
 		MinibotLockIn->Set(false);
 		MinibotLockOut = new Solenoid(6);
 		MinibotLockOut->Set(true);
 		MinibotArm = new Solenoid(8, 4);
-		
+		*/
 	}
 		
 	
@@ -281,7 +296,7 @@ public:
 						if(TrackL->Get() && TrackC->Get() && TrackR->Get() && ForkPass == false)
 						{
 							speed = 0;
-							turn = -.5;
+							turn = -1;
 							slide = 0;
 							printf("AT FORK\n");
 							AtFork = true;
@@ -546,6 +561,33 @@ public:
 				ShoulderToggle = false;
 				ArmDown = true;
 			}
+			
+			//New Minibot Code
+			
+			if(stick2.GetRawButton(10) && MiniToggle == false && !lastButton10)
+			{
+				MinibotElbow->Set(1);
+				MiniToggle = true;
+			}
+			else if(stick2.GetRawButton(10) && MiniToggle == true && !lastButton10)
+			{
+				MinibotElbow->Set(0);
+				MiniToggle = false;
+			}
+			if(stick2.GetRawButton(11) && MiniToggle == true  && !lastButton11 && MiniArmToggle == false)
+			{
+				MinibotLockIn->Set(0);
+				MinibotLockOut->Set(1);
+				MiniArmToggle = true;
+			}
+			else if (stick2.GetRawButton(11) && !lastButton11 && MiniArmToggle == true)
+			{
+				MinibotLockOut->Set(0);
+				MinibotLockIn->Set(1);
+				MiniArmToggle = false;
+			}			
+			
+			/*
 			if(stick2.GetRawButton(10) && MiniToggle == false && !lastButton10)
 			{
 				MinibotLockIn->Set(true);
@@ -568,6 +610,7 @@ public:
 				MinibotArm->Set(0);
 				MiniArmToggle = false;
 			}
+			*/
 			
 			lastButton1a = stick2.GetRawButton(1);
 			lastButton1b = stick1.GetRawButton(1);
@@ -577,7 +620,21 @@ public:
 			lastButton11 = stick2.GetRawButton(11);
 			lastButton8 = stick2.GetRawButton(8);
 			
+			if(stick1.GetRawButton(4) && !lastButton4 && Miss == false)
+			{
+				EleState = EleState + MissFix;
+				Miss = true;
+			}
+			else if(stick1.GetRawButton(4) && !lastButton4 && Miss == true)
+			{
+				EleState = Floor;
+				Miss = false;
+			}
 			
+			lastButton4 = stick1.GetRawButton(4);
+			
+			
+			/*
 			//printf("MissOn = %f, MissOff = %f, Miss = %f", MissOn, MissOff, Miss);
 			
 			if(stick1.GetRawButton(4) && !lastButton4 && Miss == false)
@@ -590,9 +647,13 @@ public:
 				MissCounter++;
 				//printf("2");
 				
-				//ELSEN COMMENT
-				//EleState = Floor + a little;
+				//ELSEN COMMENT - REMOVE COUNTER
+				//EleState = Floor + a little so it doesn't bounce;
 				//EleSet(EleState);
+				//Miss = true;
+				//MissOn = false;
+				//END ELSEN COMMENT
+				
 				
 				if(MissCounter <= 200)
 				{
@@ -619,9 +680,13 @@ public:
 				MissCounter++;
 				printf("2\n");
 				
-				//ELSEN COMMENT
+				//ELSEN COMMENT - REMOVE COUNTER
 				//EleState = Floor;
 				//EleSet(EleState);
+				//Miss = false;
+				//MissOff = false;
+				//END ELSEN COMMENT
+				
 				if(MissCounter <= 200 && Miss == true)
 				{
 					EM->Set(-.7);
@@ -638,9 +703,9 @@ public:
 				}
 			}
 
-			lastButton4 = stick1.GetRawButton(4);
 			
 			
+			*/
 			
 			//printf("x= %f y= %f z= %f \r\n", stick1.GetX(), stick1.GetY(), stick1.GetZ());
 			//printf("speed= %f slide= %f turn= %f \n", speed, slide, turn);
@@ -667,6 +732,7 @@ public:
 			Wait(0.005);				// wait for a motor update time
 		}
 	}
+
 	
 	float Deadband(float val, float min, float max) 
 	{
