@@ -2,7 +2,7 @@
 #define MYROBOT_H_
 
 #define TRACKINGSPEED  -.26;
-#define TRACKINGTURN .2;
+#define TRACKINGTURN .26;
 #define ElevatorSpeed ;
 
 float Lvl1 = 180;		//lvl 1 outside
@@ -16,6 +16,7 @@ float EleMin = 60;
 float EleMax = 620;
 float eleTemp;
 float EleRange = (EleMax - EleMin);
+float MissFix = 60;
 
 bool init = false;
 bool error = false; 
