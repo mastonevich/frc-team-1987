@@ -131,7 +131,7 @@ public:
 		analog5VIn = new AnalogChannel(1, 7);
 		analog5VIn->SetAverageBits(3);
 		
-		EleState = ElevatorPOT->GetAverageValue(); //Floor;
+		EleState = Floor;
 		
 		//ElevatorPID = new PIDController(-0.6, -0.0001, 0, ElevatorPOT, EM, 0.005);
 		//ElevatorPID->SetInputRange(0, 986);
@@ -392,11 +392,6 @@ public:
 		}
 	}
 
-	
-	
-	
-	
-	
 	/**
 	 * Runs the motors with arcade steering. 
 	 */
@@ -500,7 +495,7 @@ public:
 				}
 				else if(EleManUse == true)
 				{
-					EM->Set(0);
+					EM->Set(EleStop);
 					EleState = ElevatorPOT->GetValue();
 					EleManUse = false; 
 					error = false;
@@ -662,7 +657,7 @@ public:
 				}
 				else if(MissCounter > 200)
 				{
-					EM->Set(0);
+					EM->Set(EleStop);
 					EleState = ElevatorPOT->GetAverageValue();
 					MissCounter = 0;
 					Miss = true;
@@ -694,7 +689,7 @@ public:
 				}
 				else
 				{
-					EM->Set(0);
+					EM->Set(EleStop);
 					EleState = ElevatorPOT->GetAverageValue();
 					MissCounter = 0;
 					Miss = false;
@@ -758,7 +753,7 @@ public:
 		{
 			if(val <= (eleCurr + 5) && val >= (eleCurr - 5))
 			{
-				EM->Set(0);
+				EM->Set(EleStop);
 				EMDir = 0;			
 			}
 			else if(val > (eleCurr - eleTol))
@@ -770,7 +765,7 @@ public:
 					eleTemp = eleCurr;
 					EleCycle = 0;
 				}
-				if (EM->Get() != 0 && error == false)
+				if (EM->Get() != EleStop && error == false)
 				{
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
@@ -788,7 +783,7 @@ public:
 					eleTemp = eleCurr;
 					EleCycle = 0;
 				}
-				if (EM->Get() != 0 && error == false)
+				if (EM->Get() != EleStop && error == false)
 				{
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
@@ -809,7 +804,7 @@ public:
 			// printf("Setadj, stop counter, going up\n");
 			EleCountStat = 0;
 			error = false;
-			EM->Set(0);
+			EM->Set(EleStop);
 		}
 		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat == 1)
 		{
@@ -821,11 +816,11 @@ public:
 			// printf("Setadj, stop counter, going down\n");
 			EleCountStat = 0;
 			error = false;
-			EM->Set(0);
+			EM->Set(EleStop);
 		}
 		else if(EleDead())
 		{
-			EM->Set(0);
+			EM->Set(EleStop);
 			// printf("XXXXXXXXXXXXXXXXX DEAD XXXXXXXXXXXXXXXXXX\n");
 		}
 		else if(error == true || val < EleMin || val > EleMax)
