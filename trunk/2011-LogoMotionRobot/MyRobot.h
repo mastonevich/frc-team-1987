@@ -22,7 +22,7 @@ bool init = false;
 bool error = false; 
 bool EleAuto = true;
 
-
+int EleStop = .01;
 const int eleTol = 2;
 int EleCycle = 0;
 const int NumCycle = 50;
