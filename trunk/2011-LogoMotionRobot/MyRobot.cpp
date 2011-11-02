@@ -145,7 +145,7 @@ public:
 		// 0.025,0.0001   -0.2,-0.001
 		// lg->Log(Logger::kINFO,"+5V ADC %1.0f at %1.2f Volts",maximumPot5V,analog5VIn->GetAverageVoltage());
 
-		Shoulder = new Solenoid(8, 5);
+		Shoulder = new Solenoid(8, 8);
 		Wrist = new Solenoid(8, 7);
 		Claw = new Solenoid(8, 6);
 		
@@ -192,18 +192,18 @@ public:
 		int LCR = 1;
 
 		while (IsAutonomous() && IsEnabled()) {
-			/*
-			printf("AStr = %i \n", AStr);
-			printf("AFL = %i \t", AFL);
-			printf("AFR = %i \t", AFR);
-			printf("Mid = %i \t", Mid);
-			printf("Top = %i \t", Top);
 			
-			printf("L-%i \t",TrackL->Get());
-			printf("C-%i \t",TrackC->Get());
-			printf("R-%i \t",TrackR->Get());
-			printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
-			*/
+			//printf("AStr = %i \n", AStr);
+			//printf("AFL = %i \t", AFL);
+			//printf("AFR = %i \t", AFR);
+			//printf("Mid = %i \t", Mid);
+			//printf("Top = %i \t", Top);
+			
+			//printf("L-%i \t",TrackL->Get());
+			//printf("C-%i \t",TrackC->Get());
+			//printf("R-%i \t",TrackR->Get());
+			//printf("avg Value = %d \t", ElevatorPOT->GetAverageValue());
+			
 			//printf("State = %f \t", EleState);
 			
 			
@@ -227,6 +227,11 @@ public:
 					FREncoder->Start();
 					BREncoder->Start();
 					BLEncoder->Start();
+					//printf("Step 1\n");
+					//printf("Error = %i\n", error);
+					printf("EleTemp = %f\t", eleTemp);
+					printf("EleCurr = %f\t", eleCurr);
+					printf("EleCycle = %i\n", EleCycle);
 					
 					if(Mid)
 					{
@@ -374,7 +379,7 @@ public:
 				case 3:				// place tube
 					Claw->Set(1);
 					//Wait(.5);
-					printf("********SCORE********\n");
+					//printf("********SCORE********\n");
 					autoStep++;
 					break;
 
@@ -406,6 +411,8 @@ public:
 		while (IsOperatorControl())
 		{			
 			ds->GetBatteryVoltage();
+
+			printf("avg Value = %d \n", ElevatorPOT->GetAverageValue());
 			
 			if(AirComp->GetPressureSwitchValue() == 0)
 			{
@@ -490,7 +497,7 @@ public:
 				else if(stick2.GetRawButton(7) && ElevatorPOT->GetAverageValue() > EleMin)
 				{
 					//EleState = (ElevatorPOT->GetValue() - 5);
-					EM->Set(-.7);
+					EM->Set(-.6);
 					EleManUse = true; 
 				}
 				else if(EleManUse == true)
@@ -711,7 +718,7 @@ public:
 			
 			// printf("track1= %b track2= %b track3= %b \n", Track1->Get(), Track2->Get(), Track3->Get() ); 
 			// printf("err = %i \t", error);
-			// printf("C %f \t", eleCurr);
+			//printf("C %f \n", eleCurr);
 			// printf("S %f \t", EleState);
 			// printf(" T %f \n", eleTemp);
 			// printf("Ct %d \t", EleCycle);
@@ -751,7 +758,7 @@ public:
 		}
 		if(val <= EleMax && val >= EleMin && error == false)
 		{
-			if(val <= (eleCurr + 5) && val >= (eleCurr - 5))
+			if(val <= (eleCurr + 8) && val >= (eleCurr - 8))  //there were 5s
 			{
 				EM->Set(EleStop);
 				EMDir = 0;			
@@ -770,7 +777,7 @@ public:
 					if((eleCurr <= (eleTemp + eleTol)) && (eleCurr >= (eleTemp - eleTol)) && EleCycle == NumCycle)
 					{
 						error = true;
-						// printf("***************************Err***********************\n");				
+						// printf("***************************Err**************************\n");				
 					}
 				}
 			}
@@ -793,10 +800,10 @@ public:
 				}
 			}
 		}
-
+//**************************************************************************************************************************************
 		if(error == true && EMDir == 1 && !EleDead() && EleCountStat == 1)
 		{
-			EleState = eleCurr - EleErrorAdj;
+			EleState = eleCurr - EleErrorAdjUp;
 			if(EleState <= EleMin)
 			{
 				EleState = Floor;
@@ -808,7 +815,7 @@ public:
 		}
 		else if(error == true && EMDir == -1 && !EleDead() && EleCountStat == 1)
 		{
-			EleState = eleCurr + EleErrorAdj;
+			EleState = eleCurr + EleErrorAdjDown;
 			if(EleState >= EleMax)
 			{
 				EleState = EleMax;
@@ -853,37 +860,37 @@ public:
 		{
 			Shoulder->Set(reShoulder);
 			Wrist->Set(reWrist);
-			return .65;
+			return .5;
 		}
 		else if(.1 < SpeedRequest && SpeedRequest <= .6)
 		{
 			Shoulder->Set(0);
 			Wrist->Set(0);			
-			return .8;
+			return .6;
 		}
 		else if(1 >= SpeedRequest && SpeedRequest > .6)
 		{
 			Shoulder->Set(0);
 			Wrist->Set(0);			
-			return 1;
+			return .7;
 		}
 		else if(-1 <= SpeedRequest && SpeedRequest <= -.7)
 		{
 			Shoulder->Set(0);
 			Wrist->Set(0);			
-			return -.7;
+			return -.2; //-.4
 		}
-		else if(-.7 < SpeedRequest && SpeedRequest < -.5)
+		else if(-.6 < SpeedRequest && SpeedRequest < -.5)
 		{
 			Shoulder->Set(0);
 			Wrist->Set(0);
-			return SpeedRequest;
+			return (-.15);  // WAS JUST SPEEDREQUEST
 		}
 		else if(-.5 <= SpeedRequest && SpeedRequest < 0)
 		{
 			Shoulder->Set(reShoulder);
 			Wrist->Set(reWrist);
-			return -.5;
+			return -.1; //.3
 		}
 		else
 		{
