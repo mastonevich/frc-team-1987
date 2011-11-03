@@ -10,13 +10,13 @@ float Lvl2 = 235;		//lvl 2 outside
 float Lvl3 = 175;		//lvl 1 middle
 float Lvl4 = 239;		//lvl 2 middle
 float Lvl5 = 517;		//lvl 3 outside
-float Lvl6 = 540;		//lvl 3 middle 561
-float Floor = 48;  //48
-float EleMin = 45;  
+float Lvl6 = 561;		//lvl 3 middle
+float Floor = 48;  
+float EleMin = 33;  
 float EleMax = 562;
 float eleTemp;
 float EleRange = (EleMax - EleMin);
-float MissFix = 70;
+float MissFix = 80;
 float EleStop = .18;
 bool init = false;
 bool error = false; 
@@ -29,8 +29,8 @@ const int NumCycle = 50;
 int EMDir = 0;
 const int EleErrorAdjUp = 25;
 const int EleErrorAdjDown = 50;
-const int LowEleDead = 33; //45
-const int HighEleDead = 563;
+const int LowEleDead = 30;
+const int HighEleDead = 565;
 bool EleCountStat = 1;
 
 class MyRobot;
