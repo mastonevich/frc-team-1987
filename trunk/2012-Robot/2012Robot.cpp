@@ -35,7 +35,7 @@ public:
 		myRobot = new RobotDrive(1, 3, 2, 4);	// create robot drive base
 		rightStick = new Joystick(1);			// create the joysticks
 		leftStick = new Joystick(2);
-		armStick = new Joystick(3);
+		armStick = new Joystick(4);
 		armUpperLimit = new DigitalInput(1);	// create the limit switch inputs
 		armLowerLimit = new DigitalInput(2);
 		//Update the motors at least every 100ms.
