@@ -2,15 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class ElevatorUp extends CommandBase {
+public class L_Elevator_Up extends CommandBase {
     
-    public ElevatorUp() {
+    public L_Elevator_Up() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
         requires(elevator);
@@ -22,7 +24,7 @@ public class ElevatorUp extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-         System.out.println("***********ELEVATOR DOING SOMETHING************");
+        //System.out.println("***********ELEVATOR DOING SOMETHING************");
         elevator.up();
     }
 

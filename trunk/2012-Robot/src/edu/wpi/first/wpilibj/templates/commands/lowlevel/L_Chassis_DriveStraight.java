@@ -2,37 +2,37 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
-import edu.wpi.first.wpilibj.Joystick;
-import  edu.wpi.first.wpilibj.templates.OI;
-import edu.wpi.first.wpilibj.templates.RobotMap;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class DriveWithJoystick extends CommandBase {
+public class L_Chassis_DriveStraight extends CommandBase{
+    private double m_timeout;
     
-    public DriveWithJoystick() {
+    public L_Chassis_DriveStraight(double timeout) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(chassis); // reserve the chassis subsystem
+        m_timeout = timeout;
+        requires(chassis);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-
-        
+        setTimeout(m_timeout);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        chassis.setMotors(oi.getJoystick());
+        chassis.straight();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return isTimedOut();
     }
 
     // Called once after isFinished returns true

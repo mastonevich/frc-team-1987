@@ -2,18 +2,21 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class MoveTurret extends CommandBase {
+public class L_Shooter_PrintData extends CommandBase {
     
-    public MoveTurret() {
+    public L_Shooter_PrintData() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(turret);
+        //requires(shooter);
     }
 
     // Called just before this Command runs the first time
@@ -22,8 +25,11 @@ public class MoveTurret extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        //System.out.println("Joystick 2 X: " + oi.getJoystick2().getX());
-        //turret.moveTurret(oi.getJoystick2().getX());
+        SmartDashboard.putDouble("Current Angle:", shooter.getAngle());
+        SmartDashboard.putDouble("Target Angle:", shooter.getTargetAngle());
+        SmartDashboard.putDouble("Set Point: ", shooter.getSP());
+        SmartDashboard.putDouble("Current Point: ", shooter.getRawPOTValue());
+        SmartDashboard.putBoolean("  Shooter PID (ON/OFF)", shooter.getPID());
     }
 
     // Make this return true when this Command no longer needs to run execute()

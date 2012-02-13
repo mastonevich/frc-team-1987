@@ -2,18 +2,23 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class MoveTurret extends CommandBase {
+public class L_Shooter_PIDSet extends CommandBase {
     
-    public MoveTurret() {
+    private boolean isEnabled;
+    
+    public L_Shooter_PIDSet(boolean value) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(turret);
+        this.isEnabled = value;
+        requires(shooter);
     }
 
     // Called just before this Command runs the first time
@@ -22,8 +27,7 @@ public class MoveTurret extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        //System.out.println("Joystick 2 X: " + oi.getJoystick2().getX());
-        //turret.moveTurret(oi.getJoystick2().getX());
+        shooter.setPID(isEnabled);
     }
 
     // Make this return true when this Command no longer needs to run execute()

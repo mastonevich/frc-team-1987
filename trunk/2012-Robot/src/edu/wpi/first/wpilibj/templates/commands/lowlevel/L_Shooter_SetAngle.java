@@ -2,18 +2,23 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class IntakeOFF extends CommandBase {
+public class L_Shooter_SetAngle extends CommandBase {
     
-    public IntakeOFF() {
+    private double angle;
+    
+    public L_Shooter_SetAngle(double angle) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(ballIntake);
+        requires(shooter);
+        this.angle = angle;
     }
 
     // Called just before this Command runs the first time
@@ -22,7 +27,7 @@ public class IntakeOFF extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        ballIntake.off();
+        shooter.setAngle(angle);
     }
 
     // Make this return true when this Command no longer needs to run execute()

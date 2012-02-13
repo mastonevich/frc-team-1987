@@ -2,23 +2,23 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.DigitalIOButton;
 import edu.wpi.first.wpilibj.buttons.InternalButton;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.templates.commands.*;
+import edu.wpi.first.wpilibj.templates.commands.TurretPIDEnable;
+import edu.wpi.first.wpilibj.templates.commands.TurretPreset;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_ThrottleToShooterPos;
+import edu.wpi.first.wpilibj.templates.commands.lowlevel.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-    public static final int JOYSTICK_PORT = 1;
-    public static final int JOYSTICK_PORT2 = 2;
     private Joystick stick;
     private JoystickButton trigger;
-    //private JoystickButton leftSeven; 
+    private JoystickButton bttn11; 
+    private JoystickButton bttn12;
     //private JoystickButton leftNine;
     //private JoystickButton leftEleven;
     
@@ -33,22 +33,33 @@ public class OI {
     
     
     public OI(){
-        stick = new Joystick(JOYSTICK_PORT);
-        stick2 = new Joystick(JOYSTICK_PORT2);
+        stick = new Joystick(RobotMap.RIGHT_JOYSTICK_PORT);
+        stick2 = new Joystick(RobotMap.LEFT_JOYSTICK_PORT);
         trigger = new JoystickButton(stick, Joystick.ButtonType.kTop.value);
-        //leftSeven = stick.getRawButton(7);
+        bttn11 = new JoystickButton(stick, 11);
+        bttn12 = new JoystickButton(stick, 12);
         //leftNine = new JoystickButton(stick, Joystick.ButtonType.kNumButton.value);
         //leftEleven = new JoystickButton(stick, Joystick.ButtonType.kNumButton.value);  
-        trigger.whenPressed(new IntakeFWD());
-        trigger.whenReleased(new IntakeOFF());
+        trigger.whenPressed(new L_Intake_In());
+        trigger.whenReleased(new L_Intake_Off());
         
-        SmartDashboard.putData("GO!", button3);
-        button3.whenPressed(new TurretPreset(1));
         
-        SmartDashboard.putDouble("POINT", 560);
+        bttn11.whenPressed(new L_Shooter_PIDSet(false));
+        bttn12.whenPressed(new L_Shooter_PIDSet(true));
         
-        SmartDashboard.putData("Enable", button1);
-        button1.whenPressed(new TurretPIDEnable());
+        //SmartDashboard.putData("GO!", button3);
+        //button3.whenPressed(new TurretPreset(1));
+        
+        //SmartDashboard.putDouble("POINT", 560);
+        
+        //SmartDashboard.putDouble("Shooter Angle", 45);
+        
+        //SmartDashboard.putData("Set ANGLE", button2);
+        //button2.whenPressed(new L_Shooter_SDButtonAngle());
+        //button2.whenPressed(new H_ThrottleToShooterPos());
+        
+        //SmartDashboard.putData("Enable", button1);
+        //button1.whenPressed(new L_Shooter_PIDSet(true));
     }
     
     public Joystick getJoystick(){

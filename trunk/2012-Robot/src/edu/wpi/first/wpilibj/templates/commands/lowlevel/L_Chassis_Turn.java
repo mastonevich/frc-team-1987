@@ -2,34 +2,37 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class ElevatorStop extends CommandBase {
+public class L_Chassis_Turn extends CommandBase {
+    private double m_timeout;
     
-    public ElevatorStop() {
+    public L_Chassis_Turn(double timeout) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(elevator);
+        m_timeout = timeout;
+        requires(chassis);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        
+        setTimeout(m_timeout);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        System.out.println("*************ELEVATOR STOP***************");
-        elevator.stop();
+        chassis.turn();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return isTimedOut();
     }
 
     // Called once after isFinished returns true
