@@ -2,35 +2,34 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 /**
  *
  * @author team1987
  */
-public class DriveStraight extends CommandBase{
-    private double m_timeout;
+public class L_Shooter_GetPOTValue extends CommandBase {
     
-    public DriveStraight(double timeout) {
+    public L_Shooter_GetPOTValue() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        m_timeout = timeout;
-        requires(chassis);
+        requires(shooter);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        setTimeout(m_timeout);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        chassis.straight();
+        SmartDashboard.putDouble("POT Value", shooter.getRawPOTValue());
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut();
+        return false;
     }
 
     // Called once after isFinished returns true

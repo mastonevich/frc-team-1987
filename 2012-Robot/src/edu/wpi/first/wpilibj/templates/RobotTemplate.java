@@ -13,9 +13,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
-import edu.wpi.first.wpilibj.templates.commands.DriveInASquare;
-import edu.wpi.first.wpilibj.templates.commands.TurretPOTPrint;
-import edu.wpi.first.wpilibj.templates.RobotMap;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_DriveInASquare;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_ShooterMain;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,6 +27,7 @@ public class RobotTemplate extends IterativeRobot {
 
     Command autonomousCommand;
     Command printTurretPOT;
+    Command printData;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -35,8 +35,8 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void robotInit() {
         // instantiate the command used for the autonomous period
-        autonomousCommand = new DriveInASquare();
-        printTurretPOT = new TurretPOTPrint();
+        autonomousCommand = new H_DriveInASquare();
+        printData = new H_ShooterMain();
         SmartDashboard.putData(Scheduler.getInstance());
         
 
@@ -46,6 +46,7 @@ public class RobotTemplate extends IterativeRobot {
     public void autonomousInit() {
         // schedule the autonomous command (example)
         autonomousCommand.start();
+        printData.start();
     }
 
     /**
@@ -61,6 +62,7 @@ public class RobotTemplate extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         autonomousCommand.cancel();
+        printData.cancel();
     }
 
     /**
@@ -68,7 +70,7 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        printTurretPOT.start();
+        printData.start();
     }
     
     public void updateStatus(){

@@ -4,8 +4,8 @@
  */
 package edu.wpi.first.wpilibj.templates.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.templates.RobotMap;
 
 
@@ -19,7 +19,7 @@ public class Elevator extends Subsystem {
     protected Relay m_elevatorMotor;
     
     public Elevator(){
-        m_elevatorMotor = new Relay(RobotMap.elevatorMotor);
+        m_elevatorMotor = new Relay(RobotMap.ELEVATOR_MOTOR_PORT);
     }
 
     public void initDefaultCommand() {

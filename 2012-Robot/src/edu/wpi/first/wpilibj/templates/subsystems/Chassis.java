@@ -4,14 +4,11 @@
  */
 package edu.wpi.first.wpilibj.templates.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.templates.commands.DriveWithJoystick;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.templates.RobotMap;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_DriveWithJoystick;
 
 /**
  *
@@ -21,30 +18,24 @@ public class Chassis extends Subsystem {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
     //RobotDrive drive;
-    Victor m_rightMotor = new Victor(RobotMap.rightMotor);
-    Victor m_leftMotor = new Victor(RobotMap.leftMotor);
+    Victor m_rightMotor = new Victor(RobotMap.RIGHT_DRIVE_MOTOR_PORT);
+    Victor m_leftMotor = new Victor(RobotMap.LEFT_DRIVE_MOTOR_PORT);
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
-        setDefaultCommand(new DriveWithJoystick()); //set the default command
+        setDefaultCommand(new H_DriveWithJoystick()); //set the default command
     }
     
     public Chassis(){
-        //drive = new RobotDrive(2,1);
-        //drive.setSafetyEnabled(false);
     }
     
     public void straight(){
-        //drive.arcadeDrive(1.0,0.0);
+        //drives the robot straight
     }
     
-    public void turnLeft(){
-        //drive.arcadeDrive(0.0,1.0);
-    }
-    
-    public void arcadeDrive(Joystick stick) {
-        //drive.arcadeDrive(stick);
+    public void turn(){
+        //turns the robot a certain amount
     }
 
     public void setMotors(Joystick stick){

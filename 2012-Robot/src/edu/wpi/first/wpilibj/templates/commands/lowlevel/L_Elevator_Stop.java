@@ -2,29 +2,31 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class IntakeFWD extends CommandBase {
+public class L_Elevator_Stop extends CommandBase {
     
-    public IntakeFWD() {
+    public L_Elevator_Stop() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(ballIntake);
+        requires(elevator);
     }
-    
+
     // Called just before this Command runs the first time
     protected void initialize() {
+        
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        System.out.println("***********INTAKE ON************");
-        ballIntake.intake();
-        
+        //System.out.println("*************ELEVATOR STOP***************");
+        elevator.stop();
     }
 
     // Make this return true when this Command no longer needs to run execute()

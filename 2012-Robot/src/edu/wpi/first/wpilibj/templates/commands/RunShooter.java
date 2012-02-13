@@ -22,8 +22,8 @@ public class RunShooter extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        shooter.runShooter(oi.getJoystick2().getThrottle(), oi.getJoystick().getThrottle());
-        System.out.println("Shooter TOP: " + oi.getJoystick2().getThrottle() + " Shooter BOTTOM: " + oi.getJoystick().getThrottle());
+        //shooter.runShooter(oi.getJoystick2().getThrottle(), oi.getJoystick().getThrottle());
+        //System.out.println("Shooter TOP: " + oi.getJoystick2().getThrottle() + " Shooter BOTTOM: " + oi.getJoystick().getThrottle());
         
     }
 

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.highlevel;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
@@ -10,16 +10,9 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  *
  * @author team1987
  */
-public class DriveInASquare extends CommandGroup {
+public class H_Shoot extends CommandGroup {
     
-    public DriveInASquare() {
-        addSequential(new DriveStraight(1));
-        addSequential(new Turn(1));
-        addSequential(new DriveStraight(1));
-        addSequential(new Turn(1));
-        addSequential(new DriveStraight(1));
-        addSequential(new Turn(1));
-        addSequential(new DriveStraight(1));
+    public H_Shoot() {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());

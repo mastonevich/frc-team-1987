@@ -2,35 +2,34 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands;
+package edu.wpi.first.wpilibj.templates.commands.highlevel;
+import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
  *
  * @author team1987
  */
-public class Turn extends CommandBase {
-    private double m_timeout;
+public class H_ThrottleToShooterPos extends CommandBase {
     
-    public Turn(double timeout) {
+    public H_ThrottleToShooterPos() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        m_timeout = timeout;
-        requires(chassis);
+        requires(shooter);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        setTimeout(m_timeout);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        chassis.turnLeft();
+        shooter.throttleToShooter(oi.getJoystick());      
+        System.out.println("Throttle _H: " + oi.getJoystick().getThrottle());
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut();
+        return false;
     }
 
     // Called once after isFinished returns true

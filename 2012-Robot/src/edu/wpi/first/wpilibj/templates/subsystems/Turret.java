@@ -30,8 +30,8 @@ public class Turret extends Subsystem {
     
     
     public Turret() {
-        m_POT = new  AnalogChannel(1,1);
-        m_TMOTOR = new Jaguar(6);   
+        m_POT = new  AnalogChannel(1,3);
+        m_TMOTOR = new Jaguar(7);   
         m_turretPID = new PIDController(-0.01, -0.001, 0, m_POT, m_TMOTOR, 0.05);
         m_turretPID.setInputRange(100, 800);
         m_turretPID.setOutputRange(-0.5, 0.5);
@@ -41,7 +41,7 @@ public class Turret extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
-        setDefaultCommand(new MoveTurret());
+        //setDefaultCommand(new MoveTurret());
         //set the default command
     }
     

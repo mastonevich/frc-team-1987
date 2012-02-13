@@ -3,15 +3,15 @@
  * and open the template in the editor.
  */
 package edu.wpi.first.wpilibj.templates.subsystems;
-import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.templates.RobotMap;
 
 /**
  *
  * @author team1987
  */
-public class BallIntake extends Subsystem {
+public class Intake extends Subsystem {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -21,8 +21,8 @@ public class BallIntake extends Subsystem {
     
     
     
-    public BallIntake() {
-        m_intakeMotor = new Relay(RobotMap.intakeSpike);
+    public Intake() {
+        m_intakeMotor = new Relay(RobotMap.INTAKE_MOTOR_PORT);
     }
 
     public void initDefaultCommand() {
