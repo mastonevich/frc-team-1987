@@ -11,7 +11,7 @@ public class RobotMap {
     // following variables to use with your drivetrain subsystem.
     
      //Elevator
-     public static final int ELEVATOR_MOTOR_PORT = 4;
+     public static final int ELEVATOR_MOTOR_PORT = 2;
      //public static final int ELEVATOR_SENSOR_PORT = ;
      
      //Shooter
@@ -37,7 +37,7 @@ public class RobotMap {
      public static final int LEFT_DRIVE_MOTOR_PORT = 1;
      public static final int RIGHT_DRIVE_MOTOR_PORT = 2;
      
-     //Playmate
+     //Playmate TEE HEE :P
      public static final int RIGHT_JOYSTICK_PORT = 1;
      public static final int LEFT_JOYSTICK_PORT = 2;
      

@@ -19,6 +19,9 @@ public class OI {
     private JoystickButton trigger;
     private JoystickButton bttn11; 
     private JoystickButton bttn12;
+    private JoystickButton bttn3;
+    private JoystickButton bttn4;
+    private JoystickButton bttn5;
     //private JoystickButton leftNine;
     //private JoystickButton leftEleven;
     
@@ -38,6 +41,9 @@ public class OI {
         trigger = new JoystickButton(stick, Joystick.ButtonType.kTop.value);
         bttn11 = new JoystickButton(stick, 11);
         bttn12 = new JoystickButton(stick, 12);
+        bttn3 = new JoystickButton(stick, 3);
+        bttn4 = new JoystickButton(stick, 4);
+        bttn5 = new JoystickButton(stick, 5);
         //leftNine = new JoystickButton(stick, Joystick.ButtonType.kNumButton.value);
         //leftEleven = new JoystickButton(stick, Joystick.ButtonType.kNumButton.value);  
         trigger.whenPressed(new L_Intake_In());
@@ -46,6 +52,10 @@ public class OI {
         
         bttn11.whenPressed(new L_Shooter_PIDSet(false));
         bttn12.whenPressed(new L_Shooter_PIDSet(true));
+        
+        bttn5.whenPressed(new L_Elevator_Up());
+        bttn3.whenPressed(new L_Elevator_Down());
+        bttn4.whenPressed(new L_Elevator_Stop());
         
         //SmartDashboard.putData("GO!", button3);
         //button3.whenPressed(new TurretPreset(1));
@@ -102,5 +112,5 @@ public class OI {
     // button.whenReleased(new ExampleCommand());
 }
 
-/***********
+/*********** Tee hee hee......
  *******************/
