@@ -3,11 +3,7 @@ package edu.wpi.first.wpilibj.templates.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.OI;
-import edu.wpi.first.wpilibj.templates.subsystems.Intake;
-import edu.wpi.first.wpilibj.templates.subsystems.Chassis;
-import edu.wpi.first.wpilibj.templates.subsystems.Shooter;
-import edu.wpi.first.wpilibj.templates.subsystems.Turret;
-import edu.wpi.first.wpilibj.templates.subsystems.Elevator;
+import edu.wpi.first.wpilibj.templates.subsystems.*;
 
 /**
  * The base for all commands. All atomic commands should subclass CommandBase.
@@ -23,6 +19,8 @@ public abstract class CommandBase extends Command {
     public static Turret turret = new Turret();
     public static Shooter shooter = new Shooter();
     public static Elevator elevator = new Elevator();
+    public static BridgeArm bridgeArm = new BridgeArm();
+   // public static Targeting targeting = new Targeting();
     // Create a single static instance of all of your subsystems
 
     public static void init() {
@@ -39,6 +37,7 @@ public abstract class CommandBase extends Command {
        SmartDashboard.putData(turret);
        SmartDashboard.putData(shooter);
        SmartDashboard.putData(elevator);
+       SmartDashboard.putData(bridgeArm);
        
     }
 

@@ -4,6 +4,8 @@
  */
 package edu.wpi.first.wpilibj.templates.commands.lowlevel;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 
 /**
@@ -23,6 +25,8 @@ public class L_Elevator_GetBallCount extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+        SmartDashboard.putBoolean("Elevator Sensor", elevator.getBottomSensor());
+        SmartDashboard.putInt("Ball Count", RobotMap.numBalls);
     }
 
     // Make this return true when this Command no longer needs to run execute()

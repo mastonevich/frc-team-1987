@@ -30,7 +30,17 @@ public class Chassis extends Subsystem {
     public Chassis(){
     }
     
-    public void straight(){
+    public void straight(int dir){
+        if(dir == -1){
+            m_leftMotor.set(-RobotMap.LEFT_STRAIGHT_MOTOR_SPEED);
+            m_rightMotor.set(-RobotMap.RIGHT_STRAIGHT_MOTOR_SPEED);
+        }             
+        else if(dir == 1){
+            m_leftMotor.set(RobotMap.LEFT_STRAIGHT_MOTOR_SPEED);
+            m_rightMotor.set(RobotMap.RIGHT_STRAIGHT_MOTOR_SPEED);
+        }
+        
+             
         //drives the robot straight
     }
     

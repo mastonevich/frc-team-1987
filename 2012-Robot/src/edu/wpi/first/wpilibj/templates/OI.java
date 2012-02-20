@@ -4,10 +4,9 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.InternalButton;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.templates.commands.TurretPIDEnable;
-import edu.wpi.first.wpilibj.templates.commands.TurretPreset;
-import edu.wpi.first.wpilibj.templates.commands.highlevel.H_ThrottleToShooterPos;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_BallCheck;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_ShooterPreset;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_elevatorShooterFeed;
 import edu.wpi.first.wpilibj.templates.commands.lowlevel.*;
 
 /**
@@ -15,17 +14,25 @@ import edu.wpi.first.wpilibj.templates.commands.lowlevel.*;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
+        
     private Joystick stick;
     private JoystickButton trigger;
     private JoystickButton bttn11; 
     private JoystickButton bttn12;
+    private JoystickButton bttn2;
     private JoystickButton bttn3;
     private JoystickButton bttn4;
     private JoystickButton bttn5;
-    //private JoystickButton leftNine;
-    //private JoystickButton leftEleven;
+    private JoystickButton bttn6;
+  
     
     private Joystick stick2;
+    private JoystickButton S2trigger;
+    private JoystickButton S2bttn8;
+    private JoystickButton S2bttn10;
+    private JoystickButton S2bttn12;
+    
+    
     
     InternalButton button1 = new InternalButton();
     InternalButton button2 = new InternalButton();
@@ -34,42 +41,44 @@ public class OI {
     InternalButton button5 = new InternalButton();
    
     
-    
     public OI(){
+        
         stick = new Joystick(RobotMap.RIGHT_JOYSTICK_PORT);
         stick2 = new Joystick(RobotMap.LEFT_JOYSTICK_PORT);
-        trigger = new JoystickButton(stick, Joystick.ButtonType.kTop.value);
+
+        
+        
+        
+        S2trigger = new JoystickButton(stick2, Joystick.ButtonType.kTop.value);
+        S2bttn8 = new JoystickButton(stick2, 8);
+        S2bttn10 = new JoystickButton(stick2, 10);
+        S2bttn12 = new JoystickButton(stick2, 12);
+        
         bttn11 = new JoystickButton(stick, 11);
         bttn12 = new JoystickButton(stick, 12);
+        bttn2 = new JoystickButton(stick, 2);
         bttn3 = new JoystickButton(stick, 3);
         bttn4 = new JoystickButton(stick, 4);
         bttn5 = new JoystickButton(stick, 5);
-        //leftNine = new JoystickButton(stick, Joystick.ButtonType.kNumButton.value);
-        //leftEleven = new JoystickButton(stick, Joystick.ButtonType.kNumButton.value);  
-        trigger.whenPressed(new L_Intake_In());
-        trigger.whenReleased(new L_Intake_Off());
-        
+        bttn6 = new JoystickButton(stick, 6);
+
+
+        S2trigger.whenPressed(new H_elevatorShooterFeed());
+        S2bttn8.whenPressed(new H_ShooterPreset(RobotMap.FENDER_MOTOR_SPEED, RobotMap.FENDER_MOTOR_ANGLE));
+        S2bttn10.whenPressed(new H_ShooterPreset(RobotMap.KEY_MOTOR_SPEED, RobotMap.KEY_MOTOR_ANGLE));
+        S2bttn12.whenPressed(new H_ShooterPreset(RobotMap.LANE_MOTOR_SPEED, RobotMap.LANE_MOTOR_ANGLE));
         
         bttn11.whenPressed(new L_Shooter_PIDSet(false));
         bttn12.whenPressed(new L_Shooter_PIDSet(true));
         
-        bttn5.whenPressed(new L_Elevator_Up());
-        bttn3.whenPressed(new L_Elevator_Down());
-        bttn4.whenPressed(new L_Elevator_Stop());
-        
-        //SmartDashboard.putData("GO!", button3);
-        //button3.whenPressed(new TurretPreset(1));
-        
-        //SmartDashboard.putDouble("POINT", 560);
-        
-        //SmartDashboard.putDouble("Shooter Angle", 45);
-        
-        //SmartDashboard.putData("Set ANGLE", button2);
-        //button2.whenPressed(new L_Shooter_SDButtonAngle());
-        //button2.whenPressed(new H_ThrottleToShooterPos());
-        
-        //SmartDashboard.putData("Enable", button1);
-        //button1.whenPressed(new L_Shooter_PIDSet(true));
+        bttn2.whenPressed(new H_BallCheck());
+      
+        bttn4.whenPressed(new L_Intake_In());
+        bttn6.whenPressed(new L_Intake_Off());
+  
+        bttn5.whenPressed(new L_Elevator_Stop());
+        bttn3.whenPressed(new L_Elevator_Up());
+       
     }
     
     public Joystick getJoystick(){

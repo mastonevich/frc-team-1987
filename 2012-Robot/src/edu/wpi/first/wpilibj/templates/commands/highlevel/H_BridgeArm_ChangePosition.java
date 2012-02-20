@@ -2,20 +2,29 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wpi.first.wpilibj.templates.commands.lowlevel;
+package edu.wpi.first.wpilibj.templates.commands.highlevel;
 
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
+import edu.wpi.first.wpilibj.templates.commands.lowlevel.L_BridgeArm_DOWN;
+import edu.wpi.first.wpilibj.templates.commands.lowlevel.L_BridgeArm_UP;
 
 /**
  *
  * @author team1987
  */
-public class L_Intake_Out extends CommandBase {
+public class H_BridgeArm_ChangePosition extends CommandBase {
     
-    public L_Intake_Out() {
+    Command toUP;
+    Command toDOWN;
+    
+    public H_BridgeArm_ChangePosition() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(ballIntake);
+        toUP = new L_BridgeArm_UP();
+        toDOWN = new L_BridgeArm_DOWN();
+        requires(bridgeArm);
     }
 
     // Called just before this Command runs the first time
@@ -24,8 +33,13 @@ public class L_Intake_Out extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        System.out.println("***********INTAKE OUT************");
-        ballIntake.outake();
+        if (oi.getJoystick().getRawButton(8))
+            toUP.start();
+        if (oi.getJoystick().getRawButton(7))
+            toDOWN.start();
+        
+        SmartDashboard.putBoolean("Bottom Switch", bridgeArm.getDownSwitch());
+        SmartDashboard.putBoolean("Top Switch", bridgeArm.getUpSwitch());
     }
 
     // Make this return true when this Command no longer needs to run execute()

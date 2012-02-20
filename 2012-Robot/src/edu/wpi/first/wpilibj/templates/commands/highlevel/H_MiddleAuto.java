@@ -5,14 +5,19 @@
 package edu.wpi.first.wpilibj.templates.commands.highlevel;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.templates.RobotMap;
+import edu.wpi.first.wpilibj.templates.commands.lowlevel.L_BridgeArm_DOWN;
+import edu.wpi.first.wpilibj.templates.commands.lowlevel.L_Chassis_DriveStraight;
 
 /**
  *
  * @author team1987
  */
-public class H_Shoot extends CommandGroup {
+public class H_MiddleAuto extends CommandGroup {
     
-    public H_Shoot() {
+    public H_MiddleAuto() {
+        
+        RobotMap.numBalls = 2;
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -29,5 +34,13 @@ public class H_Shoot extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
+        
+        addParallel(new H_ShooterPreset(RobotMap.KEY_MOTOR_SPEED, RobotMap.KEY_MOTOR_ANGLE));
+        addSequential(new H_elevatorShooterFeed());
+        //addSequential(new H_elevatorShooterFeed());
+        addSequential(new L_Chassis_DriveStraight(2, -1));
+        addSequential(new L_BridgeArm_DOWN());
+        
+
     }
 }
