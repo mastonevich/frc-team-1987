@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj.templates.commands.lowlevel.L_Chassis_Turn;
 public class H_DriveInASquare extends CommandGroup {
     
     public H_DriveInASquare() {
-        addSequential(new L_Chassis_DriveStraight(1));
+        addSequential(new L_Chassis_DriveStraight(1, 1));
         addSequential(new L_Chassis_Turn(1));
-        addSequential(new L_Chassis_DriveStraight(1));
+        addSequential(new L_Chassis_DriveStraight(1, 1));
         addSequential(new L_Chassis_Turn(1));
-        addSequential(new L_Chassis_DriveStraight(1));
+        addSequential(new L_Chassis_DriveStraight(1, 1));
         addSequential(new L_Chassis_Turn(1));
-        addSequential(new L_Chassis_DriveStraight(1));
+        addSequential(new L_Chassis_DriveStraight(1, 1));
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());

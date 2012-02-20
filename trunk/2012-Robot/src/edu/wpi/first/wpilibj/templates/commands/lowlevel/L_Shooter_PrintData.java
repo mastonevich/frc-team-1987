@@ -30,6 +30,15 @@ public class L_Shooter_PrintData extends CommandBase {
         SmartDashboard.putDouble("Set Point: ", shooter.getSP());
         SmartDashboard.putDouble("Current Point: ", shooter.getRawPOTValue());
         SmartDashboard.putBoolean("  Shooter PID (ON/OFF)", shooter.getPID());
+        SmartDashboard.putDouble("Set Motor Speed", shooter.getShooterSpeed());
+        
+        SmartDashboard.putBoolean("Top Sensor: ", elevator.getTopSensor());
+        SmartDashboard.putBoolean("Bottom Sensor: ", elevator.getBottomSensor());
+        //SmartDashboard.putDouble("Distance(inches)", shooter.getDistance());
+        //SmartDashboard.putDouble("Battery Voltage", shooter.getBatteryVoltage());
+        
+        //SmartDashboard.putBoolean("Motor Sensor", shooter.getShooterSensor());
+        //SmartDashboard.putInt("Shooter Rotations", shooter.getShooterRotations());
     }
 
     // Make this return true when this Command no longer needs to run execute()

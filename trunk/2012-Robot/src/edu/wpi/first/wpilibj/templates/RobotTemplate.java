@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 import edu.wpi.first.wpilibj.templates.commands.highlevel.H_DriveInASquare;
+import edu.wpi.first.wpilibj.templates.commands.highlevel.H_MiddleAuto;
 import edu.wpi.first.wpilibj.templates.commands.highlevel.H_ShooterMain;
+import edu.wpi.first.wpilibj.templates.commands.lowlevel.L_Elevator_GetBallCount;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,7 +29,9 @@ public class RobotTemplate extends IterativeRobot {
 
     Command autonomousCommand;
     Command printTurretPOT;
-    Command printData;
+    Command printShooterData;
+    Command printBallCount;
+    
 
     /**
      * This function is run when the robot is first started up and should be
@@ -35,10 +39,10 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void robotInit() {
         // instantiate the command used for the autonomous period
-        autonomousCommand = new H_DriveInASquare();
-        printData = new H_ShooterMain();
+        autonomousCommand = new H_MiddleAuto();
+        printShooterData = new H_ShooterMain();
+        printBallCount = new L_Elevator_GetBallCount();
         SmartDashboard.putData(Scheduler.getInstance());
-        
 
         // Initialize all subsystems
         CommandBase.init();
@@ -46,7 +50,8 @@ public class RobotTemplate extends IterativeRobot {
     public void autonomousInit() {
         // schedule the autonomous command (example)
         autonomousCommand.start();
-        printData.start();
+        //printShooterData.start();
+        printBallCount.start();
     }
 
     /**
@@ -62,7 +67,8 @@ public class RobotTemplate extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         autonomousCommand.cancel();
-        printData.cancel();
+        printShooterData.cancel();
+        printBallCount.cancel();
     }
 
     /**
@@ -70,7 +76,8 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        printData.start();
+        printShooterData.start();
+        printBallCount.start();
     }
     
     public void updateStatus(){

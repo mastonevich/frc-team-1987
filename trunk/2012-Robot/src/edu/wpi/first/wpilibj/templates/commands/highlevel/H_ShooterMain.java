@@ -32,6 +32,6 @@ public class H_ShooterMain extends CommandGroup {
         // arm.
         
         addParallel(new L_Shooter_PrintData());
-        addParallel(new H_ThrottleToShooterPos());
+        addParallel(new H_ShooterControl());
     }
 }
